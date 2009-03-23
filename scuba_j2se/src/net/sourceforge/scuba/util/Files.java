@@ -49,6 +49,10 @@ public class Files
 
 	private Files() {
 	}
+	
+	public static void main(String[] arg) {
+		URL a = getBaseDir();
+	}
 
 	public static URL getBaseDir() {
 		ClassLoader cl = (new Object() {
@@ -70,6 +74,7 @@ public class Files
 			URL basePathURL = new URL(protocol, host, basePathString);
 			return basePathURL;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -87,5 +92,4 @@ public class Files
 		}
 		return new File(baseDirURL.getPath().replace("%20", " "));
 	}
-
 }
