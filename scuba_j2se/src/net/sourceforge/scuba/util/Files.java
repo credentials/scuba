@@ -49,10 +49,6 @@ public class Files
 
 	private Files() {
 	}
-	
-	public static void main(String[] arg) {
-		URL a = getBaseDir();
-	}
 
 	public static URL getBaseDir() {
 		ClassLoader cl = (new Object() {
@@ -70,7 +66,7 @@ public class Files
 
 			File imagesDirFile = new File(imagesDirFileString);
 			String basePathString = imagesDirFile.getParent();
-
+			
 			URL basePathURL = new URL(protocol, host, basePathString);
 			return basePathURL;
 		} catch (Exception e) {
