@@ -10,7 +10,6 @@
 	<property name="src" location="src" />
 	<property name="build" location="bin" />
 	<property name="dist" location="dist" />
-	<property name="distlib" location="${dist}/lib" />
 
 	<property name="app_name" value="scuba" />
 	<property name="app_version" value="0.0.1" />
@@ -22,7 +21,7 @@
 	<property name="jcopprovider-build" location="${basedir}/../jcopprovider/bin" />
 
 	<target name="all" description="Build everything" depends="init, dist, doc">
-		<move failonerror="false" file="${distlib}/${app_name}.jar" tofile="${distlib}/${app_name}-${app_version}.jar" />
+		<move failonerror="false" file="${dist}/${app_name}.jar" tofile="${dist}/${app_name}-${app_version}.jar" />
 	</target>
 
 	<target name="init" depends="check_conditional_properties" description="Initializes some variables">
@@ -33,7 +32,7 @@
 		<mkdir dir="${build}" />
 
 		<!-- Create the distribution directory structure -->
-		<mkdir dir="${distlib}" />
+		<mkdir dir="${dist}" />
 	</target>
 	
 	<target name="compile" depends="init" description="Compiles the source ">
@@ -56,7 +55,7 @@
 		</copy>
 
 		<!-- Create the distribution jar file -->
-		<jar jarfile="${distlib}/scuba.jar">
+		<jar jarfile="${dist}/scuba.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name} on ${os.name} ${os.arch}" />
 				<attribute name="Built-Date" value="${TODAY}" />
