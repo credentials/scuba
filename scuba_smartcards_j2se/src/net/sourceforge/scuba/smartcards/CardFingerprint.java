@@ -1,7 +1,7 @@
 /*
- * JMRTD - A Java API for accessing machine readable travel documents.
+ * SCUBA smart card framework.
  *
- * Copyright (C) 2008  The JMRTD team
+ * Copyright (C) 2009  The SCUBA team.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

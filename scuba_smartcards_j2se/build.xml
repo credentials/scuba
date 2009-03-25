@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="scuba" default="all" basedir=".">
+<project name="scuba_smartcards" default="all" basedir=".">
 
 	<description>
 		Builds SCUBA jar
@@ -55,7 +55,7 @@
 		</copy>
 
 		<!-- Create the distribution jar file -->
-		<jar jarfile="${dist}/scuba.jar">
+		<jar jarfile="${dist}/${app_name}.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name} on ${os.name} ${os.arch}" />
 				<attribute name="Built-Date" value="${TODAY}" />
@@ -100,7 +100,7 @@
 			<package name="net.sourceforge.scuba.tlv" />
 		</javadoc>
 	
-		<zip destfile="scuba-doc-${app_version}-${DSTAMP}.zip" basedir="apidocs" />
+		<zip destfile="${app_name}-doc-${app_version}-${DSTAMP}.zip" basedir="apidocs" />
 	</target>
 	
 	<!-- Conditional stuff is set below -->
