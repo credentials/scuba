@@ -58,7 +58,7 @@ public class Icons
 	}
 
 	public static Image getFlagImage(Country country) {
-		return getImageFromZippedCollection("flags", country.toString().toLowerCase(), DEFAULT_16X11_IMAGE);
+		return getImageFromCollection("flags", country.toString().toLowerCase(), DEFAULT_16X11_IMAGE);
 	}
 
 	/**
@@ -88,7 +88,12 @@ public class Icons
 	 * @return
 	 */
 	public static Image getFamFamFamSilkIcon(String iconName) {
-		return getImageFromZippedCollection("famfamfam_silk", iconName.toLowerCase(), DEFAULT_16X16_IMAGE);
+		return getImageFromCollection("famfamfam_silk", iconName.toLowerCase(), DEFAULT_16X16_IMAGE);
+	}
+	
+	private static Image getImageFromCollection(String collectionName, String imageName, Image defaultImage) {
+		/* TODO: check if directory with name collectionName or zip file with name collectionName.zip exists */
+		return getImageFromZippedCollection(collectionName, imageName, defaultImage);
 	}
 
 	private static Image getImageFromZippedCollection(String collectionName, String imageName, Image defaultImage) {
@@ -102,8 +107,6 @@ public class Icons
 				if (entryName != null && entryName.equals(fileName)) {
 					Image flagImage = ImageIO.read(zipIn);
 					return flagImage;
-				} else {
-					//						zipIn.closeEntry();
 				}
 			}
 		} catch (Exception e) {
