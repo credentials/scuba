@@ -18,11 +18,11 @@ public class Files
 		public String getDescription() { return "Certificate files"; }				
 	};
 
-    public static final FileFilter CV_CERTIFICATE_FILE_FILTER = new FileFilter() {
-        public boolean accept(File f) { return f.isDirectory()
-            || f.getName().endsWith("cvcert") || f.getName().endsWith("CVCERT"); }
-        public String getDescription() { return "CV Certificate files"; }              
-    };
+	public static final FileFilter CV_CERTIFICATE_FILE_FILTER = new FileFilter() {
+		public boolean accept(File f) { return f.isDirectory()
+			|| f.getName().endsWith("cvcert") || f.getName().endsWith("CVCERT"); }
+		public String getDescription() { return "CV Certificate files"; }              
+	};
 
 	public static final FileFilter KEY_FILE_FILTER = new FileFilter() {
 		public boolean accept(File f) { return f.isDirectory()
@@ -51,22 +51,51 @@ public class Files
 	}
 
 	public static URL getBaseDir() {
-		ClassLoader cl = (new Object() {
-			public String toString() { return super.toString(); }
-		}).getClass().getClassLoader();
-
 		try {
-			URL imagesURL = cl.getResource("images");
-			if (imagesURL == null) {
-				imagesURL = new URL(cl.getResource(".") + "../images");
-			}
-			String protocol = imagesURL.getProtocol().toLowerCase();
-			String host = imagesURL.getHost().toLowerCase();
-			String imagesDirFileString = imagesURL.getFile();
+			Class<?> c = (new Object() {
+				public String toString() { return super.toString(); }
+			}).getClass();
+			ClassLoader cl = c.getClassLoader();
+			URL url = cl.getResource(".");
+		
+			String protocol = url.getProtocol().toLowerCase();
+			String host = url.getHost().toLowerCase();
+			String basePathString = url.getFile();
 
-			File imagesDirFile = new File(imagesDirFileString);
-			String basePathString = imagesDirFile.getParent();
+			if (basePathString.endsWith("/bin")
+					|| basePathString.endsWith("/bin/")
+					|| basePathString.endsWith("/build")
+					|| basePathString.endsWith("/bin/")) {
+				basePathString = (new File(basePathString)).getParent();
+			}
+			System.out.println("DEBUG: getBaseDir() says basePathString = " + basePathString);
+			return new URL(protocol, host, basePathString);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static URL getBaseDir(Class<?> c) {
+		try {
+			String classCanonicalName = c.getCanonicalName();
+			if (classCanonicalName == null) { classCanonicalName = c.getName(); }
+			String classPathToClass = "/" + classCanonicalName.replace(".", "/") + ".class";
+			URL url = c.getResource(classPathToClass);
+
+			String protocol = url.getProtocol().toLowerCase();
+			String host = url.getHost().toLowerCase();
+			String dirString = url.getFile();
+			int classNameIndex = dirString.indexOf(classPathToClass);
+			String basePathString = dirString.substring(0, classNameIndex);
+			if (basePathString.endsWith("/bin")
+					|| basePathString.endsWith("/bin/")
+					|| basePathString.endsWith("/build")
+					|| basePathString.endsWith("/bin/")) {
+				basePathString = (new File(basePathString)).getParent();
+			}
 			
+			System.out.println("DEBUG: basePathString = " + basePathString);
 			URL basePathURL = new URL(protocol, host, basePathString);
 			return basePathURL;
 		} catch (Exception e) {
