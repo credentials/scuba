@@ -3,6 +3,8 @@ package net.sourceforge.scuba.util;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 
@@ -56,14 +58,7 @@ public class Icons
 	}
 
 	public static Image getFlagImage(Country country) {
-		try {
-			URL flagsDir = new URL(getImagesDir() + "/flags");
-			String fileName = country.toString().toLowerCase() + ".png";
-			Image flagImage = ImageIO.read(new URL(flagsDir + "/" + fileName));
-			return flagImage;
-		} catch (Exception e) {
-			return DEFAULT_16X11_IMAGE;
-		}
+		return getImageFromZippedCollection("flags", country.toString().toLowerCase(), DEFAULT_16X11_IMAGE);
 	}
 
 	/**
@@ -93,13 +88,27 @@ public class Icons
 	 * @return
 	 */
 	public static Image getFamFamFamSilkIcon(String iconName) {
+		return getImageFromZippedCollection("famfamfam_silk", iconName.toLowerCase(), DEFAULT_16X16_IMAGE);
+	}
+
+	private static Image getImageFromZippedCollection(String collectionName, String imageName, Image defaultImage) {
 		try {
-			URL iconsDir = new URL(getImagesDir() + "/famfamfam_silk");
-			String fileName = iconName.toLowerCase() + ".png";
-			Image iconImage = ImageIO.read(new URL(iconsDir + "/" + fileName));
-			return iconImage;
+			URL flagsDir = new URL(getImagesDir() + "/" + collectionName + ".zip");
+			ZipInputStream zipIn = new ZipInputStream(flagsDir.openStream());
+			ZipEntry entry;
+			while ((entry = zipIn.getNextEntry()) != null) {
+				String fileName = imageName + ".png";
+				String entryName = entry.getName();
+				if (entryName != null && entryName.equals(fileName)) {
+					Image flagImage = ImageIO.read(zipIn);
+					return flagImage;
+				} else {
+					//						zipIn.closeEntry();
+				}
+			}
 		} catch (Exception e) {
-			return DEFAULT_16X16_IMAGE;
+			return defaultImage;
 		}
+		return defaultImage;
 	}
 }
