@@ -15,11 +15,15 @@
 	<property name="app_version" value="0.0.1" />
 	<property name="app_title" value="${app_name} ${app_version}" />
 	
-	<!-- Terminal provider classes will be included in main jar -->
+	<!-- Classes of these projects will be included in main jar -->
 	<property name="acrprovider-build" location="${basedir}/../acrprovider/bin" />
 	<property name="crefprovider-build" location="${basedir}/../crefprovider/bin" />
 	<property name="jcopprovider-build" location="${basedir}/../jcopprovider/bin" />
 
+	<property name="scuba_data-build" location="${basedir}/../scuba_data/bin" />
+	<property name="scuba_util-build" location="${basedir}/../scuba_util/bin" />
+	<property name="scuba_storage-build" location="${basedir}/../scuba_storage_j2se/bin" />
+	
 	<target name="all" description="Build everything" depends="init, dist, doc">
 		<move failonerror="false" file="${dist}/${app_name}.jar" tofile="${dist}/${app_name}-${app_version}.jar" />
 	</target>
@@ -67,6 +71,10 @@
 			<fileset dir="${acrprovider-build}" includes="**/*.class" />
 			<fileset dir="${crefprovider-build}" includes="**/*.class" />
 			<fileset dir="${jcopprovider-build}" includes="**/*.class" />
+			<fileset dir="${scuba_data-build}" includes="**/*.class" />
+			<fileset dir="${scuba_util-build}" includes="**/*.class" />
+			<fileset dir="${scuba_storage-build}" includes="**/*.class" />
+
 			<fileset dir="." includes="images/famfamfam_silk/*.png,images/flags/*.png" />
 			<fileset dir="${dist}" includes="README,LICENSE" />
 		</jar>	
