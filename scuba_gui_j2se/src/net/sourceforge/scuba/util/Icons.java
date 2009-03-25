@@ -44,6 +44,16 @@ public class Icons
 			return null;
 		}
 	}
+	
+	private static URL getIconsDir() {
+		try {
+			URL basePathURL = Files.getBaseDir(Icons.class);
+			URL imagesDirURL = new URL(basePathURL + "/images");
+			return imagesDirURL;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public static Image getImage(String imageName) {
 		try {
@@ -98,7 +108,7 @@ public class Icons
 
 	private static Image getImageFromZippedCollection(String collectionName, String imageName, Image defaultImage) {
 		try {
-			URL flagsDir = new URL(getImagesDir() + "/" + collectionName + ".zip");
+			URL flagsDir = new URL(getIconsDir() + "/" + collectionName + ".zip");
 			ZipInputStream zipIn = new ZipInputStream(flagsDir.openStream());
 			ZipEntry entry;
 			while ((entry = zipIn.getNextEntry()) != null) {

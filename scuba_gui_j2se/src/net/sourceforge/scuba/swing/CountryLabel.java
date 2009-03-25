@@ -9,10 +9,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import net.sourceforge.scuba.smartcards.*;
-import net.sourceforge.scuba.tlv.*;
-import net.sourceforge.scuba.util.*;
-import net.sourceforge.scuba.data.*;
+import net.sourceforge.scuba.data.Country;
+import net.sourceforge.scuba.util.Icons;
 
 public class CountryLabel extends Box
 {
