@@ -50,11 +50,18 @@ public class Files
 	private Files() {
 	}
 
+	/**
+	 * Gets the application base directory.
+	 * 
+	 * @return the base directory
+	 */
 	public static URL getBaseDir() {
 		try {
 			Class<?> c = (new Object() {
 				public String toString() { return super.toString(); }
 			}).getClass();
+			
+			/* We're using the classloader to determine the base URL. */
 			ClassLoader cl = c.getClassLoader();
 			URL url = cl.getResource(".");
 		
@@ -65,10 +72,9 @@ public class Files
 			if (basePathString.endsWith("/bin")
 					|| basePathString.endsWith("/bin/")
 					|| basePathString.endsWith("/build")
-					|| basePathString.endsWith("/bin/")) {
+					|| basePathString.endsWith("/build/")) {
 				basePathString = (new File(basePathString)).getParent();
 			}
-			System.out.println("DEBUG: getBaseDir() says basePathString = " + basePathString);
 			return new URL(protocol, host, basePathString);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -76,26 +82,30 @@ public class Files
 		}
 	}
 
+	/**
+	 * Gets the base directory where class <code>c</code> resides.
+	 *
+	 * @param c
+	 * @return the base directory
+	 */
 	public static URL getBaseDir(Class<?> c) {
 		try {
-			String classCanonicalName = c.getCanonicalName();
-			if (classCanonicalName == null) { classCanonicalName = c.getName(); }
-			String classPathToClass = "/" + classCanonicalName.replace(".", "/") + ".class";
-			URL url = c.getResource(classPathToClass);
+			String className = c.getCanonicalName();
+			if (className == null) { className = c.getName(); }
+			String pathToClass = "/" + className.replace(".", "/") + ".class";
+			URL url = c.getResource(pathToClass);
 
 			String protocol = url.getProtocol().toLowerCase();
 			String host = url.getHost().toLowerCase();
 			String dirString = url.getFile();
-			int classNameIndex = dirString.indexOf(classPathToClass);
+			int classNameIndex = dirString.indexOf(pathToClass);
 			String basePathString = dirString.substring(0, classNameIndex);
 			if (basePathString.endsWith("/bin")
 					|| basePathString.endsWith("/bin/")
 					|| basePathString.endsWith("/build")
-					|| basePathString.endsWith("/bin/")) {
+					|| basePathString.endsWith("/build/")) {
 				basePathString = (new File(basePathString)).getParent();
 			}
-			
-			System.out.println("DEBUG: basePathString = " + basePathString);
 			URL basePathURL = new URL(protocol, host, basePathString);
 			return basePathURL;
 		} catch (Exception e) {
