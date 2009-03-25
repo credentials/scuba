@@ -72,30 +72,10 @@ public class Icons
 	}
 
 	/**
-	 * Gets small icon from file.
-	 * 
-	 * @param iconName name without the .png or .gif
-	 * @return
-	 */
-	public static Image getSmallIcon(String iconName) {
-		return getFamFamFamSilkIcon(iconName);
-	}
-
-	/**
-	 * Gets large icon from file.
-	 * 
-	 * @param iconName name without the .png or .gif
-	 * @return
-	 */
-	public static Image getLargeIcon(String iconName) {
-		return getFamFamFamSilkIcon(iconName);
-	}
-
-	/**
 	 * Gets icon from file.
 	 * 
 	 * @param iconName name without the .png or .gif
-	 * @return
+	 * @return an image
 	 */
 	public static Image getFamFamFamSilkIcon(String iconName) {
 		return getImageFromCollection("famfamfam_silk", iconName.toLowerCase(), DEFAULT_16X16_IMAGE);
