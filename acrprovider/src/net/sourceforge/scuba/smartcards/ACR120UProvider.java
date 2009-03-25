@@ -30,6 +30,6 @@ public final class ACR120UProvider extends Provider
         super("ACR120U", 0.1d,
                 "TerminalFactory Provider for the ACR120U Smart Card Reader");
         put("TerminalFactory.ACR120U",
-                "ds.smartcards.acr120.ACR120UTerminalFactorySpi");
+                "net.sourceforge.scuba.smartcards.ACR120UTerminalFactorySpi");
     }
 }

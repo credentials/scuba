@@ -39,6 +39,6 @@ public class JCOPTerminalProvider extends Provider
 	 */
 	public JCOPTerminalProvider() {
 		super("JCOPTerminalProvider", 0.1d, "JCOP Emulation Provider");
-		put("TerminalFactory.JCOP", "ds.smartcards.JCOPEmulatorTerminalFactorySpi");
+		put("TerminalFactory.JCOP", "net.sourceforge.scuba.smartcards.JCOPEmulatorTerminalFactorySpi");
 	}
 }

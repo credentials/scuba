@@ -28,6 +28,6 @@ public final class ACR122Provider extends Provider {
         super("DS", 0.9d,
                 "TerminalFactory Provider for the ACR122 Smart Card Reader");
         put("TerminalFactory.ACR",
-                "ds.smartcards.acr122.ACR122TerminalFactorySpi");
+                "net.sourceforge.scuba.smartcards.ACR122TerminalFactorySpi");
     }
 }

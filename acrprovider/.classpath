@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="ACR120U_LIB">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/D:/Software/ACR120U_Driver_SPC_Signed-1.0.1.0/ACR120U-JNI/ACR120U-API-doc-html.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

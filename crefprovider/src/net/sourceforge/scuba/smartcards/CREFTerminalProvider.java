@@ -38,6 +38,6 @@ public class CREFTerminalProvider extends Provider
 	 */
 	public CREFTerminalProvider() {
 		super("CREFTerminalProvider", 0.1d, "CREF Emulation Provider");
-		put("TerminalFactory.CREF", "ds.smartcards.CREFEmulatorTerminalFactorySpi");
+		put("TerminalFactory.CREF", "net.sourceforge.scuba.smartcards.CREFEmulatorTerminalFactorySpi");
 	}
 }
