@@ -45,16 +45,31 @@ public class Icons
 		}
 	}
 	
-	private static URL getIconsDir() {
+	private static URL getImagesDir(Class<?> c) {
 		try {
-			URL basePathURL = Files.getBaseDir(Icons.class);
+			URL basePathURL = Files.getBaseDir(c);
 			URL imagesDirURL = new URL(basePathURL + "/images");
 			return imagesDirURL;
 		} catch (Exception e) {
 			return null;
 		}
 	}
+	
+	private static URL getIconsDir() {
+		return getImagesDir(Icons.class);
+	}
 
+	public static Image getImage(String imageName, Class<?> c) {
+		try {
+			URL imagesDir = getImagesDir(c);
+			String fileName = imageName.toLowerCase() + ".png";
+			Image image = ImageIO.read(new URL(imagesDir + "/" + fileName));
+			return image;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	public static Image getImage(String imageName) {
 		try {
 			URL imagesDir = getImagesDir();
@@ -64,7 +79,6 @@ public class Icons
 		} catch (Exception e) {
 			return null;
 		}
-
 	}
 
 	public static Image getFlagImage(Country country) {
