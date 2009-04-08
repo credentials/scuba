@@ -3,7 +3,7 @@
 <project name="scuba_smartcards" default="all" basedir=".">
 
 	<description>
-		Builds SCUBA jar
+		Builds scuba_smartcards jar
 	</description>
 
 	<!-- Global properties for this build -->
@@ -11,21 +11,20 @@
 	<property name="build" location="bin" />
 	<property name="dist" location="dist" />
 
-	<property name="app_name" value="scuba" />
+	<property name="app_name" value="scuba_smartcards" />
 	<property name="app_version" value="0.0.1" />
 	<property name="app_title" value="${app_name} ${app_version}" />
 	
 	<!-- Classes of these projects will be included in main jar -->
-	<property name="acrprovider-build" location="${basedir}/../acrprovider/bin" />
-	<property name="crefprovider-build" location="${basedir}/../crefprovider/bin" />
-	<property name="jcopprovider-build" location="${basedir}/../jcopprovider/bin" />
+	<property name="acrprovider_build" location="${basedir}/../acrprovider/bin" />
+	<property name="crefprovider_build" location="${basedir}/../crefprovider/bin" />
+	<property name="jcopprovider_build" location="${basedir}/../jcopprovider/bin" />
 
-	<property name="scuba_data-build" location="${basedir}/../scuba_data/bin" />
-	<property name="scuba_util-build" location="${basedir}/../scuba_util/bin" />
-	<property name="scuba_storage-build" location="${basedir}/../scuba_storage_j2se/bin" />
+	<property name="scuba_data_jar" value="scuba_data-${app_version}.jar" />
+	<property name="scuba_util_jar" value="scuba_util-${app_version}.jar" />
+	<property name="scuba_storage_jar" value="scuba_storage-${app_version}.jar" />
 	
 	<target name="all" description="Build everything" depends="init, dist, doc">
-		<move failonerror="false" file="${dist}/${app_name}.jar" tofile="${dist}/${app_name}-${app_version}.jar" />
 	</target>
 
 	<target name="init" depends="check_conditional_properties" description="Initializes some variables">
@@ -59,8 +58,9 @@
 		</copy>
 
 		<!-- Create the distribution jar file -->
-		<jar jarfile="${dist}/${app_name}.jar">
+		<jar jarfile="${dist}/${app_name}-${app_version}.jar">
 			<manifest>
+				<attribute name="Class-path" value="${scuba_util_jar} ${scuba_data_jar} ${scuba_storage_jar}" />
 				<attribute name="Built-By" value="${user.name} on ${os.name} ${os.arch}" />
 				<attribute name="Built-Date" value="${TODAY}" />
 				<attribute name="Implementation-Vendor" value="${author_name}"/>
@@ -68,14 +68,9 @@
 				<attribute name="Implementation-Version" value="${app_version}-${DSTAMP}"/>
 			</manifest>
 			<fileset dir="${build}/" includes="**/*.class" />
-			<fileset dir="${acrprovider-build}" includes="**/*.class" />
-			<fileset dir="${crefprovider-build}" includes="**/*.class" />
-			<fileset dir="${jcopprovider-build}" includes="**/*.class" />
-			<fileset dir="${scuba_data-build}" includes="**/*.class" />
-			<fileset dir="${scuba_util-build}" includes="**/*.class" />
-			<fileset dir="${scuba_storage-build}" includes="**/*.class" />
-
-			<fileset dir="." includes="images/famfamfam_silk/*.png,images/flags/*.png" />
+			<fileset dir="${acrprovider_build}" includes="**/*.class" />
+			<fileset dir="${crefprovider_build}" includes="**/*.class" />
+			<fileset dir="${jcopprovider_build}" includes="**/*.class" />
 			<fileset dir="${dist}" includes="README,LICENSE" />
 		</jar>	
 	</target>
@@ -114,9 +109,9 @@
 	<!-- Conditional stuff is set below -->
 
 	<target name="check_conditional_properties" description="Sets some properties depending on build platform">
-		<available file="${acrprovider-build}" property="is_acr_available" />
-		<available file="${crefprovider-build}" property="is_cref_available" />
-		<available file="${jcopprovider-build}" property="is_jcop_available" />
+		<available file="${acrprovider_build}" property="is_acr_available" />
+		<available file="${crefprovider_build}" property="is_cref_available" />
+		<available file="${jcopprovider_build}" property="is_jcop_available" />
 		<available classname="com.izforge.izpack.ant.IzPackTask" classpath="${izpack-standalone-compiler}" property="is_izpack_available" />
 		<available classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="${jsmooth_dir}/lib/jsmoothgen-ant.jar" property="is_jsmooth_available" />
 		<available classname="net.sourceforge.retroweaver.ant.RetroWeaverTask" classpath="${retroweaver_dir}/${retroweaver_jar}" property="is_retroweaver_available" />
