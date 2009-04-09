@@ -105,9 +105,9 @@ public class CountryEntryField extends Box
 			String name = country.getName();
 			int length = Math.min(name.length(), MAX_COUNTRY_NAME_LENGTH);
 			if (length == name.length()) {
-				return country.toString() + " " + name;
+				return country.toAlpha2Code() + " " + name;
 			} else {
-				return country.toString() + " " + name.substring(0, MAX_COUNTRY_NAME_LENGTH - 3) + "...";
+				return country.toAlpha2Code() + " " + name.substring(0, MAX_COUNTRY_NAME_LENGTH - 3) + "...";
 			}
 		}
 
