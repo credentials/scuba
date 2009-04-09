@@ -339,6 +339,10 @@ public class Country
 		return alpha2Code;
 	}
 
+	public String toAlpha2Code() {
+		return alpha2Code;
+	}
+	
 	public String toAlpha3Code() {
 		return alpha3Code;
 	}
