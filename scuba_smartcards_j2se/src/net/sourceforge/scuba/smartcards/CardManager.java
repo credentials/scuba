@@ -39,7 +39,7 @@ import javax.smartcardio.TerminalFactory;
  * Manages all card terminals.
  * This is the source of card insertion and removal events.
  * Ideally this should be the only place where low level CardService
- * instances (such as {@link sos.smartcards.TerminalCardService TerminalCardService})
+ * instances (such as {@link net.sourceforge.scuba.smartcards.TerminalCardService TerminalCardService})
  * are created.
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
