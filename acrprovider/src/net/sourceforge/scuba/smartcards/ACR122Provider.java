@@ -25,9 +25,9 @@ import java.security.Provider;
 
 public final class ACR122Provider extends Provider {
     public ACR122Provider() {
-        super("DS", 0.9d,
+        super("ACR122", 0.9d,
                 "TerminalFactory Provider for the ACR122 Smart Card Reader");
-        put("TerminalFactory.ACR",
+        put("TerminalFactory.ACR122",
                 "net.sourceforge.scuba.smartcards.ACR122TerminalFactorySpi");
     }
 }

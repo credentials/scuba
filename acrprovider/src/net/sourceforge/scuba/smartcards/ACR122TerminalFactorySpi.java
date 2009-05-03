@@ -312,7 +312,6 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
                 virtualCard = null;
                 debug("Exception occured: " + e1);
             }
-
         }
 
         /**
@@ -992,7 +991,5 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
             resp.put(r.getBytes());
             return r.getBytes().length;
         }
-
     }
-
 }
