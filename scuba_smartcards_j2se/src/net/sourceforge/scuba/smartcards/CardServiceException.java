@@ -21,11 +21,47 @@
 
 package net.sourceforge.scuba.smartcards;
 
-public class CardServiceException extends Exception
-{
+/**
+ * CardServiceExceptions are used to signal error Response APDUs , ie responses
+ * different from 0x9000, but also low level errors.
+ * 
+ * @author erikpoll
+ * 
+ */
+
+public class CardServiceException extends Exception {
 	private static final long serialVersionUID = 4489156194716970879L;
+
+	/**
+	 * The status word that caused this exception, or -1 if not known or
+	 * recorded.
+	 */
+	private int sw = -1;
 
 	public CardServiceException(String msg) {
 		super(msg);
 	}
+
+	/**
+	 * Create a CardServiceException with a status word
+	 * 
+	 * @param sw
+	 *            The status word that caused this CardServiceException
+	 */
+	public CardServiceException(String msg, int sw) {
+		super(msg);
+		this.sw = sw;
+	}
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
+	/**
+	 * @return The status word that caused this exception
+	 */
+	public int getSW() {
+		return sw;
+	}
+
 }

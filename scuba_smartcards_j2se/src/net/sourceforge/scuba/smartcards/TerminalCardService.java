@@ -74,6 +74,7 @@ public class TerminalCardService extends CardService
 	 * 
 	 * @param ourCommandAPDU the command apdu to send
 	 * @return the response from the card, including the status word
+	 * @throws CardServiceException - if the card operation failed 
 	 */
 	public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) throws CardServiceException {
 		try {

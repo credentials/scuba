@@ -95,10 +95,12 @@ public abstract class CardService
    
    /**
     * Sends and apdu to the card. Notifies any interested apduListeners.
+    * This method does not throw a CardServiceException if the ResponseAPDU
+    * is status word indicating error.
     * 
     * @param apdu the command apdu to send.
     * @return the response from the card, including the status word.
-    * @throws CardServiceException 
+    * @throws CardServiceException - if the card operation failed 
     */
    /*
     * @ requires state == SESSION_STARTED_STATE; @ ensures state ==

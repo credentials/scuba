@@ -5,8 +5,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/scuba_data"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scuba_storage_j2se"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scuba_util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/acrprovider"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/crefprovider"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jcopprovider"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
