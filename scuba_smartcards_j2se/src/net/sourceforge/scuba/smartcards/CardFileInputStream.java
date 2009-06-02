@@ -23,14 +23,14 @@ package net.sourceforge.scuba.smartcards;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Vector;
 
 /**
  * Inputstream for reading ISO 7816 file system cards.
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class CardFileInputStream extends InputStream
-{
+public class CardFileInputStream extends InputStream {
 	private short fid;
 	private final byte[] buffer;
 	private int bufferLength;
@@ -40,7 +40,8 @@ public class CardFileInputStream extends InputStream
 	private int fileLength;
 	private FileSystemStructured fs;
 
-	public CardFileInputStream(short fid, int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
+	public CardFileInputStream(short fid, int maxBlockSize,
+			FileSystemStructured fs) throws CardServiceException {
 		this.fid = fid;
 		this.fs = fs;
 		fs.selectFile(fid);
@@ -54,7 +55,9 @@ public class CardFileInputStream extends InputStream
 
 	public int read() throws IOException {
 		int offsetInFile = offsetBufferInFile + offsetInBuffer;
-		if (offsetInFile >= fileLength) { return -1; }
+		if (offsetInFile >= fileLength) {
+			return -1;
+		}
 		if (offsetInBuffer >= bufferLength) {
 			int le = Math.min(buffer.length, fileLength - offsetInFile);
 			try {
@@ -72,12 +75,14 @@ public class CardFileInputStream extends InputStream
 
 	public long skip(long n) {
 		int available = available();
-		if (n > available) { n = available; }
+		if (n > available) {
+			n = available;
+		}
 		if (n < (buffer.length - offsetInBuffer)) {
 			offsetInBuffer += n;
 		} else {
 			int absoluteOffset = offsetBufferInFile + offsetInBuffer;
-			offsetBufferInFile = (int)(absoluteOffset + n);
+			offsetBufferInFile = (int) (absoluteOffset + n);
 			offsetInBuffer = 0;
 		}
 		return n;
@@ -92,7 +97,9 @@ public class CardFileInputStream extends InputStream
 	}
 
 	public void reset() throws IOException {
-		if (markedOffset < 0) { throw new IOException("Mark not set"); }
+		if (markedOffset < 0) {
+			throw new IOException("Mark not set");
+		}
 		offsetBufferInFile = markedOffset;
 		offsetInBuffer = 0;
 		bufferLength = 0;
@@ -101,36 +108,67 @@ public class CardFileInputStream extends InputStream
 	public boolean markSupported() {
 		return true;
 	}
-	
+
 	/**
 	 * Gets the length of the underlying card file.
-	 *
+	 * 
 	 * @return the length of the underlying card file.
 	 */
 	public int getFileLength() {
 		return fileLength;
 	}
-	
+
 	public int getFilePos() {
 		return offsetBufferInFile + offsetInBuffer;
 	}
 
 	/**
 	 * Reads from file with id <code>fid</code>.
-	 *
-	 * @param fid the file to read
-	 * @param offsetInFile starting offset in file
-	 * @param length the number of bytes to read, or -1 to read until EOF
-	 *
+	 * 
+	 * @param fid
+	 *            the file to read
+	 * @param offsetInFile
+	 *            starting offset in file
+	 * @param length
+	 *            the number of bytes to read, or -1 to read until EOF
+	 * 
 	 * @return the contents of the file.
 	 */
-	private int fillBufferFromFile(short fid, int offsetInFile, int le) throws CardServiceException {
-		synchronized(fs) {
-			if (le > buffer.length) { throw new IllegalArgumentException("length too big"); }
-			if (fs.getSelectedFID() != fid) { fs.selectFile(fid); }
-			byte[] data = fs.readBinary((short)offsetInFile, le);
+	private int fillBufferFromFile(short fid, int offsetInFile, int le)
+			throws CardServiceException {
+		synchronized (fs) {
+			if (le > buffer.length) {
+				throw new IllegalArgumentException("length too big");
+			}
+			if (fs.getSelectedFID() != fid) {
+				fs.selectFile(fid);
+			}
+			byte[] data = fs.readBinary((short) offsetInFile, le);
 			System.arraycopy(data, 0, buffer, 0, data.length);
 			return data.length;
 		}
+	}
+
+	/**
+	 * @return the contents of the file
+	 */
+	public byte[] toByteArray() {
+		try {
+			Vector<Integer> vec = new Vector<Integer>();
+			int c = 0;
+			while ((c = read()) != -1) {
+				vec.add(new Integer(c));
+			}
+			byte[] result = new byte[vec.size()];
+			int index = 0;
+			for (Integer i : vec) {
+				result[index++] = i.byteValue();
+			}
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 }
