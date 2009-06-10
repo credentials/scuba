@@ -928,7 +928,7 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
                             // For some cards (ie. JCOP41) we have to slow down a bit,
                             // otherwise the card gets stuck
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(450); // FIXME: 100 makes it loop infty for me -- MO
                             }catch(InterruptedException ex) {
                             }
                         }
