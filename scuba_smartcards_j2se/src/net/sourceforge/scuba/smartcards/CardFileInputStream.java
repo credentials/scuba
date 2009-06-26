@@ -23,6 +23,7 @@ package net.sourceforge.scuba.smartcards;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -31,7 +32,7 @@ import java.util.Vector;
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
 public class CardFileInputStream extends InputStream {
-	private short fid;
+	private short[] path;
 	private final byte[] buffer;
 	private int bufferLength;
 	private int offsetBufferInFile;
@@ -40,17 +41,29 @@ public class CardFileInputStream extends InputStream {
 	private int fileLength;
 	private FileSystemStructured fs;
 
-	public CardFileInputStream(short fid, int maxBlockSize,
-			FileSystemStructured fs) throws CardServiceException {
-		this.fid = fid;
+	public CardFileInputStream(short[] path, int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
+		if (path == null) { throw new CardServiceException("Path is null"); }
+		this.path = new short[path.length];
+		System.arraycopy(path, 0, this.path, 0, path.length);
 		this.fs = fs;
-		fs.selectFile(fid);
+		for (short fid: path) {
+			fs.selectFile(fid);
+		}
 		fileLength = fs.getFileLength();
 		buffer = new byte[maxBlockSize];
 		bufferLength = 0;
 		offsetBufferInFile = 0;
 		offsetInBuffer = 0;
 		markedOffset = -1;
+	}
+
+	public CardFileInputStream(short fid, int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
+		this(createSingletonPath(fid), maxBlockSize, fs);
+	}
+	
+	private static short[] createSingletonPath(short fid) {
+		short[] path = { fid };
+		return path;
 	}
 
 	public int read() throws IOException {
@@ -63,7 +76,7 @@ public class CardFileInputStream extends InputStream {
 			try {
 				offsetBufferInFile += bufferLength;
 				offsetInBuffer = 0;
-				bufferLength = fillBufferFromFile(fid, offsetBufferInFile, le);
+				bufferLength = fillBufferFromFile(path, offsetBufferInFile, le);
 			} catch (CardServiceException cse) {
 				throw new IOException(cse.toString());
 			}
@@ -134,14 +147,14 @@ public class CardFileInputStream extends InputStream {
 	 * 
 	 * @return the contents of the file.
 	 */
-	private int fillBufferFromFile(short fid, int offsetInFile, int le)
-			throws CardServiceException {
+	private int fillBufferFromFile(short[] path, int offsetInFile, int le)
+	throws CardServiceException {
 		synchronized (fs) {
 			if (le > buffer.length) {
 				throw new IllegalArgumentException("length too big");
 			}
-			if (fs.getSelectedFID() != fid) {
-				fs.selectFile(fid);
+			if (!Arrays.equals(fs.getSelectedPath(), path)) {
+				fs.selectFile(path);
 			}
 			byte[] data = fs.readBinary((short) offsetInFile, le);
 			System.arraycopy(data, 0, buffer, 0, data.length);
@@ -169,6 +182,5 @@ public class CardFileInputStream extends InputStream {
 			e.printStackTrace();
 			return null;
 		}
-
 	}
 }
