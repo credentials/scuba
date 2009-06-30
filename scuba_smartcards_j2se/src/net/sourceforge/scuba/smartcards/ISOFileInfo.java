@@ -31,7 +31,7 @@ import net.sourceforge.scuba.util.Hex;
  * @author Wojciech Mostowski (woj@cs.ru.nl)
  *
  */
-public class ISOFileInfo { // implements FileInfo {
+public class ISOFileInfo extends FileInfo {
     
     /** This class reflects the File Control Parameters included in the FCI as described in ISO7816-4 in Table 12 */ 
     
