@@ -44,7 +44,7 @@ public abstract class AbstractFileSystemStructured implements
     private int length = -1;
     private int p2 = 0;
     private int selectLe = 256;
-    private FileInfo fileInfo = null;
+    private ISOFileInfo fileInfo = null;
     
     public AbstractFileSystemStructured(CardService service) {
         this.service = service;
@@ -81,7 +81,7 @@ public abstract class AbstractFileSystemStructured implements
         // 0, 4, 8 absolute
         // 1, 2, 9, relative
         // 3 parent
-        this.fileInfo = new FileInfo(response.getData());
+        this.fileInfo = new ISOFileInfo(response.getData());
         if(this.fileInfo.fid != -1) {
             selectedFID = this.fileInfo.fid;
         }

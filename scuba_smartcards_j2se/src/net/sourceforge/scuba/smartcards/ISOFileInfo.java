@@ -31,7 +31,7 @@ import net.sourceforge.scuba.util.Hex;
  * @author Wojciech Mostowski (woj@cs.ru.nl)
  *
  */
-public class FileInfo {
+public class ISOFileInfo { // implements FileInfo {
     
     /** This class reflects the File Control Parameters included in the FCI as described in ISO7816-4 in Table 12 */ 
     
@@ -85,7 +85,7 @@ public class FileInfo {
     byte[] ab = null;
     byte[] ac = null;
     
-    public FileInfo(byte[] fileInfo) throws CardServiceException {
+    public ISOFileInfo(byte[] fileInfo) throws CardServiceException {
         if(fileInfo.length == 0) {
             return;
         }
@@ -422,9 +422,9 @@ public class FileInfo {
     0x01, 0x05, (byte)0xA1, 0x03, (byte)0x8B, 0x01, 0x01
     };
     try {
-      FileInfo f2 = new FileInfo(fci2);
+      ISOFileInfo f2 = new ISOFileInfo(fci2);
       System.out.println(f2);
-      FileInfo f3 = new FileInfo(fci3);
+      ISOFileInfo f3 = new ISOFileInfo(fci3);
       System.out.println(f3);
       System.out.println(Hex.bytesToHexString(fci2));
       System.out.println(Hex.bytesToHexString(f2.getFormatted()));

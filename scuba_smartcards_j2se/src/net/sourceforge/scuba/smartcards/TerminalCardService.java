@@ -117,4 +117,13 @@ public class TerminalCardService extends CardService
 	/* package visible */ long getLastActiveTime() {
 	   return lastActiveTime;
 	}
+	
+	/**
+	 * Produces a textual representation of this service.
+	 * 
+	 * @return a textual representation of this service
+	 */
+	public String toString() {
+		return "TerminalCardService [" + terminal.getName() + "]";
+	}
 }
