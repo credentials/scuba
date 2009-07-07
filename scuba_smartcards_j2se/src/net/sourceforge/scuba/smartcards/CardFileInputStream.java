@@ -46,10 +46,8 @@ public class CardFileInputStream extends InputStream {
 		this.path = new short[path.length];
 		System.arraycopy(path, 0, this.path, 0, path.length);
 		this.fs = fs;
-		for (short fid: path) {
-			fs.selectFile(fid);
-		}
-		fileLength = fs.getFileLength();
+		for (short fid: path) { fs.selectFile(fid); }
+		fileLength = fs.getFileInfo().getFileLength();
 		buffer = new byte[maxBlockSize];
 		bufferLength = 0;
 		offsetBufferInFile = 0;
@@ -154,7 +152,7 @@ public class CardFileInputStream extends InputStream {
 				throw new IllegalArgumentException("length too big");
 			}
 			if (!Arrays.equals(fs.getSelectedPath(), path)) {
-				fs.selectFile(path);
+				for (short fid: path) { fs.selectFile(fid); }
 			}
 			byte[] data = fs.readBinary((short) offsetInFile, le);
 			System.arraycopy(data, 0, buffer, 0, data.length);
