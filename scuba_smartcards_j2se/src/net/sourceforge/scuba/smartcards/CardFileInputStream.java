@@ -27,12 +27,13 @@ import java.util.Arrays;
 import java.util.Vector;
 
 /**
- * Inputstream for reading ISO 7816 file system cards.
+ * Inputstream for reading files on ISO 7816 file system cards.
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class CardFileInputStream extends InputStream {
-	private short[] path;
+public class CardFileInputStream extends InputStream
+{
+	private FileInfo[] path;
 	private final byte[] buffer;
 	private int bufferLength;
 	private int offsetBufferInFile;
@@ -41,27 +42,18 @@ public class CardFileInputStream extends InputStream {
 	private int fileLength;
 	private FileSystemStructured fs;
 
-	public CardFileInputStream(short[] path, int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
-		if (path == null) { throw new CardServiceException("Path is null"); }
-		this.path = new short[path.length];
-		System.arraycopy(path, 0, this.path, 0, path.length);
+	public CardFileInputStream(int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
 		this.fs = fs;
-		for (short fid: path) { fs.selectFile(fid); }
-		fileLength = fs.getFileInfo().getFileLength();
+		FileInfo[] fsPath = fs.getSelectedPath();
+		if (fsPath == null || fsPath.length < 1) { throw new CardServiceException("No valid file selected"); }
+		this.path = new FileInfo[fsPath.length];
+		System.arraycopy(fsPath, 0, this.path, 0, fsPath.length);
+		fileLength = fsPath[fsPath.length - 1].getFileLength();
 		buffer = new byte[maxBlockSize];
 		bufferLength = 0;
 		offsetBufferInFile = 0;
 		offsetInBuffer = 0;
 		markedOffset = -1;
-	}
-
-	public CardFileInputStream(short fid, int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
-		this(createSingletonPath(fid), maxBlockSize, fs);
-	}
-	
-	private static short[] createSingletonPath(short fid) {
-		short[] path = { fid };
-		return path;
 	}
 
 	public int read() throws IOException {
@@ -145,14 +137,14 @@ public class CardFileInputStream extends InputStream {
 	 * 
 	 * @return the contents of the file.
 	 */
-	private int fillBufferFromFile(short[] path, int offsetInFile, int le)
+	private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le)
 	throws CardServiceException {
 		synchronized (fs) {
 			if (le > buffer.length) {
 				throw new IllegalArgumentException("length too big");
 			}
 			if (!Arrays.equals(fs.getSelectedPath(), path)) {
-				for (short fid: path) { fs.selectFile(fid); }
+				for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
 			}
 			byte[] data = fs.readBinary((short) offsetInFile, le);
 			System.arraycopy(data, 0, buffer, 0, data.length);

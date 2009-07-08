@@ -37,15 +37,7 @@ public interface FileSystemStructured
 	 * @throws CardServiceException in case of error
 	 */
 	void selectFile(short fid) throws CardServiceException;
-	
-	/**
-	 * Gets the length of the currently selected file.
-	 * 
-	 * @return the length of the currently selected file.
-	 * @throws CardServiceException 
-	 */
-	FileInfo getFileInfo() throws CardServiceException;
-	
+
 	/**
 	 * Reads a fragment of the currently selected file.
 	 * 
@@ -61,5 +53,5 @@ public interface FileSystemStructured
 	 * 
 	 * @return a path of file identifiers or <code>null</code>.
 	 */
-	short[] getSelectedPath();
+	FileInfo[] getSelectedPath();
 }
