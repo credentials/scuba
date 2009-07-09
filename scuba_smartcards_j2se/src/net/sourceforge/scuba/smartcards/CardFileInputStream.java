@@ -146,7 +146,7 @@ public class CardFileInputStream extends InputStream
 			if (!Arrays.equals(fs.getSelectedPath(), path)) {
 				for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
 			}
-			byte[] data = fs.readBinary((short) offsetInFile, le);
+			byte[] data = fs.readBinary(offsetInFile, le);
 			System.arraycopy(data, 0, buffer, 0, data.length);
 			return data.length;
 		}
