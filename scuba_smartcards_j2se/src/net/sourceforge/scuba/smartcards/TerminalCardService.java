@@ -97,6 +97,10 @@ public class TerminalCardService extends CardService
 	public void close() {
 		try {
 			if (card != null) {
+                // WARNING: Woj: the meaning of the reset flag is actually
+                // reversed w.r.t. to the official documentation, false means
+                // that the card is going to be reset, true means do not reset
+                // This is a bug in the smartcardio implementation from SUN
 				card.disconnect(false);
 			}
 			state = SESSION_STOPPED_STATE;
