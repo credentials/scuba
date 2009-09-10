@@ -302,6 +302,18 @@ public class CardManager
 		Collections.sort(result, TERMINAL_COMPARATOR);
 		return result;
 	}
+	
+	public String toString() {
+		StringBuffer result = new StringBuffer();
+		result.append("CardManager: [");
+		boolean first = true;
+		for (CardTerminal terminal: terminals.keySet()) {
+			result.append((first ? "" : ", ") + terminals.get(terminal));
+			if (first) { first = false; }
+		}
+		result.append("]");
+		return result.toString();
+	}
 
 	/**
 	 * Gets the card manager.
