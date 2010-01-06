@@ -102,8 +102,8 @@ public class Icons
 
 	private static Image getImageFromZippedCollection(String collectionName, String imageName, Image defaultImage) {
 		try {
-			URL flagsDir = new URL(getIconsDir() + "/" + collectionName + ".zip");
-			ZipInputStream zipIn = new ZipInputStream(flagsDir.openStream());
+			URL collectionURL = new URL(getIconsDir() + "/" + collectionName + ".zip");
+			ZipInputStream zipIn = new ZipInputStream(collectionURL.openStream());
 			ZipEntry entry;
 			while ((entry = zipIn.getNextEntry()) != null) {
 				String fileName = imageName + ".png";
