@@ -115,16 +115,19 @@ public class Files
 	}
 
 	public static File getBaseDirAsFile() {
-		URL baseDirURL = getBaseDir();
-		File baseDirFile = null;
+		return toFile(getBaseDir());
+	}
+	
+	public static File toFile(URL url) {
+		File file = null;
 		try {
-			baseDirFile = new File(baseDirURL.toURI());
-			if (baseDirFile.isDirectory()) {
-				return baseDirFile;
+			file = new File(url.toURI());
+			if (file.isDirectory()) {
+				return file;
 			}
 		} catch(URISyntaxException e) {
 			/* Fall through */
 		}
-		return new File(baseDirURL.getPath().replace("%20", " "));
+		return new File(url.getPath().replace("%20", " "));
 	}
 }
