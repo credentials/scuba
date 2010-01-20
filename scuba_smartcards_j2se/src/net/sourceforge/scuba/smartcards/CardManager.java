@@ -74,31 +74,13 @@ public class CardManager
 	}
 	
 	/**
-	 * @deprecated Use {@link #startPolling(CardTerminal)}.
-	 */
-	public synchronized void start() {
-		for (CardTerminal terminal: terminals.keySet()) {
-			startPolling(terminal);
-		}
-	}
-	
-	/**
-	 * @deprecated Use {@link #stopPolling(CardTerminal)}.
-	 */
-	public synchronized void stop() {
-		for (CardTerminal terminal: terminals.keySet()) {
-			stopPolling(terminal);
-		}
-	}
-	
-	/**
 	 * Starts polling <code>terminal</code> (if not already doing so).
 	 * 
 	 * @param terminal a card terminal
 	 */
 	public synchronized void startPolling(CardTerminal terminal) {
 		TerminalPoller poller = terminals.get(terminal);
-		if (poller == null) { poller = new TerminalPoller(terminal); }
+		if (poller == null) { poller = new TerminalPoller(terminal, this); }
 		try {
 			poller.startPolling();
 		} catch (InterruptedException ie) {
@@ -204,7 +186,7 @@ public class CardManager
 	public synchronized void addTerminal(CardTerminal terminal, boolean isPolling) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) {
-			poller = new TerminalPoller(terminal);
+			poller = new TerminalPoller(terminal, this);
 			terminals.put(terminal, poller);
 		}
 		if (isPolling && !isPolling(terminal)) {
@@ -221,7 +203,7 @@ public class CardManager
 	 * @param l the listener to add
 	 */
 	public void addCardTerminalListener(CardTerminalListener l) {
-		synchronized(INSTANCE) {
+		synchronized(this) {
 			cardTerminalListeners.add(l);
 			notifyAll();
 		}
@@ -233,7 +215,7 @@ public class CardManager
 	 * @param l the listener to remove
 	 */
 	public void removeCardTerminalListener(CardTerminalListener l) {
-		synchronized(INSTANCE) {
+		synchronized(this) {
 			cardTerminalListeners.remove(l);
 		}
 	}
@@ -328,15 +310,17 @@ public class CardManager
 
 	private class TerminalPoller implements Runnable
 	{
+		private CardManager cm;
 		private CardTerminal terminal;
 		private TerminalCardService service;
 		private boolean isPolling, isOutsidePollingLoop;
 		private Thread myThread;
 
-		public TerminalPoller(CardTerminal terminal) {
+		public TerminalPoller(CardTerminal terminal, CardManager cm) {
 			this.terminal = terminal;
 			this.service = null;
 			this.isPolling = false;
+			this.cm = cm;
 		}
 		
 		public boolean isPolling() {
@@ -365,10 +349,6 @@ public class CardManager
 		public CardService getService() {
 			return service;
 		}
-		
-		public String toString() {
-			return "Poller for " + terminal.getName() + (isPolling ? " (polling)" : " (not polling)");
-		}
 
 		public void run() {
 			try {
@@ -377,11 +357,11 @@ public class CardManager
 					notifyAll(); /* NOTE: startPolling() may be waiting on us. */
 				}
 				while (isPolling()) {
-					if (hasNoListeners()) {
-						/* No listeners, we go to sleep. */
-						synchronized(INSTANCE) {
+					if (cm.hasNoListeners()) {
+						/* Card Manager has no listeners, we go to sleep. */
+						synchronized(cm) {
 							while (hasNoListeners()) {
-								INSTANCE.wait();
+								cm.wait();
 							}
 						}
 					}
@@ -442,6 +422,10 @@ public class CardManager
             	isOutsidePollingLoop = true;
                 notifyAll(); /* NOTE: we just stopped polling, stopPolling may be waiting on us. */
             }
+		}		
+		
+		public String toString() {
+			return "Poller for " + terminal.getName() + (isPolling ? " (polling)" : " (not polling)");
 		}
 	}
 }

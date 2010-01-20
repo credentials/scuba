@@ -151,26 +151,4 @@ public class CardFileInputStream extends InputStream
 			return data.length;
 		}
 	}
-
-	/**
-	 * @return the contents of the file
-	 */
-	public byte[] toByteArray() {
-		try {
-			Vector<Integer> vec = new Vector<Integer>();
-			int c = 0;
-			while ((c = read()) != -1) {
-				vec.add(new Integer(c));
-			}
-			byte[] result = new byte[vec.size()];
-			int index = 0;
-			for (Integer i : vec) {
-				result[index++] = i.byteValue();
-			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 }

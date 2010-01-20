@@ -30,14 +30,16 @@ import net.sourceforge.scuba.util.Hex;
 
 /**
  * A dummy card service to produce APDU traces instead of the actual communication
- * with CAD. So far can only serve APDUs that expect 9000 resoponse.
+ * with CAD. So far can only serve APDUs that expect 9000 status words.
  * 
  * @author Wojciech Mostowski <woj@cs.ru.nl>
  *
  */
-public class DummyAcceptingCardService extends CardService {
+public class DummyAcceptingCardService extends CardService
+{
+	private static final long serialVersionUID = 959248891375637853L;
 
-    private PrintStream out = null;
+	private PrintStream out = null;
     
     private boolean closed = false;
     

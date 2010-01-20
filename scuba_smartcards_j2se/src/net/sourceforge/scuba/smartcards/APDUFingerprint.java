@@ -161,6 +161,7 @@ public class APDUFingerprint implements CardFingerprint
 			File[] fingerPrintFiles = fingerprintDir.listFiles(HENNING_FILE_FILENAME_FILTER);
 			if (fingerPrintFiles == null) {
 				System.out.println("DEBUG: cannot open fingerprint dir: " + fingerprintDir);
+				return;
 			}
 			for (File fingerPrintFile: fingerPrintFiles) {
 				String fileName = fingerPrintFile.getName();
@@ -187,8 +188,9 @@ public class APDUFingerprint implements CardFingerprint
 		APDUFingerprint result = new APDUFingerprint();
 		try {
 			byte[] fileContentBytes = new byte[(int)file.length()];
-			DataInputStream in = new DataInputStream(new FileInputStream(file));
-			in.readFully(fileContentBytes);
+			DataInputStream dataIn = new DataInputStream(new FileInputStream(file));
+			dataIn.readFully(fileContentBytes);
+			dataIn.close();
 			String fileContents = new String(fileContentBytes, "UTF-8");			
 			StringTokenizer st = new StringTokenizer(fileContents, "\n");
 			int cla = -1, ins = -1, p1 = -1, p2 = -1, nc = -1, ne = -1;
@@ -305,9 +307,13 @@ public class APDUFingerprint implements CardFingerprint
 	public boolean equals(Object obj) {
 		if (obj == null) { return false; }
 		if (obj == this) { return true; }
-		if (obj.getClass() != getClass()) { return false; }
+		if (obj.getClass() != this.getClass()) { return false; }
 		APDUFingerprint other = (APDUFingerprint)obj;
 		return commandResponsePairs.equals(other.commandResponsePairs);
+	}
+	
+	public int hashCode() {
+		return 3 * commandResponsePairs.hashCode() + 11;
 	}
 
 	public String toString() {

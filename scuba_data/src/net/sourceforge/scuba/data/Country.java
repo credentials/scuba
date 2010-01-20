@@ -4,14 +4,18 @@
 
 package net.sourceforge.scuba.data;
 
+import java.io.Serializable;
+
 /**
  * ISO 3166 country codes.
  * Table based on Wikipedia information.
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class Country
+public class Country implements Serializable
 {
+	private static final long serialVersionUID = 7220597955847617859L;
+
 	public static final Country
 	AD = new Country(0x020, "AD", "AND", "Andorra"),
 	AE = new Country(0x784, "AE", "ARE", "United Arab Emirates"),

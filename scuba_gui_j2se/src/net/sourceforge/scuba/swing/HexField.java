@@ -181,11 +181,11 @@ public class HexField extends Box
 	 * @param value the new value
 	 */
 	public void setValue(byte[] value) {
-		String result = "";
+		StringBuffer result = new StringBuffer();
 		for (byte element : value) {
-			result += Hex.byteToHexString(element);
+			result.append(Hex.byteToHexString(element));
 		}
-		textField.setText(result);
+		textField.setText(result.toString());
 	}
 
 	/**

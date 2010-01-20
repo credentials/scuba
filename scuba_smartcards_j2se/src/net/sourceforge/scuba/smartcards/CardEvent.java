@@ -91,7 +91,7 @@ public class CardEvent extends EventObject
 	public boolean equals(Object other) {
 		if (other == null) { return false; }
 		if (other == this) { return true; }
-		if (other.getClass() != CardEvent.class) { return false; }
+		if (!other.getClass().equals(this.getClass())) { return false; }
 		CardEvent otherCardEvent = (CardEvent)other;
 		return type == otherCardEvent.type && service.equals(otherCardEvent.service);
 	}

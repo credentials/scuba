@@ -110,7 +110,7 @@ public class ISOFileInfo extends FileInfo {
 				switch(tag) {
 				case DATA_BYTES1:
 					integer = new BigInteger(contents);
-					integer.abs();
+					integer = integer.abs();
 					this.fileLength = integer.intValue();
 					break;
 				case DATA_BYTES2:

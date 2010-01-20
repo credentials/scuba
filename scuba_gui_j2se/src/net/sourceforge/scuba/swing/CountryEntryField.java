@@ -117,6 +117,10 @@ public class CountryEntryField extends Box
 			if (!other.getClass().equals(this.getClass())) { return false; }
 			return ((CountryDisplayContainer)other).getCountry().equals(country);
 		}
+		
+		public int hashCode() {
+			return 7 * country.hashCode() + 111;
+		}
 	}
 
 	public void addActionListener(ActionListener l) {
