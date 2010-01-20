@@ -357,7 +357,7 @@ public class Country implements Serializable
 	
 	public boolean equals(Object obj) {
 		if (obj == null) { return false; }
-		if (!obj.getClass().equals(Country.class)) { return false; }
+		if (!obj.getClass().equals(this.getClass())) { return false; }
 		Country other = (Country)obj;
 		return other.code == code;
 	}
