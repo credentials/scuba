@@ -1,3 +1,24 @@
+/*
+ * SCUBA smart card framework.
+ *
+ * Copyright (C) 2009 - 2010  The SCUBA team.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.util;
 
 import java.io.File;
@@ -5,6 +26,11 @@ import java.net.URL;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * Some helper methods for handling the local file system.
+ * 
+ * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
+ */
 public class Files
 {
 	public static final FileFilter CERTIFICATE_FILE_FILTER = new FileFilter() {
@@ -115,6 +141,24 @@ public class Files
 
 	public static File getBaseDirAsFile() {
 		return toFile(getBaseDir());
+	}
+	
+	public static File getApplicationDataDir(String appName) {
+		String osName = System.getProperty("os.name").toLowerCase();
+		String userHomeName = System.getProperty("user.home");
+		if (osName.indexOf("windows") > -1) {
+			String appDataDirName = System.getenv("APPDATA");   
+			File appDataDir = appDataDirName != null ? new File(appDataDirName) : new File (userHomeName, "Application Data");
+			File myAppDataDir = new File(appDataDir, appName.toUpperCase());
+			if (!myAppDataDir.isDirectory()) { myAppDataDir.mkdirs(); }
+			return myAppDataDir;
+		} else {
+			File myAppDataDir = new File(userHomeName, "." + appName.toLowerCase());
+			if (!myAppDataDir.isDirectory()) {
+				myAppDataDir.mkdirs();
+			}
+			return myAppDataDir;
+		}
 	}
 	
 	public static File toFile(URL url) {
