@@ -1,7 +1,6 @@
 package net.sourceforge.scuba.util;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.filechooser.FileFilter;
@@ -121,12 +120,16 @@ public class Files
 	public static File toFile(URL url) {
 		File file = null;
 		try {
-			file = new File(url.toURI());
+			/* TODO: this used to be new File(url.toURI()), but that didn't work?!?! Needs testing. */
+			file = new File(url.getPath().replace("%20", " "));
 			if (file.isDirectory()) {
 				return file;
 			}
-		} catch(URISyntaxException e) {
-			/* Fall through */
+//		} catch(URISyntaxException e) {
+//			/* Fall through */
+		} catch(IllegalArgumentException iae) {
+			System.out.println("DEBUG: toFile(URL): url = " + url.toString());
+			throw iae;
 		}
 		return new File(url.getPath().replace("%20", " "));
 	}
