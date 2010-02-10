@@ -102,10 +102,14 @@ public class TerminalCardService extends CardService
                 // reversed w.r.t. to the official documentation, false means
                 // that the card is going to be reset, true means do not reset
                 // This is a bug in the smartcardio implementation from SUN
-				card.disconnect(false);
+				// Moreover, Linux PCSC implementation goes numb if you try to
+				// disconnect a card that is not there anymore.
+				if(terminal.isCardPresent()) {
+				  card.disconnect(false);
+				}
 			}
 			state = SESSION_STOPPED_STATE;
-		} catch (CardException ce) {
+		} catch (Exception ce) {
 			/* Disconnect failed? Fine... */
 		}
 	}
