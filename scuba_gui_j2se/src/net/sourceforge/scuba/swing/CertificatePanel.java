@@ -51,6 +51,8 @@ public class CertificatePanel extends JPanel
 			result.append('\n');
 			result.append("Not before: " + x509Cert.getNotBefore() + "\n");
 			result.append("Not after: " + x509Cert.getNotAfter() + "\n");
+			result.append('\n');
+			result.append("Serial number: " + x509Cert.getSerialNumber() + "\n");
 			certText = result.toString();
 		} else {
 			certText = certificate.toString();
