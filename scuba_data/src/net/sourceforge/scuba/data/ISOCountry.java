@@ -4,15 +4,13 @@
 
 package net.sourceforge.scuba.data;
 
-import java.io.Serializable;
-
 /**
  * ISO 3166 country codes.
  * Table based on Wikipedia information.
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class ISOCountry extends Country
+public class ISOCountry implements Country
 {
 	private static final long serialVersionUID = 7220597933847617859L;
 
