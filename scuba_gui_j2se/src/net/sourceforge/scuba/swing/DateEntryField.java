@@ -20,7 +20,12 @@ import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
+import net.sourceforge.scuba.util.Icons;
 
 /**
  * Component for setting date (just day, month, year for now).
@@ -33,6 +38,7 @@ public class DateEntryField extends Box
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("dd MMM yyyy");
 	private static final Font FONT = new Font("Monospaced", Font.PLAIN, 12);
+	private static final Icon DATE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("date"));
 
 	private Calendar cal;
 	private JComboBox monthComboBox;
@@ -63,6 +69,9 @@ public class DateEntryField extends Box
 
 		dayNumField = new NumField(2, 1, 31);
 		yearNumField = new NumField(4, 0000, 9999);
+		
+		add(new JLabel(DATE_ICON));
+		add(Box.createHorizontalStrut(10));
 		add(dayNumField);
 		add(monthComboBox);
 		add(yearNumField);
@@ -172,8 +181,10 @@ public class DateEntryField extends Box
 		wy = yearNumField.getPreferredSize().getWidth(),
 		hm = monthComboBox.getPreferredSize().getHeight(),
 		hd = dayNumField.getPreferredSize().getHeight(),
-		hy = yearNumField.getPreferredSize().getHeight();
+		hy = yearNumField.getPreferredSize().getHeight(),
+		iw = DATE_ICON.getIconWidth(),
+		ih = DATE_ICON.getIconHeight();
 
-		return new Dimension((int)(wd + wm + wy), (int)Math.max(Math.max(hd, hm), hy));
+		return new Dimension((int)(iw + 10 + wd + wm + wy), (int)Math.max(Math.max(hd, hm), Math.max(ih, hy)));
 	}
 }
