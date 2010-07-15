@@ -19,7 +19,12 @@ import java.util.Collection;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import net.sourceforge.scuba.util.Icons;
 
 /**
  * GUI text field component for entering MRZ values.
