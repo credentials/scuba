@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import net.sourceforge.scuba.data.Country;
+import net.sourceforge.scuba.data.ISOCountry;
 import net.sourceforge.scuba.util.Icons;
 
 public class CountryEntryField extends Box
@@ -31,7 +32,7 @@ public class CountryEntryField extends Box
 		super(BoxLayout.X_AXIS);
 		iconLabel = new JLabel();
 		comboBox = new JComboBox();
-		Country[] countryValues = Country.values();
+		Country[] countryValues = ISOCountry.values();
 		for (int i = 0; i < countryValues.length; i++) {
 			comboBox.addItem(new CountryDisplayContainer(countryValues[i]));
 		}
