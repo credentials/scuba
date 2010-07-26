@@ -24,7 +24,6 @@ package net.sourceforge.scuba.smartcards;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Vector;
 
 /**
  * Inputstream for reading files on ISO 7816 file system cards.
