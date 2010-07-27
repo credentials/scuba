@@ -114,6 +114,7 @@ public class Icons
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return defaultImage;
 		}
 		return defaultImage;
