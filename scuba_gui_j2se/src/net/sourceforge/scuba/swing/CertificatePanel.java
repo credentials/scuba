@@ -1,40 +1,61 @@
 package net.sourceforge.scuba.swing;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.security.auth.x500.X500Principal;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 public class CertificatePanel extends JPanel
 {
-	private static final long serialVersionUID = -1109469067988004311L;
+	private static final long serialVersionUID = -1109469067988004321L;
 
-	private Certificate certificate;
-	private JTextArea area;
+	private List<Certificate> certificates;
+	private JTabbedPane tabbedPane;
 	
-	public CertificatePanel(Certificate certificate) {
-		super(new BorderLayout());
-		this.certificate = certificate;
-		area = new JTextArea(20, 40);
-		area.append(certificateToString(certificate));
-		area.setEditable(false);
-		add(new JScrollPane(area), BorderLayout.CENTER);
-		add(new KeyPanel(certificate.getPublicKey()), BorderLayout.SOUTH);
+	public CertificatePanel(Certificate certificate) {		
+		this(Collections.singletonList(certificate));
 	}
 	
+	public CertificatePanel(List<Certificate> certificates) {
+		super(new FlowLayout());
+		this.certificates = certificates;
+		
+		tabbedPane = new JTabbedPane();
+		
+		int i = 0;
+		for (Certificate certificate: certificates) {
+			JPanel panel = new JPanel(new BorderLayout());
+			JTextArea area = new JTextArea(20, 40);
+			area.append(certificateToString(certificate));
+			area.setEditable(false);
+			panel.add(new JScrollPane(area), BorderLayout.CENTER);
+			panel.add(new KeyPanel(certificate.getPublicKey()), BorderLayout.SOUTH);
+			tabbedPane.addTab(Integer.toString(++i), panel);
+		}
+		add(tabbedPane);
+	}
+
 	public Certificate getCertificate() {
-		return certificate;
+		int i = tabbedPane.getSelectedIndex();
+		return certificates.get(i);
+	}
+	
+	public List<Certificate> getCertificates() {
+		return certificates;
 	}
 	
 	public void setFont(Font font) {
 		super.setFont(font);
-		if (area != null) { area.setFont(font); }
 	}
 
 	private static String certificateToString(Certificate certificate) {
