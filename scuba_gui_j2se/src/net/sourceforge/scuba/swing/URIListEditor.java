@@ -16,7 +16,6 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -54,8 +53,6 @@ public class URIListEditor extends JPanel
 		uriEntryField = new URIEntryField();
 		this.actionListeners = new ArrayList<ActionListener>();
 		this.uriList = new URIListModel(initialURIList);
-
-		final Action addAction = getAddAction();
 		
 		uriDisplay = new JList(uriList) {
 			private static final long serialVersionUID = -3510897575223413193L;
@@ -86,8 +83,8 @@ public class URIListEditor extends JPanel
 		setBorder(BorderFactory.createTitledBorder(title));
 		
 		JToolBar toolBar = new JToolBar();
-		JButton addButton = new JButton(); toolBar.add(addButton); addButton.setAction(addAction);
-		JButton deleteButton = new JButton(); toolBar.add(deleteButton); deleteButton.setAction(getDeleteAction());
+		toolBar.add(getAddAction());
+		toolBar.add(getDeleteAction());
 		add(toolBar, BorderLayout.NORTH);
 	}
 
