@@ -1,8 +1,8 @@
 package net.sourceforge.scuba.swing;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -10,24 +10,33 @@ import java.util.List;
 import java.util.Scanner;
 
 import javax.security.auth.x500.X500Principal;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
+import net.sourceforge.scuba.util.Icons;
+
 public class CertificatePanel extends JPanel
 {
 	private static final long serialVersionUID = -1109469067988004321L;
 
+	private static final Image
+	VALID_ICON = Icons.getFamFamFamSilkIcon("tick"),
+	INVALID_ICON = Icons.getFamFamFamSilkIcon("cross");
+
+	
 	private List<Certificate> certificates;
 	private JTabbedPane tabbedPane;
 	
-	public CertificatePanel(Certificate certificate) {		
-		this(Collections.singletonList(certificate));
+	public CertificatePanel(Certificate certificate, boolean isValid) {		
+		this(Collections.singletonList(certificate), isValid);
 	}
 	
-	public CertificatePanel(List<Certificate> certificates) {
-		super(new FlowLayout());
+	public CertificatePanel(List<Certificate> certificates, boolean isValid) {
+		super(new BorderLayout());
 		this.certificates = certificates;
 		
 		tabbedPane = new JTabbedPane();
@@ -42,8 +51,12 @@ public class CertificatePanel extends JPanel
 			panel.add(new KeyPanel(certificate.getPublicKey()), BorderLayout.SOUTH);
 			tabbedPane.addTab(Integer.toString(++i), panel);
 		}
-		add(tabbedPane);
-	}
+		add(tabbedPane, BorderLayout.CENTER);
+		JLabel validLabel = new JLabel();
+		validLabel.setText(isValid ? "Certificate chain trusted" : "Certificate chain untrusted");
+		validLabel.setIcon(isValid ? new ImageIcon(VALID_ICON) : new ImageIcon(INVALID_ICON));
+		add(validLabel, BorderLayout.SOUTH);
+	}	
 
 	public Certificate getCertificate() {
 		int i = tabbedPane.getSelectedIndex();
