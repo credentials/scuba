@@ -103,6 +103,10 @@ public class ImagePanel extends JPanel
 		setVisible(false);
 		setVisible(true);
 	}
+	
+	public boolean isSomePointHighlighted() {
+		return highlights != null && !highlights.isEmpty();
+	}
 
 	public void highlightPoint(String key, int x, int y) {
 		setVisible(false);
