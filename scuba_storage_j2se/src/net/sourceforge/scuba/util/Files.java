@@ -22,6 +22,8 @@
 package net.sourceforge.scuba.util;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.filechooser.FileFilter;
@@ -85,11 +87,11 @@ public class Files
 			Class<?> c = (new Object() {
 				public String toString() { return super.toString(); }
 			}).getClass();
-			
+
 			/* We're using the classloader to determine the base URL. */
 			ClassLoader cl = c.getClassLoader();
 			URL url = cl.getResource(".");
-		
+
 			String protocol = url.getProtocol().toLowerCase();
 			String host = url.getHost().toLowerCase();
 			String basePathString = url.getFile();
@@ -139,10 +141,37 @@ public class Files
 		}
 	}
 
+	public static URI getBaseDirAsURI(Class<?> c) {
+		try {
+
+			URL url = getBaseDir(c);
+
+			System.out.println("DEBUG: url.getProtocol() = " + url.getProtocol());
+			System.out.println("DEBUG: url.getUserInfo() = " + url.getUserInfo());
+			System.out.println("DEBUG: url.getHost() = " + url.getHost());
+			System.out.println("DEBUG: url.getPort() = " + url.getPort());
+			System.out.println("DEBUG: url.getPath() = " + url.getPath());			
+			System.out.println("DEBUG: url.getQuery() = " + url.getQuery());
+			System.out.println("DEBUG: url.getRef() = " + url.getRef());
+
+			String protocol = url.getProtocol();
+			if (protocol.equalsIgnoreCase("file")) {
+				File file = new File(url.getPath().replace("%20", " "));
+				return file.toURI();
+			} else {
+				return url.toURI();
+			}
+		} catch (URISyntaxException use) {
+			use.printStackTrace();
+			return null;
+		}
+		//		return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), path, url.getQuery(), url.getRef());
+	}
+
 	public static File getBaseDirAsFile() {
 		return toFile(getBaseDir());
 	}
-	
+
 	public static File getApplicationDataDir(String appName) {
 		String osName = System.getProperty("os.name").toLowerCase();
 		String userHomeName = System.getProperty("user.home");
@@ -160,7 +189,7 @@ public class Files
 			return myAppDataDir;
 		}
 	}
-	
+
 	public static File toFile(URL url) {
 		File file = null;
 		try {
@@ -169,10 +198,7 @@ public class Files
 			if (file.isDirectory()) {
 				return file;
 			}
-//		} catch(URISyntaxException e) {
-//			/* Fall through */
 		} catch(IllegalArgumentException iae) {
-			System.out.println("DEBUG: toFile(URL): url = " + url.toString());
 			throw iae;
 		}
 		return new File(url.getPath().replace("%20", " "));
