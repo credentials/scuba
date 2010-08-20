@@ -130,7 +130,7 @@ public abstract class CardService implements Serializable
 	protected void notifyExchangedAPDU(CommandAPDU capdu, ResponseAPDU rapdu) {
 		if(listeners) {
 			for (APDUListener listener: apduListeners) {
-				listener.exchangedAPDU(capdu, rapdu);
+				listener.exchangedAPDU(new APDUEvent(this, capdu, rapdu));
 			}
 		}
 	}

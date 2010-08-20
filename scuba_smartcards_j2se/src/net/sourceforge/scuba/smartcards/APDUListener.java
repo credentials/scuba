@@ -41,5 +41,5 @@ public interface APDUListener extends EventListener
     * @param capdu a Command apdu
     * @param rapdu the Response apdu
     */
-   void exchangedAPDU(CommandAPDU capdu, ResponseAPDU rapdu);
+   void exchangedAPDU(APDUEvent e);
 }
