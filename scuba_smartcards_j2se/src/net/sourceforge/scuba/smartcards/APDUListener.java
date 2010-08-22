@@ -23,9 +23,6 @@ package net.sourceforge.scuba.smartcards;
 
 import java.util.EventListener;
 
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
-
 /**
  * Specifies an event handler type to react to apdu events.
  * 
@@ -38,8 +35,7 @@ public interface APDUListener extends EventListener
    /**
     * Is called after an apdu was exchanged.
     * 
-    * @param capdu a Command apdu
-    * @param rapdu the Response apdu
+    * @param e an APDU event containing the exchanged APDUs
     */
    void exchangedAPDU(APDUEvent e);
 }
