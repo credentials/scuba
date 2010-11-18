@@ -12,6 +12,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,12 +35,21 @@ import net.sourceforge.scuba.util.Icons;
  */
 public class DateEntryField extends Box
 {
+	public static final int YEAR_MODE_2_DIGITS = 2, YEAR_MODE_4_DIGITS = 4;
+	
 	private static final long serialVersionUID = -8604165563369764876L;
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("dd MMM yyyy");
+	private static final SimpleDateFormat
+	PRESENTATION_SDF = new SimpleDateFormat("dd MMM yyyy"),
+	PARSER_6_DIGITS_SDF = new SimpleDateFormat("yyMMdd"),
+	PARSER_8_DIGITS_SDF = new SimpleDateFormat("yyyyMMdd"),
+	YEAR_2_SDF = new SimpleDateFormat("yy"),
+	YEAR_4_SDF = new SimpleDateFormat("yyyy");
+
 	private static final Font FONT = new Font("Monospaced", Font.PLAIN, 12);
 	private static final Icon DATE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("date"));
 
+	private int yearMode;
 	private Calendar cal;
 	private JComboBox monthComboBox;
 	private NumField dayNumField;
@@ -47,7 +57,7 @@ public class DateEntryField extends Box
 	
 	private Collection<ActionListener> listeners;
 
-	public DateEntryField() {
+	private DateEntryField() {
 		super(BoxLayout.X_AXIS);
 		listeners = new ArrayList<ActionListener>();
 		cal = Calendar.getInstance();
@@ -66,9 +76,22 @@ public class DateEntryField extends Box
 		monthComboBox.addItem("Nov");
 		monthComboBox.addItem("Dec");
 		cal.set(Calendar.MONTH, 0);
-
 		dayNumField = new NumField(2, 1, 31);
-		yearNumField = new NumField(4, 0000, 9999);
+	}
+	
+	public DateEntryField(int yearMode) {
+		this();
+		this.yearMode = yearMode;
+		switch (yearMode) {
+		case YEAR_MODE_2_DIGITS:
+			yearNumField = new NumField(2, 00, 99);
+			break;
+		case YEAR_MODE_4_DIGITS:
+			yearNumField = new NumField(2, 0000, 9999);
+			break;
+		default:
+			throw new IllegalArgumentException("Illegal year mode.");
+		}
 		
 		add(new JLabel(DATE_ICON));
 		add(Box.createHorizontalStrut(10));
@@ -137,10 +160,45 @@ public class DateEntryField extends Box
 	}
 
 	public DateEntryField(Date date) {
-		this();
+		this(YEAR_MODE_4_DIGITS);
 		setDate(date);
 	}
+	
+	public DateEntryField(String dateString) throws ParseException {
+		this();
+		if (dateString == null) {
+			throw new IllegalArgumentException("Cannot parse null date");
+		}
+		dateString.trim();
+		switch(dateString.length()) {
+		case 6:
+			yearMode = YEAR_MODE_2_DIGITS;
+			yearNumField = new NumField(2, 00, 99);
+			setDate(dateString);
+			break;
+		case 8:
+			yearMode = YEAR_MODE_2_DIGITS;
+			yearNumField = new NumField(2, 0000, 9999);
+			setDate(dateString);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid date " + dateString);
+		}
+	}
 
+	public void setDate(String dateString) throws ParseException {
+		switch(dateString.length()) {
+		case 6:
+			setDate(PARSER_6_DIGITS_SDF.parse(dateString));
+			break;
+		case 8:
+			setDate(PARSER_8_DIGITS_SDF.parse(dateString));
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid date " + dateString);
+		}
+	}
+	
 	public void setDate(Date date) {
 		cal.setTime(date);
 		dayNumField.setValue(cal.get(Calendar.DATE));
@@ -156,7 +214,17 @@ public class DateEntryField extends Box
 	}
 
 	public String toString() {
-		return SDF.format(cal.getTime());
+		return PRESENTATION_SDF.format(cal.getTime());
+	}
+	
+	public String toCompactString(int yearMode) {
+		switch (yearMode) {
+		case YEAR_MODE_2_DIGITS:
+			return PARSER_6_DIGITS_SDF.format(cal.getTime());
+		case YEAR_MODE_4_DIGITS:
+			return PARSER_8_DIGITS_SDF.format(cal.getTime());
+		}
+		throw new IllegalStateException("Undetermined year mode");
 	}
 	
 	public void setEnabled(boolean b) {
