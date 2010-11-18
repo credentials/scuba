@@ -24,15 +24,25 @@ package net.sourceforge.scuba.smartcards;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
-import javax.smartcardio.*;
+import javax.smartcardio.ATR;
+import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
+import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
+import javax.smartcardio.CardTerminals;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
+import javax.smartcardio.TerminalFactory;
+import javax.smartcardio.TerminalFactorySpi;
 
 public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
 
-    /** Two constants to represent card's presence */
-    private static int PRESENT = 1;
-
-    private static int ABSENT = 0;
+	private static final Logger LOGGER = Logger.getLogger("net.sourceforge.scuba.smartcards");
+	
+    /** Constant to represent card's presence */
+    private static int PRESENT = 1, ABSENT = 0;
 
     /** The Control IDentifier byte for ISO14443 protocol, seem to be always 0x01 */
     private static final byte CID = (byte) 0x01;
@@ -58,20 +68,14 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
      * Some (RAW_SEND) are not documented there. More generally these are
      * commands for the PN532 controller.
      */
-    private static final byte ACR_CLA = (byte) 0xFF;
-
-    private static final byte ACR_BYTE = (byte) 0xD4;
-
-    private static final byte ACR_BYTE_ACK = (byte) 0xD5;
-
-    private static final byte RAW_SEND = 0x42;
-
-    private static final byte RAW_SEND_ACK = 0x43;
-
-    private static final byte POLL_ACK = 0x4B;
-
-    private static final byte RESP_BYTE_OK = 0x00;
-
+    private static final byte ACR_CLA = (byte) 0xFF,
+    ACR_BYTE = (byte) 0xD4,
+    ACR_BYTE_ACK = (byte) 0xD5,
+    RAW_SEND = 0x42,
+    RAW_SEND_ACK = 0x43,
+    POLL_ACK = 0x4B,
+    RESP_BYTE_OK = 0x00;
+    
     private static final byte[] READER_ID = new byte[] { ACR_CLA, 0x00, 0x48,
             0x00, 0x00 };
 
@@ -128,13 +132,13 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
 
     private static void debug(Object o) {
         if (DEBUG) {
-            System.out.println("DEBUG: " + o.toString());
+            LOGGER.info("DEBUG: " + o.toString());
         }
     }
 
     private static void info(Object o) {
         if (INFO) {
-            System.out.println("INFO: " + o.toString());
+            LOGGER.info(o.toString());
         }
     }
 
@@ -292,13 +296,21 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
          */
         private ACR122CardTerminal() {
             try {
-                TerminalFactory tf = TerminalFactory.getInstance("PC/SC", null,
-                        "SunPCSC");
+                TerminalFactory tf = TerminalFactory.getInstance("PC/SC", null, "SunPCSC");
                 for (CardTerminal terminal : tf.terminals().list(
                         CardTerminals.State.CARD_PRESENT)) {
                     debug("Terminal: " + terminal.getName());
-                    if (terminal.getName().indexOf("ACR") == -1)
+                    if (!terminal.getName().contains("ACR122")
+                    		/*
+                        	 * FIXME: On WinXP with ACS supplied drivers (October 2010)
+                        	 * the one of my tikitag readers presents itself as " CCID USB Reader 0"
+                        	 * (instead of "ACR 122 USB Reader").
+                        	 * 
+                        	 * Is there some other way to positively identify a 122U? -- MO
+                        	 */
+                    		&& !terminal.getName().contains(" CCID USB Reader")) {
                         continue;
+                    }
                     virtualCard = terminal.connect("T=0");
                     channel = virtualCard.getBasicChannel();
                     channel.transmit(new CommandAPDU(ACRcommand(ANTENNA_OFF)));
