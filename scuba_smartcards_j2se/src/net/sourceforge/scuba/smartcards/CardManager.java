@@ -307,7 +307,7 @@ public class CardManager
 	public static CardManager getInstance() {
 		return INSTANCE;
 	}
-
+	
 	private class TerminalPoller implements Runnable
 	{
 		private CardManager cm;
@@ -320,6 +320,7 @@ public class CardManager
 			this.terminal = terminal;
 			this.service = null;
 			this.isPolling = false;
+			this.isOutsidePollingLoop = true;
 			this.cm = cm;
 		}
 		
@@ -328,8 +329,9 @@ public class CardManager
 		}
 		
 		public synchronized void startPolling() throws InterruptedException {
-			if (isPolling()) { return; }
+			if (isPolling) { return; }
 			isPolling = true;
+			notifyAll();
 			if (myThread != null && myThread.isAlive()) { return; }
 			myThread = new Thread(this);
 			myThread.start();
@@ -339,11 +341,14 @@ public class CardManager
 		}
 		
 		public synchronized void stopPolling() throws InterruptedException {
-			if (!isPolling()) { return; }
+			if (!isPolling) { return; }
 			isPolling = false;
+			notifyAll();
+			if (myThread == null || !myThread.isAlive()) { return; }
 			while (!isPolling && !isOutsidePollingLoop) {
 				wait();
 			}
+			myThread = null;
 		}
 		
 		public CardService getService() {
@@ -356,15 +361,15 @@ public class CardManager
 					isOutsidePollingLoop = false;
 					notifyAll(); /* NOTE: startPolling() may be waiting on us. */
 				}
-				while (isPolling()) {
-					if (cm.hasNoListeners()) {
-						/* Card Manager has no listeners, we go to sleep. */
-						synchronized(cm) {
-							while (hasNoListeners()) {
-								cm.wait();
-							}
-						}
-					}
+				while (isPolling) {
+//					if (cm.hasNoListeners()) {
+//						/* Card Manager has no listeners, we go to sleep. */
+//						synchronized(cm) {
+//							while (cm.hasNoListeners()) {
+//								cm.wait();
+//							}
+//						}
+//					}
 					boolean wasCardPresent = false;
 					boolean isCardPresent = false;
 					long currentTime = System.currentTimeMillis();
@@ -375,7 +380,7 @@ public class CardManager
 							try {
 								if (terminal.isCardPresent()) {
 									service = new TerminalCardService(terminal);
-									for (APDUListener l: apduListeners) { service.addAPDUListener(l); }
+									for (APDUListener l: cm.apduListeners) { service.addAPDUListener(l); }
 								}
 							} catch (Exception e) {
 								if (service != null) { service.close(); }
@@ -418,10 +423,10 @@ public class CardManager
 			} catch (InterruptedException ie) {
 				/* NOTE: This ends thread when interrupted. */
 			}
-            synchronized (this) {
-            	isOutsidePollingLoop = true;
-                notifyAll(); /* NOTE: we just stopped polling, stopPolling may be waiting on us. */
-            }
+	        synchronized (this) {
+	        	isOutsidePollingLoop = true;
+	            notifyAll(); /* NOTE: we just stopped polling, stopPolling may be waiting on us. */
+	        }
 		}		
 		
 		public String toString() {
@@ -429,3 +434,5 @@ public class CardManager
 		}
 	}
 }
+
+
