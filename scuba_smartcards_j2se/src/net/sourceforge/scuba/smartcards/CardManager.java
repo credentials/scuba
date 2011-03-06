@@ -72,13 +72,13 @@ public class CardManager
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Starts polling <code>terminal</code> (if not already doing so).
 	 * 
 	 * @param terminal a card terminal
 	 */
-	public synchronized void startPolling(CardTerminal terminal) {
+	public void startPolling(CardTerminal terminal) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) { poller = new TerminalPoller(terminal, this); }
 		try {
@@ -86,15 +86,14 @@ public class CardManager
 		} catch (InterruptedException ie) {
 			/* NOTE: if thread interrupted we just quit. */
 		}
-		notifyAll();
 	}
-	
+
 	/**
 	 * Stops polling <code>terminal</code>.
 	 * 
 	 * @param terminal a card terminal
 	 */
-	public synchronized void stopPolling(CardTerminal terminal) {
+	public void stopPolling(CardTerminal terminal) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) { return; }
 		try {
@@ -102,9 +101,8 @@ public class CardManager
 		} catch (InterruptedException ie) {
 			/* NOTE: if thread interrupted we just quit. */
 		}
-		notifyAll();
 	}
-	
+
 	/**
 	 * Whether we are polling <code>terminal</code>.
 	 *
@@ -148,7 +146,7 @@ public class CardManager
 		}
 		return isPolling;
 	}
-	
+
 	private void addTerminals() {
 		addTerminals(TerminalFactory.getDefault(), true);
 	}
@@ -219,7 +217,7 @@ public class CardManager
 			cardTerminalListeners.remove(l);
 		}
 	}
-	
+
 	/**
 	 * Adds a listener.
 	 * 
@@ -284,7 +282,7 @@ public class CardManager
 		Collections.sort(result, TERMINAL_COMPARATOR);
 		return result;
 	}
-	
+
 	public String toString() {
 		StringBuffer result = new StringBuffer();
 		result.append("CardManager: [");
@@ -307,7 +305,7 @@ public class CardManager
 	public static CardManager getInstance() {
 		return INSTANCE;
 	}
-	
+
 	private class TerminalPoller implements Runnable
 	{
 		private CardManager cm;
@@ -323,11 +321,11 @@ public class CardManager
 			this.isOutsidePollingLoop = true;
 			this.cm = cm;
 		}
-		
+
 		public boolean isPolling() {
 			return isPolling;
 		}
-		
+
 		public synchronized void startPolling() throws InterruptedException {
 			if (isPolling) { return; }
 			isPolling = true;
@@ -339,7 +337,7 @@ public class CardManager
 				wait();
 			}
 		}
-		
+
 		public synchronized void stopPolling() throws InterruptedException {
 			if (!isPolling) { return; }
 			isPolling = false;
@@ -350,26 +348,17 @@ public class CardManager
 			}
 			myThread = null;
 		}
-		
+
 		public CardService getService() {
 			return service;
 		}
 
 		public void run() {
 			try {
-				synchronized(this) {
-					isOutsidePollingLoop = false;
-					notifyAll(); /* NOTE: startPolling() may be waiting on us. */
-				}
+				notifyOutsidePollingLoop(false);
 				while (isPolling) {
-//					if (cm.hasNoListeners()) {
-//						/* Card Manager has no listeners, we go to sleep. */
-//						synchronized(cm) {
-//							while (cm.hasNoListeners()) {
-//								cm.wait();
-//							}
-//						}
-//					}
+//					waitForListeners();
+					if (!isPolling) { break; }
 					boolean wasCardPresent = false;
 					boolean isCardPresent = false;
 					long currentTime = System.currentTimeMillis();
@@ -415,20 +404,33 @@ public class CardManager
 						Thread.sleep(POLL_INTERVAL);
 					} catch (CardException ce) {
 						/* FIXME: what if reader no longer connected, should we remove it from list? */
-						// ce.printStackTrace(); // for debugging
+						ce.printStackTrace(); // for debugging
 					} finally {
-						if (!isPolling() && service != null) { service.close(); }
+						if (!isPolling && service != null) { service.close(); }
 					}
 				}
 			} catch (InterruptedException ie) {
 				/* NOTE: This ends thread when interrupted. */
 			}
-	        synchronized (this) {
-	        	isOutsidePollingLoop = true;
-	            notifyAll(); /* NOTE: we just stopped polling, stopPolling may be waiting on us. */
-	        }
-		}		
-		
+			notifyOutsidePollingLoop(true);
+		}
+
+		private void waitForListeners() throws InterruptedException {
+			if (cm.hasNoListeners()) {
+				/* Card Manager has no listeners, we go to sleep. */
+				synchronized(cm) {
+					while (isPolling && cm.hasNoListeners()) {
+						cm.wait();
+					}
+				}
+			}
+		}
+
+		private synchronized void notifyOutsidePollingLoop(boolean isOutsidePollingLoop) {
+			this.isOutsidePollingLoop = isOutsidePollingLoop;
+			notifyAll(); /* NOTE: we just stopped polling, stopPolling may be waiting on us. */			
+		}
+
 		public String toString() {
 			return "Poller for " + terminal.getName() + (isPolling ? " (polling)" : " (not polling)");
 		}
