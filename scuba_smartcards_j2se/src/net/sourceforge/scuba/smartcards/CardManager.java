@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
@@ -49,6 +52,7 @@ import javax.smartcardio.TerminalFactory;
  */
 public class CardManager
 {
+
 	private static final CardManager INSTANCE = new CardManager();
 	private static final int POLL_INTERVAL = 450;
 	private static final Comparator<CardTerminal> TERMINAL_COMPARATOR = new Comparator<CardTerminal>() {
@@ -61,10 +65,16 @@ public class CardManager
 	private Collection<CardTerminalListener> cardTerminalListeners;
 	private Collection<APDUListener> apduListeners;
 
+	private Lock listenersLock;
+	private Condition notWaitingForFirstListenerCondition;
+
 	private CardManager() {	   
 		try {
 			cardTerminalListeners = new HashSet<CardTerminalListener>();
 			apduListeners = new HashSet<APDUListener>();
+			listenersLock = new ReentrantLock(true);
+			notWaitingForFirstListenerCondition = listenersLock.newCondition();
+
 			terminals = new HashMap<CardTerminal, TerminalPoller>();
 			addTerminals();
 		} catch (Exception ex) {
@@ -110,7 +120,7 @@ public class CardManager
 	 *
 	 * @return a boolean
 	 */
-	public synchronized boolean isPolling(CardTerminal terminal) {
+	public boolean isPolling(CardTerminal terminal) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) { return false; }
 		return poller.isPolling();
@@ -124,7 +134,7 @@ public class CardManager
 	 *
 	 * @return a card service or <code>null</code>
 	 */
-	public synchronized CardService getService(CardTerminal terminal) {
+	public CardService getService(CardTerminal terminal) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) { return null; }
 		CardService service = poller.getService();
@@ -157,7 +167,7 @@ public class CardManager
 	 * @param factory
 	 * @return the number of terminals added
 	 */
-	public synchronized int addTerminals(TerminalFactory factory, boolean isPolling) {
+	public int addTerminals(TerminalFactory factory, boolean isPolling) {
 		try {
 			CardTerminals additionalTerminals = factory.terminals();
 			if (additionalTerminals == null) { return 0; }
@@ -181,7 +191,7 @@ public class CardManager
 	 * @param terminal the card terminal to add
 	 * @param isPolling whether we should immediately start polling this terminal
 	 */
-	public synchronized void addTerminal(CardTerminal terminal, boolean isPolling) {
+	public void addTerminal(CardTerminal terminal, boolean isPolling) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) {
 			poller = new TerminalPoller(terminal, this);
@@ -201,9 +211,12 @@ public class CardManager
 	 * @param l the listener to add
 	 */
 	public void addCardTerminalListener(CardTerminalListener l) {
-		synchronized(this) {
+		listenersLock.lock();
+		try {
 			cardTerminalListeners.add(l);
-			notifyAll();
+			notWaitingForFirstListenerCondition.signalAll();
+		} finally {
+			listenersLock.unlock();
 		}
 	}
 
@@ -213,9 +226,7 @@ public class CardManager
 	 * @param l the listener to remove
 	 */
 	public void removeCardTerminalListener(CardTerminalListener l) {
-		synchronized(this) {
-			cardTerminalListeners.remove(l);
-		}
+		cardTerminalListeners.remove(l);
 	}
 
 	/**
@@ -267,7 +278,7 @@ public class CardManager
 		}
 	}
 
-	private synchronized boolean hasNoListeners() {
+	private boolean hasNoListeners() {
 		return cardTerminalListeners.isEmpty();
 	}
 
@@ -311,42 +322,67 @@ public class CardManager
 		private CardManager cm;
 		private CardTerminal terminal;
 		private TerminalCardService service;
-		private boolean isPolling, isOutsidePollingLoop;
+		private boolean isPolling, hasStoppedPolling;
 		private Thread myThread;
+
+		private Lock pollingLock;
+		private Condition startedPollingCondition, stoppedPollingCondition;
 
 		public TerminalPoller(CardTerminal terminal, CardManager cm) {
 			this.terminal = terminal;
 			this.service = null;
 			this.isPolling = false;
-			this.isOutsidePollingLoop = true;
+			this.hasStoppedPolling = true;
 			this.cm = cm;
+			this.pollingLock = new ReentrantLock(true);
+			stoppedPollingCondition = pollingLock.newCondition();
+			startedPollingCondition = pollingLock.newCondition();
 		}
 
 		public boolean isPolling() {
 			return isPolling;
 		}
 
-		public synchronized void startPolling() throws InterruptedException {
-			if (isPolling) { return; }
-			isPolling = true;
-			notifyAll();
-			if (myThread != null && myThread.isAlive()) { return; }
-			myThread = new Thread(this);
-			myThread.start();
-			while (isPolling && isOutsidePollingLoop) {
-				wait();
+		public void startPolling() throws InterruptedException {
+			pollingLock.lock();
+			try {
+				if (isPolling) { return; }
+				isPolling = true;
+				if (myThread != null && myThread.isAlive()) { return; }
+				myThread = new Thread(this);
+				myThread.start();
+				while (isPolling && hasStoppedPolling) {
+					startedPollingCondition.await();
+				}
+			} finally {
+				pollingLock.unlock();
 			}
 		}
 
-		public synchronized void stopPolling() throws InterruptedException {
-			if (!isPolling) { return; }
-			isPolling = false;
-			notifyAll();
-			if (myThread == null || !myThread.isAlive()) { return; }
-			while (!isPolling && !isOutsidePollingLoop) {
-				wait();
+		public void stopPolling() throws InterruptedException {
+			pollingLock.lock();
+			try {
+				if (!isPolling) { return; }
+				isPolling = false;
+
+				/* Wake up threads waiting for first listener. */
+				listenersLock.lock();
+				try {
+					notWaitingForFirstListenerCondition.signalAll();
+				} finally {
+					listenersLock.unlock();
+				}
+
+				if (myThread == null || !myThread.isAlive()) { return; }
+				
+				/* Wait until thread has stopped polling. */
+				while (!isPolling && !hasStoppedPolling) {
+					stoppedPollingCondition.await();
+				}
+				myThread = null;
+			} finally {
+				pollingLock.unlock();
 			}
-			myThread = null;
 		}
 
 		public CardService getService() {
@@ -354,81 +390,94 @@ public class CardManager
 		}
 
 		public void run() {
+			pollingLock.lock();
 			try {
-				notifyOutsidePollingLoop(false);
+				hasStoppedPolling = false;
+				startedPollingCondition.signalAll();
+			} finally {
+				pollingLock.unlock();
+			}
+			try {
 				while (isPolling) {
-//					waitForListeners();
-					if (!isPolling) { break; }
-					boolean wasCardPresent = false;
-					boolean isCardPresent = false;
-					long currentTime = System.currentTimeMillis();
+					/* If Card Manager has no listeners, we go to sleep. */
+					listenersLock.lock();
 					try {
-						if (service != null) {
-							wasCardPresent = true;
-						} else {
-							try {
-								if (terminal.isCardPresent()) {
-									service = new TerminalCardService(terminal);
-									for (APDUListener l: cm.apduListeners) { service.addAPDUListener(l); }
-								}
-							} catch (Exception e) {
-								if (service != null) { service.close(); }
-							}
+						while (isPolling && cm.hasNoListeners()) {
+							notWaitingForFirstListenerCondition.await();
 						}
-						if (service != null && (currentTime - service.getLastActiveTime() < POLL_INTERVAL)) {
-							isCardPresent = true;
-						} else {
-							isCardPresent = terminal.isCardPresent();
-						}
-						if (wasCardPresent && !isCardPresent) {
-							if (service != null) {
-								final CardEvent ce = new CardEvent(CardEvent.REMOVED, service);
-								notifyCardEvent(ce);
-								service.close();
-							}
-							service = null;
-						} else if (!wasCardPresent && isCardPresent) {
-							if (service != null) {
-								final CardEvent ce = new CardEvent(CardEvent.INSERTED, service);
-								notifyCardEvent(ce);
-							}
-						}
-
-						// // This doesn't seem to work on some variants of Linux + pcsclite. :(
-						//		if (isCardPresent) {
-						//			terminal.waitForCardAbsent(POLL_INTERVAL); // or longer..
-						//		} else {
-						//			terminal.waitForCardPresent(POLL_INTERVAL); // or longer..
-						//		}
-						// // ... so we'll just sleep for a while as a courtesy to other threads...
-						Thread.sleep(POLL_INTERVAL);
-					} catch (CardException ce) {
-						/* FIXME: what if reader no longer connected, should we remove it from list? */
-						ce.printStackTrace(); // for debugging
 					} finally {
-						if (!isPolling && service != null) { service.close(); }
+						listenersLock.unlock();
+					}
+					
+					pollingLock.lock();
+					try {
+						try {
+							if (!isPolling) { break; }
+
+							boolean wasCardPresent = false;
+							boolean isCardPresent = false;
+							long currentTime = System.currentTimeMillis();
+							if (service != null) {
+								wasCardPresent = true;
+							} else {
+								try {
+									if (terminal.isCardPresent()) {
+										service = new TerminalCardService(terminal);
+										for (APDUListener l: cm.apduListeners) { service.addAPDUListener(l); }
+									}
+								} catch (Exception e) {
+									if (service != null) { service.close(); }
+								}
+							}
+							if (service != null && (currentTime - service.getLastActiveTime() < POLL_INTERVAL)) {
+								isCardPresent = true;
+							} else {
+								isCardPresent = terminal.isCardPresent();
+							}
+							if (wasCardPresent && !isCardPresent) {
+								if (service != null) {
+									final CardEvent ce = new CardEvent(CardEvent.REMOVED, service);
+									notifyCardEvent(ce);
+									service.close();
+								}
+								service = null;
+							} else if (!wasCardPresent && isCardPresent) {
+								if (service != null) {
+									final CardEvent ce = new CardEvent(CardEvent.INSERTED, service);
+									notifyCardEvent(ce);
+								}
+							}
+
+							// // This doesn't seem to work on some variants of Linux + pcsclite. :(
+							//		if (isCardPresent) {
+							//			terminal.waitForCardAbsent(POLL_INTERVAL); // or longer..
+							//		} else {
+							//			terminal.waitForCardPresent(POLL_INTERVAL); // or longer..
+							//		}
+							// // ... so we'll just sleep for a while as a courtesy to other threads...
+							Thread.sleep(POLL_INTERVAL);
+						} catch (CardException ce) {
+							/* FIXME: what if reader no longer connected, should we remove it from list? */
+							ce.printStackTrace(); // for debugging
+						} finally {
+							if (!isPolling && service != null) { service.close(); }
+						}
+					} finally {
+						pollingLock.unlock();
 					}
 				}
-			} catch (InterruptedException ie) {
-				/* NOTE: This ends thread when interrupted. */
-			}
-			notifyOutsidePollingLoop(true);
-		}
 
-		private void waitForListeners() throws InterruptedException {
-			if (cm.hasNoListeners()) {
-				/* Card Manager has no listeners, we go to sleep. */
-				synchronized(cm) {
-					while (isPolling && cm.hasNoListeners()) {
-						cm.wait();
-					}
+				pollingLock.lock();
+				try {
+					hasStoppedPolling = true;
+					stoppedPollingCondition.signalAll();
+				} finally {
+					pollingLock.unlock();
 				}
+			} catch (InterruptedException ie) { 
+				/* NOTE: interrupt, we quit. */
+				// ie.printStackTrace();
 			}
-		}
-
-		private synchronized void notifyOutsidePollingLoop(boolean isOutsidePollingLoop) {
-			this.isOutsidePollingLoop = isOutsidePollingLoop;
-			notifyAll(); /* NOTE: we just stopped polling, stopPolling may be waiting on us. */			
 		}
 
 		public String toString() {
@@ -436,5 +485,3 @@ public class CardManager
 		}
 	}
 }
-
-
