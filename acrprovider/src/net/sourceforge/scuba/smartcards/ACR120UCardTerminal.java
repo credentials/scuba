@@ -41,11 +41,13 @@ import acs.jni.ACR120U;
  * (Tested with <code>ACR120U-JNI-1.0.0.3.zip</code>.)
  *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
+ * 
  * @version $Revision: $
  */
 public class ACR120UCardTerminal extends CardTerminal
 {
-	public static final int ACR120_USB1 = ACR120U.ACR120_USB1,	  
+	public static final int
+	ACR120_USB1 = ACR120U.ACR120_USB1,	  
 	ACR120_USB2 = ACR120U.ACR120_USB2,
 	ACR120_USB3 = ACR120U.ACR120_USB3,
 	ACR120_USB4 = ACR120U.ACR120_USB4,
@@ -55,6 +57,13 @@ public class ACR120UCardTerminal extends CardTerminal
 	ACR120_USB8 = ACR120U.ACR120_USB8;
 
 	private static final byte POWER_OFF = 0, POWER_ON = 1;
+	
+	private static final int
+	ATS_OFFSET_TL = 0,
+	ATS_OFFSET_T0 = 1,
+	ATS_OFFSET_TA = 2,
+	ATS_OFFSET_TB = 3,
+	ATS_OFFSET_TC = 4;
 
 	private static final long CARD_CHECK_SLEEP_TIME = 150;
 	private static final long HEARTBEAT_TIMEOUT = 600;
@@ -86,9 +95,9 @@ public class ACR120UCardTerminal extends CardTerminal
 			hReader = lib.open((short)readerPort) & 0xFFFF;
 			short errorCode;
 			errorCode = lib.power((short)hReader, POWER_OFF);
-			if (errorCode < 0) { throw new CardException("Could not initialize reader"); }
+			if (errorCode < 0) { throw new CardException("Could not initialize reader, power off failed with error code " + errorCode); }
 			errorCode = lib.power((short)hReader, POWER_ON);
-			if (errorCode < 0) { throw new CardException("Could not initialize reader"); }
+			if (errorCode < 0) { throw new CardException("Could not initialize reader, power on failed with error code " + errorCode); }
 			heartBeat = System.currentTimeMillis();
 		}
 	}
@@ -120,7 +129,7 @@ public class ACR120UCardTerminal extends CardTerminal
 			byte[] pTagLengths = new byte[ACR120U.ACR120UJNI_MAX_NUM_TAGS];
 			byte[][] pSNs = new byte[ACR120U.ACR120UJNI_MAX_NUM_TAGS][10];
 			errorCode = lib.listTags((short)hReader, pTagCount, pTagTypes, pTagLengths, pSNs);
-			if (errorCode < 0) { throw new CardException("Could not initialize reader"); }
+			if (errorCode < 0) { throw new CardException("Could not initialize reader, listTags failed with error code " + errorCode); }
 			int tagCount = pTagCount[0] & 0xFF;
 			heartBeat = System.currentTimeMillis();
 			return tagCount > 0;
@@ -227,29 +236,94 @@ public class ACR120UCardTerminal extends CardTerminal
 				this.card = card;
 				transmitLengthBuffer = new short[1];
 				receiveLengthBuffer = new short[1];
-				receiveBuffer = new byte[256];
+				receiveBuffer = new byte[512];
 
 				byte[] pResultTagType = { (byte)0xFF };
 				byte[] pResultTagLength = { (byte)4 };
 				byte[] pResultSN = new byte[10];
 				short errorCode = lib.select((short)hReader, pResultTagType, pResultTagLength, pResultSN);
-				if (errorCode < 0) { throw new CardException("Could not initialize reader 1"); }
+				if (errorCode < 0) { throw new CardException("Could not initialize reader, select failed with errorCode " + errorCode); }
 				int tagType = pResultTagType[0] & 0xFF;
 				isTypeA = ((tagType & 0x80) == 0x80);
 
-				byte[] atslen = new byte[1];
-				byte[] ats = new byte[256];
-				errorCode = lib.rATS((short)hReader, (byte)4, atslen, ats);
-				if (errorCode < 0) { throw new CardException("Could not initialize reader 2 (errorCode == " + errorCode + ")"); }
-				byte[] atrBytes = new byte[atslen[0] & 0xFF];
-				System.arraycopy(ats, 0, atrBytes, 0, atrBytes.length);
+				int fsd = 256; /* Our max frame length... */
+				int fsc = 16; /* Their max frame length... */
 
-				errorCode = lib.initBlockNumber((short)48); /* TODO: get size from ATS?!? */
-				if (errorCode < 0) { throw new CardException("Could not initialize reader 3"); }
-				atr = new ATR(atrBytes);
+				System.out.println("DEBUG: isTypeA = " + isTypeA);
+
+				if (isTypeA) {
+					byte[] atslen = new byte[1];
+					byte[] ats = new byte[fsd];
+					errorCode = lib.rATS((short)hReader, lookupFSDI(fsd), atslen, ats);
+					if (errorCode < 0) { throw new CardException("Could not initialize reader, rATS failed with error code " + errorCode); }
+					byte[] atrBytes = new byte[atslen[0] & 0xFF];
+					System.arraycopy(ats, 0, atrBytes, 0, atrBytes.length);
+					atr = new ATR(atrBytes);
+
+					System.out.println("DEBUG: ATS = " + net.sourceforge.scuba.util.Hex.bytesToHexString(atrBytes));
+
+					int tl = atrBytes[ATS_OFFSET_TL];
+					if (tl > 1) {
+						/* Check Y */
+						int t0 = atrBytes[ATS_OFFSET_T0];
+						if ((t0 & 0x40) == 0x40) {
+							int tc = atrBytes[ATS_OFFSET_TC];
+						}
+						if ((t0 & 0x20) == 0x20) {
+							int tb = atrBytes[ATS_OFFSET_TB];
+						}
+						if ((t0 & 0x10) == 0x10) {
+							int ta = atrBytes[ATS_OFFSET_TA];
+						}
+						
+						/* Get FSC */
+						byte fsci = (byte)(t0 & 0x0F);
+						fsc = lookupFSC(fsci);
+						System.out.println("DEBUG: fsci = " + fsci + ", setting fsc to " + fsc);
+					}
+				}
+				errorCode = lib.initBlockNumber((short)fsc);
+				if (errorCode < 0) { throw new CardException("Could not initialize reader, initBlockNumber failed with error code " + errorCode); }
 
 				isBasicChannelOpen = true;
 				heartBeat = System.currentTimeMillis();
+			}
+		}
+
+		/**
+		 * Gets FSDI from FSD.
+		 * See ISO 14443-4.
+		 * 
+		 * @param fsd the FSD
+		 * @return the FSDI
+		 */
+		private byte lookupFSDI(int fsd) {
+			switch(fsd) {
+			case 16: return 0;
+			case 24: return 1;
+			case 32: return 2;
+			case 40: return 3;
+			case 48: return 4;
+			case 64: return 5;
+			case 96: return 6;
+			case 128: return 7;
+			case 256: return 8;
+			default: throw new NumberFormatException("Illegal FSD");
+			}
+		}
+
+		private int lookupFSC(byte fsci) {
+			switch(fsci) {
+			case 0: return 16;
+			case 1: return 24;
+			case 2: return 32;
+			case 3: return 40;
+			case 4: return 48;
+			case 5: return 64;
+			case 6: return 96;
+			case 7: return 128;
+			case 8: return 256;
+			default: throw new NumberFormatException("Illegal FSCI");
 			}
 		}
 
@@ -279,7 +353,7 @@ public class ACR120UCardTerminal extends CardTerminal
 				byte[] data = apdu.getBytes();
 				transmitLengthBuffer[0] = (short)data.length;
 				errorCode = lib.xchAPDU((short)hReader, isTypeA, transmitLengthBuffer, data, receiveLengthBuffer, receiveBuffer);
-				if (errorCode < 0) { throw new CardException("Error exchanging APDU"); }
+				if (errorCode < 0) { throw new CardException("Error exchanging APDU, xchAPDU failed with error code " + errorCode); }
 				byte[] result = new byte[receiveLengthBuffer[0] & 0xFFFF];
 				System.arraycopy(receiveBuffer, 0, result, 0, result.length);
 				heartBeat = System.currentTimeMillis();

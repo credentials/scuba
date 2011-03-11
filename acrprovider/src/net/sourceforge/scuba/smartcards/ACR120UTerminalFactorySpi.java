@@ -34,6 +34,7 @@ import javax.smartcardio.TerminalFactorySpi;
  * This creates ACR120UCardTerminal instances.
  *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
+ * 
  * @version $Revision: $
  */
 public class ACR120UTerminalFactorySpi  extends TerminalFactorySpi
