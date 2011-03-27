@@ -19,23 +19,22 @@ import javax.swing.JTextArea;
 
 import net.sourceforge.scuba.util.Icons;
 
-public class CertificatePanel extends JPanel
+public class CertificateChainPanel extends JPanel
 {
 	private static final long serialVersionUID = -1109469067988004321L;
 
 	private static final Image
 	VALID_ICON = Icons.getFamFamFamSilkIcon("tick"),
 	INVALID_ICON = Icons.getFamFamFamSilkIcon("cross");
-
 	
 	private List<Certificate> certificates;
 	private JTabbedPane tabbedPane;
 	
-	public CertificatePanel(Certificate certificate, boolean isValid) {		
+	public CertificateChainPanel(Certificate certificate, boolean isValid) {		
 		this(Collections.singletonList(certificate), isValid);
 	}
 	
-	public CertificatePanel(List<Certificate> certificates, boolean isValid) {
+	public CertificateChainPanel(List<Certificate> certificates, boolean isValid) {
 		super(new BorderLayout());
 		this.certificates = certificates;
 		
