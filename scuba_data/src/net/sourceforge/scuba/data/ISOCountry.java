@@ -12,7 +12,7 @@ import java.io.Serializable;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class ISOCountry implements Country, Serializable
+public class ISOCountry implements Country, Serializable, Comparable<Country>
 {
 	private static final long serialVersionUID = 7220597933847617859L;
 
@@ -360,5 +360,9 @@ public class ISOCountry implements Country, Serializable
 		if (!obj.getClass().equals(this.getClass())) { return false; }
 		ISOCountry other = (ISOCountry)obj;
 		return other.code == code;
+	}
+
+	public int compareTo(Country o) {
+		return toAlpha2Code().compareTo(o.toAlpha2Code());
 	}
 }
