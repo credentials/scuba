@@ -11,7 +11,7 @@ package net.sourceforge.scuba.data;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public interface  Country
+public interface Country
 {
 	int valueOf();
 
