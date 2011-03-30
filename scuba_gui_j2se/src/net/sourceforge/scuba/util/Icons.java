@@ -3,6 +3,8 @@ package net.sourceforge.scuba.util;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,6 +36,9 @@ public class Icons
 {	
 	private static final Image DEFAULT_16X16_IMAGE =  new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB),
 	DEFAULT_16X11_IMAGE =  new BufferedImage(16, 11, BufferedImage.TYPE_INT_ARGB);
+
+	private static Map<String, Image> famFamFamSilkCache = new HashMap<String, Image>();
+	private static Map<Country, Image> flagCache = new HashMap<Country, Image>();
 
 	private static URL getImagesDir() {
 		try {
@@ -82,7 +87,11 @@ public class Icons
 	}
 
 	public static Image getFlagImage(Country country) {
-		return getImageFromCollection("flags", country.toString().toLowerCase(), DEFAULT_16X11_IMAGE);
+		Image image = flagCache.get(country);
+		if (image != null) { return image; }
+		image = getImageFromCollection("flags", country.toString().toLowerCase(), DEFAULT_16X11_IMAGE);
+		flagCache.put(country, image);
+		return image;
 	}
 
 	/**
@@ -92,7 +101,11 @@ public class Icons
 	 * @return an image
 	 */
 	public static Image getFamFamFamSilkIcon(String iconName) {
-		return getImageFromCollection("famfamfam_silk", iconName.toLowerCase(), DEFAULT_16X16_IMAGE);
+		Image image = famFamFamSilkCache.get(iconName);
+		if (image != null) { return image; }
+		image = getImageFromCollection("famfamfam_silk", iconName.toLowerCase(), DEFAULT_16X16_IMAGE);
+		famFamFamSilkCache.put(iconName, image);
+		return image;
 	}
 	
 	private static Image getImageFromCollection(String collectionName, String imageName, Image defaultImage) {
