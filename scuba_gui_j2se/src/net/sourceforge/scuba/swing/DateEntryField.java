@@ -36,7 +36,7 @@ import net.sourceforge.scuba.util.Icons;
 public class DateEntryField extends Box
 {
 	public static final int YEAR_MODE_2_DIGITS = 2, YEAR_MODE_4_DIGITS = 4;
-	
+
 	private static final long serialVersionUID = -8604165563369764876L;
 
 	private static final SimpleDateFormat
@@ -54,7 +54,7 @@ public class DateEntryField extends Box
 	private JComboBox monthComboBox;
 	private NumField dayNumField;
 	private NumField yearNumField ;
-	
+
 	private Collection<ActionListener> listeners;
 
 	private DateEntryField() {
@@ -78,7 +78,7 @@ public class DateEntryField extends Box
 		cal.set(Calendar.MONTH, 0);
 		dayNumField = new NumField(2, 1, 31);
 	}
-	
+
 	public DateEntryField(int yearMode) {
 		this();
 		this.yearMode = yearMode;
@@ -92,7 +92,7 @@ public class DateEntryField extends Box
 		default:
 			throw new IllegalArgumentException("Illegal year mode.");
 		}
-		
+
 		add(new JLabel(DATE_ICON));
 		add(Box.createHorizontalStrut(10));
 		add(dayNumField);
@@ -163,30 +163,25 @@ public class DateEntryField extends Box
 		this(YEAR_MODE_4_DIGITS);
 		setDate(date);
 	}
-	
+
 	public DateEntryField(String dateString) throws ParseException {
-		this();
-		if (dateString == null) {
-			throw new IllegalArgumentException("Cannot parse null date");
-		}
-		dateString.trim();
+		this(getYearMode(dateString.trim()));
+		setDate(dateString);
+	}
+
+	private static int getYearMode(String dateString) {
 		switch(dateString.length()) {
-		case 6:
-			yearMode = YEAR_MODE_2_DIGITS;
-			yearNumField = new NumField(2, 00, 99);
-			setDate(dateString);
-			break;
-		case 8:
-			yearMode = YEAR_MODE_2_DIGITS;
-			yearNumField = new NumField(2, 0000, 9999);
-			setDate(dateString);
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid date " + dateString);
+		case 6: return YEAR_MODE_2_DIGITS;
+		case 8: return YEAR_MODE_4_DIGITS;
+		default: throw new IllegalArgumentException("Invalid date " + dateString);
 		}
 	}
 
 	public void setDate(String dateString) throws ParseException {
+		if (dateString == null) {
+			throw new IllegalArgumentException("Invalid date: null");
+		}
+		dateString = dateString.trim();
 		switch(dateString.length()) {
 		case 6:
 			setDate(PARSER_6_DIGITS_SDF.parse(dateString));
@@ -195,15 +190,24 @@ public class DateEntryField extends Box
 			setDate(PARSER_8_DIGITS_SDF.parse(dateString));
 			break;
 		default:
-			throw new IllegalArgumentException("Invalid date " + dateString);
+			throw new IllegalArgumentException("Invalid date: " + dateString);
 		}
 	}
-	
+
 	public void setDate(Date date) {
 		cal.setTime(date);
 		dayNumField.setValue(cal.get(Calendar.DATE));
 		monthComboBox.setSelectedIndex(cal.get(Calendar.MONTH));
-		yearNumField.setValue(cal.get(Calendar.YEAR));
+		switch(yearMode) {
+		case YEAR_MODE_2_DIGITS:
+			yearNumField.setValue(cal.get(Calendar.YEAR) % 100);
+			break;
+		case YEAR_MODE_4_DIGITS:
+			yearNumField.setValue(cal.get(Calendar.YEAR));
+			break;
+		default:
+			throw new IllegalStateException("Illegal year mode");
+		}
 		revalidate();
 		repaint();
 		notifyActionPerformed(new ActionEvent(this, 0, "Date changed"));
@@ -216,7 +220,7 @@ public class DateEntryField extends Box
 	public String toString() {
 		return PRESENTATION_SDF.format(cal.getTime());
 	}
-	
+
 	public String toCompactString(int yearMode) {
 		switch (yearMode) {
 		case YEAR_MODE_2_DIGITS:
@@ -226,7 +230,7 @@ public class DateEntryField extends Box
 		}
 		throw new IllegalStateException("Undetermined year mode");
 	}
-	
+
 	public void setEnabled(boolean b) {
 		monthComboBox.setEnabled(b);
 		dayNumField.setEnabled(b);
@@ -236,7 +240,7 @@ public class DateEntryField extends Box
 	public void addActionListener(ActionListener l) {
 		listeners.add(l);
 	}
-	
+
 	private void notifyActionPerformed(ActionEvent e) {
 		for (ActionListener l: listeners) {
 			l.actionPerformed(e);
