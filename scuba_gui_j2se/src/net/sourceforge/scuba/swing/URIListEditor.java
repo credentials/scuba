@@ -168,6 +168,7 @@ public class URIListEditor extends JPanel
 		}
 		
 		public Object getElementAt(int index) {
+			if (index < 0) { return null; }
 			return uriList.get(index);
 		}
 		
