@@ -10,9 +10,11 @@ import java.io.Serializable;
  * ISO 3166 country codes.
  * Table based on Wikipedia information.
  * 
+ * This used to be an enum.
+ * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class ISOCountry implements Country, Serializable
+public class ISOCountry extends Country implements Serializable
 {
 	private static final long serialVersionUID = 7220597933847617859L;
 
@@ -289,28 +291,14 @@ public class ISOCountry implements Country, Serializable
 	private String alpha3Code;
 	private String name;
 
+	private ISOCountry() {
+	}
+	
 	private ISOCountry(int code, String alpha2Code, String alpha3Code, String name) {
 		this.code = code;
 		this.alpha2Code = alpha2Code;
 		this.alpha3Code = alpha3Code;
 		this.name = name;
-	}
-
-	public static ISOCountry getInstance(int code) {
-		for (ISOCountry country: VALUES) {
-			if (country.code == code) { return country; }
-		}
-		throw new IllegalArgumentException("Illegal country code" + Integer.toHexString(code));
-	}
-
-	public static ISOCountry getInstance(String code) {
-		if (code == null) { throw new IllegalArgumentException("Illegal country code " + code); }
-		code = code.trim();
-		switch (code.length()) {
-		case 2: return fromAlpha2(code);
-		case 3: return fromAlpha3(code);
-		default: throw new IllegalArgumentException("Illegal country code " + code);
-		}
 	}
 
 	public static ISOCountry[] values() {
@@ -319,20 +307,6 @@ public class ISOCountry implements Country, Serializable
 
 	public int valueOf() {
 		return code;
-	}
-
-	private static ISOCountry fromAlpha2(String code) {
-		for (ISOCountry country: VALUES) {
-			if (country.alpha2Code.equals(code)) { return country; }
-		}
-		throw new IllegalArgumentException("Illegal country code " + code);
-	}
-
-	private static ISOCountry fromAlpha3(String code) {
-		for (ISOCountry country: VALUES) {
-			if (country.alpha3Code.equals(code)) { return country; }
-		}
-		throw new IllegalArgumentException("Illegal country code " + code);
 	}
 
 	public String getName() {
