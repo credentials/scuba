@@ -61,14 +61,14 @@ public abstract class Country
 	public abstract String toAlpha3Code();
 
 	private static Country fromAlpha2(String code) {
-		for (Country country: ISOCountry.values()) {
+		for (Country country: values()) {
 			if (country.toAlpha2Code().equals(code)) { return country; }
 		}
 		throw new IllegalArgumentException("Unknown country code " + code);
 	}
 
 	private static Country fromAlpha3(String code) {
-		for (Country country: ISOCountry.values()) {
+		for (Country country: values()) {
 			if (country.toAlpha3Code().equals(code)) { return country; }
 		}
 		throw new IllegalArgumentException("Unknown country code " + code);
