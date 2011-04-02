@@ -26,20 +26,30 @@ public class CertificateChainPanel extends JPanel
 	private static final Image
 	VALID_ICON = Icons.getFamFamFamSilkIcon("tick"),
 	INVALID_ICON = Icons.getFamFamFamSilkIcon("cross");
-	
+
 	private List<Certificate> certificates;
 	private JTabbedPane tabbedPane;
-	
+
+	public CertificateChainPanel(Certificate certificate) {
+		this(Collections.singletonList(certificate));
+	}
+
 	public CertificateChainPanel(Certificate certificate, boolean isValid) {		
-		this(Collections.singletonList(certificate), isValid);
+		this(Collections.singletonList(certificate), true, isValid);
+	}
+
+	public CertificateChainPanel(List<Certificate> certificates) {
+		this(certificates, false, false);
 	}
 	
 	public CertificateChainPanel(List<Certificate> certificates, boolean isValid) {
+		this(certificates, true, isValid);
+	}
+
+	private CertificateChainPanel(List<Certificate> certificates, boolean showValidity, boolean isValid) {
 		super(new BorderLayout());
 		this.certificates = certificates;
-		
 		tabbedPane = new JTabbedPane();
-		
 		int i = 0;
 		for (Certificate certificate: certificates) {
 			JPanel panel = new JPanel(new BorderLayout());
@@ -48,24 +58,35 @@ public class CertificateChainPanel extends JPanel
 			area.setEditable(false);
 			panel.add(new JScrollPane(area), BorderLayout.CENTER);
 			panel.add(new KeyPanel(certificate.getPublicKey()), BorderLayout.SOUTH);
-			tabbedPane.addTab(Integer.toString(++i), panel);
+			if (certificates.size() == 1) {
+				add(panel, BorderLayout.CENTER);				
+			} else {
+				tabbedPane.addTab(Integer.toString(++i), panel);
+			}
 		}
-		add(tabbedPane, BorderLayout.CENTER);
-		JLabel validLabel = new JLabel();
-		validLabel.setText(isValid ? "Certificate chain trusted" : "Certificate chain untrusted");
-		validLabel.setIcon(isValid ? new ImageIcon(VALID_ICON) : new ImageIcon(INVALID_ICON));
-		add(validLabel, BorderLayout.SOUTH);
+		if (certificates.size() > 1) {
+			add(tabbedPane, BorderLayout.CENTER);
+		}
+		if (showValidity) {
+			JLabel validLabel = new JLabel();
+			validLabel.setText(isValid ? "Certificate chain trusted" : "Certificate chain untrusted");
+			validLabel.setIcon(isValid ? new ImageIcon(VALID_ICON) : new ImageIcon(INVALID_ICON));
+			add(validLabel, BorderLayout.SOUTH);
+		}
 	}	
 
 	public Certificate getCertificate() {
+		if (certificates.size() == 1) {
+			return certificates.get(0);
+		}
 		int i = tabbedPane.getSelectedIndex();
 		return certificates.get(i);
 	}
-	
+
 	public List<Certificate> getCertificates() {
 		return certificates;
 	}
-	
+
 	public void setFont(Font font) {
 		super.setFont(font);
 	}
