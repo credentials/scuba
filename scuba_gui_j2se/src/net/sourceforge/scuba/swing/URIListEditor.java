@@ -156,7 +156,7 @@ public class URIListEditor extends JPanel
 		return action;
 	}
 
-	private class URIListModel extends AbstractListModel
+	private static class URIListModel extends AbstractListModel
 	{
 		private static final long serialVersionUID = 7187879340562002114L;
 		

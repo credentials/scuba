@@ -40,7 +40,7 @@ public class DateLabel extends Box
 		if (dateString == null) {
 			throw new IllegalArgumentException("Cannot parse null date");
 		}
-		dateString.trim();
+		dateString = dateString.trim();
 		switch(dateString.length()) {
 		case 6:
 			setDate(PARSER_6_DIGITS_SDF.parse(dateString));

@@ -184,7 +184,7 @@ public class Files
 		} else {
 			File myAppDataDir = new File(userHomeName, "." + appName.toLowerCase());
 			if (!myAppDataDir.isDirectory()) {
-				myAppDataDir.mkdirs();
+				if (!myAppDataDir.mkdirs()) { /* FIXME: throw exception? */ }
 			}
 			return myAppDataDir;
 		}

@@ -91,7 +91,7 @@ public class CountryEntryField extends Box
 		return flagIcon;
 	}
 
-	private class CountryDisplayContainer
+	private static class CountryDisplayContainer
 	{
 		private Country country;
 

@@ -39,7 +39,7 @@ public class DummyAcceptingCardService extends CardService
 {
 	private static final long serialVersionUID = 959248891375637853L;
 
-	private PrintStream out = null;
+	private transient PrintStream out = null;
     
     private boolean closed = false;
     

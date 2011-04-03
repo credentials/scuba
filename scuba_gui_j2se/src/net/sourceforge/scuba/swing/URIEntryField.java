@@ -35,9 +35,6 @@ public class URIEntryField extends JPanel
 		this.eventCount = 0;
 		final Component c = this;
 		uriTextField = new JTextField(20);
-		if (uri != null) {
-			uriTextField.setText(uri.toString());
-		}
 		final JButton browseButton = new JButton("...");
 		add(uriTextField);
 		add(browseButton);

@@ -95,7 +95,7 @@ public class HexViewPanel extends JPanel
 		return FONT;
 	}
 
-	private class HexViewPanelDataModel extends DefaultTableModel
+	private static class HexViewPanelDataModel extends DefaultTableModel
 	{
 		private static final long serialVersionUID = 8498422046117447836L;
 

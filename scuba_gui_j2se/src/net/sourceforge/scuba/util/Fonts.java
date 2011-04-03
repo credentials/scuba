@@ -3,6 +3,7 @@ package net.sourceforge.scuba.util;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
+import java.io.IOException;
 
 public class Fonts
 {
@@ -11,7 +12,7 @@ public class Fonts
 			File fontDir = new File(Files.getBaseDirAsFile(), "fonts");
 			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontDir, fontFileName));
 			return baseFont.deriveFont(style, size);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new FontFormatException("Could not open font file");
 		}
 	}

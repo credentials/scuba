@@ -2,6 +2,7 @@ package net.sourceforge.scuba.util;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class Icons
 			String fileName = imageName.toLowerCase() + ".png";
 			Image image = ImageIO.read(new URL(imagesDir + "/" + fileName));
 			return image;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}
@@ -81,7 +82,7 @@ public class Icons
 			String fileName = imageName.toLowerCase() + ".png";
 			Image image = ImageIO.read(new URL(imagesDir + "/" + fileName));
 			return image;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}

@@ -26,7 +26,7 @@ public abstract class Country
 	}
 
 	public static Country getInstance(String code) {
-		if (code == null) { throw new IllegalArgumentException("Illegal country code " + code); }
+		if (code == null) { throw new IllegalArgumentException("Illegal country code"); }
 		code = code.trim();
 		switch (code.length()) {
 		case 2: return fromAlpha2(code);

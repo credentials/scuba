@@ -113,6 +113,7 @@ public class HexArrayField extends JPanel implements ActionListener
 	public void setValue(byte[] data) {
 		if (data == null) {
 			reset();
+			return;
 		}
 		int cellCount = length;
 		if (data.length < cellCount) {
