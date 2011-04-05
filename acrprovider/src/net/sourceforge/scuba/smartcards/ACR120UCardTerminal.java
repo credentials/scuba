@@ -260,8 +260,6 @@ public class ACR120UCardTerminal extends CardTerminal
 					System.arraycopy(ats, 0, atrBytes, 0, atrBytes.length);
 					atr = new ATR(atrBytes);
 
-					System.out.println("DEBUG: ATS = " + net.sourceforge.scuba.util.Hex.bytesToHexString(atrBytes));
-
 					int tl = atrBytes[ATS_OFFSET_TL];
 					if (tl > 1) {
 						/* Check Y */
