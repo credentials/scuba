@@ -30,14 +30,17 @@ import javax.smartcardio.ResponseAPDU;
 
 /**
  * Card service implementation for sending APDUs to a terminal using the
- * JSR 268 (<code>javax.smartcardio.*</code>) classes available in Java
+ * JSR 268 (<code>javax.smartcardio</code>) classes available in Java
  * SDK 6.0 and higher.
  * 
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
+ * 
  * @version $Revision$
  */
 public class TerminalCardService extends CardService
 {
+	private static final long serialVersionUID = 7918176921505623791L;
+
 	private CardTerminal terminal;
 	private Card card;
 	private CardChannel channel;
