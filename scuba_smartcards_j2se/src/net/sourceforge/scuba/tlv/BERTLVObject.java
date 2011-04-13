@@ -26,7 +26,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,34 +47,10 @@ import net.sourceforge.scuba.util.Hex;
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @version $Revision: 227 $
  */
-public class BERTLVObject
+public class BERTLVObject implements ASN1Constants
 {
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyMMddhhmmss'Z'");
-
-	/** Universal tag class. */
-	public static final int UNIVERSAL_CLASS = 0;
-	/** Application tag class. */
-	public static final int APPLICATION_CLASS = 1;
-	/** Context specific tag class. */
-	public static final int CONTEXT_SPECIFIC_CLASS = 2;
-	/** Private tag class. */
-	public static final int PRIVATE_CLASS = 3;
-
-	/** Universal tag type. */
-	public static final int BOOLEAN_TYPE_TAG = 0x01, INTEGER_TYPE_TAG = 0x02,
-	BIT_STRING_TYPE_TAG = 0x03, OCTET_STRING_TYPE_TAG = 0x04,
-	NULL_TYPE_TAG = 0x05, OBJECT_IDENTIFIER_TYPE_TAG = 0x06,
-	OBJECT_DESCRIPTOR_TYPE_TAG = 0x07, EXTERNAL_TYPE_TAG = 0x08,
-	REAL_TYPE_TAG = 0x09, ENUMERATED_TYPE_TAG = 0x0A,
-	EMBEDDED_PDV_TYPE_TAG = 0x0B, UTF8_STRING_TYPE_TAG = 0x0C,
-	SEQUENCE_TYPE_TAG = 0x10, SET_TYPE_TAG = 0x11,
-	NUMERIC_STRING_TYPE_TAG = 0x12, PRINTABLE_STRING_TYPE_TAG = 0x13,
-	T61_STRING_TYPE_TAG = 0x14, IA5_STRING_TYPE_TAG = 0x16,
-	UTC_TIME_TYPE_TAG = 0x17, GENERALIZED_TIME_TYPE_TAG = 0x18,
-	GRAPHIC_STRING_TYPE_TAG = 0x19, VISIBLE_STRING_TYPE_TAG = 0x1A,
-	GENERAL_STRING_TYPE_TAG = 0x1B, UNIVERSAL_STRING_TYPE_TAG = 0x1C,
-	BMP_STRING_TYPE_TAG = 0x1E;
-
+	
 	/** Tag. */
 	private int tag;
 
@@ -124,7 +99,7 @@ public class BERTLVObject
 				((byte[])this.value)[0] = ((Byte)value).byteValue();
 			} else if (value instanceof Integer) {
 				this.value = new BERTLVObject[1];
-				((BERTLVObject[])this.value)[0] = new BERTLVObject(INTEGER_TYPE_TAG, value);
+				((BERTLVObject[])this.value)[0] = new BERTLVObject(ASN1Constants.INTEGER_TYPE_TAG, value);
 			} else {
 				throw new IllegalArgumentException("Cannot encode value of type: " + value.getClass());
 			}
@@ -148,8 +123,8 @@ public class BERTLVObject
 	}
 
 	private static Object interpretValue(int tag, byte[] valueBytes) {
-		if (isPrimitive(tag)) {
-			return interpretPrimitiveValue(tag, valueBytes);
+		if (TLVUtil.isPrimitive(tag)) {
+			return ASN1Util.interpretPrimitiveValue(tag, valueBytes);
 		} else {
 			/*
 			 * Not primitive, the value itself consists of 0 or more BER-TLV
@@ -161,35 +136,6 @@ public class BERTLVObject
 				return new BERTLVObject[0];
 			}
 		}
-	}
-
-	/*
-	 * Primitive, the value consists of 0 or more Simple-TLV objects, or
-	 * just (application-dependent) bytes. If tag is not known (or
-	 * universal) we assume the value is just bytes.
-	 */
-	private static Object interpretPrimitiveValue(int tag, byte[] valueBytes) {
-		if (getTagClass(tag) == UNIVERSAL_CLASS)
-			switch (tag) {
-			case INTEGER_TYPE_TAG:
-			case BIT_STRING_TYPE_TAG:
-			case OCTET_STRING_TYPE_TAG:
-			case NULL_TYPE_TAG:
-			case OBJECT_IDENTIFIER_TYPE_TAG:
-				return valueBytes;
-			case UTF8_STRING_TYPE_TAG:
-			case PRINTABLE_STRING_TYPE_TAG:
-			case T61_STRING_TYPE_TAG:
-			case IA5_STRING_TYPE_TAG:
-			case VISIBLE_STRING_TYPE_TAG:
-			case GENERAL_STRING_TYPE_TAG:
-			case UNIVERSAL_STRING_TYPE_TAG:
-			case BMP_STRING_TYPE_TAG:
-				return new String(valueBytes);
-			case UTC_TIME_TYPE_TAG:
-				try { return SDF.parse(new String(valueBytes)); } catch (ParseException pe) { }
-			}
-		return valueBytes;
 	}
 
 	private static BERTLVObject[] interpretCompoundValue(int tag, byte[] valueBytes)
@@ -207,22 +153,6 @@ public class BERTLVObject
 		BERTLVObject[] result = new BERTLVObject[subObjects.size()];
 		subObjects.toArray(result);
 		return result;
-	}
-
-	private static int getTagClass(int tag) {
-		int i = 3;
-		for (; i >= 0; i--) {
-			int mask = (0xFF << (8 * i));
-			if ((tag & mask) != 0x00) { break; }
-		}
-		int msByte = (((tag & (0xFF << (8 * i))) >> (8 * i)) & 0xFF);
-		switch (msByte & 0xC0) {
-		case 0x00: return UNIVERSAL_CLASS;
-		case 0x40: return APPLICATION_CLASS;
-		case 0x80: return CONTEXT_SPECIFIC_CLASS;
-		case 0xC0:
-		default: return PRIVATE_CLASS;
-		}
 	}
 
 	/****************************************************************************
@@ -284,8 +214,8 @@ public class BERTLVObject
 	public byte[] getEncoded() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
-			out.write(getTagAsBytes(tag));
-			out.write(getLengthAsBytes(getLength()));
+			out.write(TLVUtil.getTagAsBytes(tag));
+			out.write(TLVUtil.getLengthAsBytes(getLength()));
 			out.write(getValueAsBytes(tag, value));
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -367,7 +297,7 @@ public class BERTLVObject
 		String prefix = new String(prefixBytes);
 		StringBuffer result = new StringBuffer();
 		result.append(prefix);
-		result.append(tagToString());
+		result.append(ASN1Util.tagToString(tag));
 		result.append(" ");
 		result.append(Integer.toString(getLength()));
 		result.append(" ");
@@ -398,137 +328,8 @@ public class BERTLVObject
 		return result.toString();
 	}
 
-	private String tagToString() {
-		if (getTagClass(tag) == UNIVERSAL_CLASS) {
-			if (isPrimitive(tag)) {
-				switch (tag & 0x1F) {
-				case BOOLEAN_TYPE_TAG:
-					return "BOOLEAN";
-				case INTEGER_TYPE_TAG:
-					return "INTEGER";
-				case BIT_STRING_TYPE_TAG:
-					return "BIT_STRING";
-				case OCTET_STRING_TYPE_TAG:
-					return "OCTET_STRING";
-				case NULL_TYPE_TAG:
-					return "NULL";
-				case OBJECT_IDENTIFIER_TYPE_TAG:
-					return "OBJECT_IDENTIFIER";
-				case REAL_TYPE_TAG:
-					return "REAL";
-				case UTF8_STRING_TYPE_TAG:
-					return "UTF_STRING";
-				case PRINTABLE_STRING_TYPE_TAG:
-					return "PRINTABLE_STRING";
-				case T61_STRING_TYPE_TAG:
-					return "T61_STRING";
-				case IA5_STRING_TYPE_TAG:
-					return "IA5_STRING";
-				case VISIBLE_STRING_TYPE_TAG:
-					return "VISIBLE_STRING";
-				case GENERAL_STRING_TYPE_TAG:
-					return "GENERAL_STRING";
-				case UNIVERSAL_STRING_TYPE_TAG:
-					return "UNIVERSAL_STRING";
-				case BMP_STRING_TYPE_TAG:
-					return "BMP_STRING";
-				case UTC_TIME_TYPE_TAG:
-					return "UTC_TIME";
-				case GENERALIZED_TIME_TYPE_TAG:
-					return "GENERAL_TIME";
-				}
-			} else {
-				switch (tag & 0x1F) {
-				case ENUMERATED_TYPE_TAG:
-					return "ENUMERATED";
-				case SEQUENCE_TYPE_TAG:
-					return "SEQUENCE";
-				case SET_TYPE_TAG:
-					return "SET";
-				}
-			}
-		}
-		return "'0x" + Hex.intToHexString(tag) + "'";
-	}
-	
-	private static boolean isPrimitive(int tag) {
-		int i = 3;
-		for (; i >= 0; i--) {
-			int mask = (0xFF << (8 * i));
-			if ((tag & mask) != 0x00) { break; }
-		}
-		int msByte = (((tag & (0xFF << (8 * i))) >> (8 * i)) & 0xFF);
-		boolean result = ((msByte & 0x20) == 0x00);
-		return result;
-	}
-	
-	public static int getTagLength(int tag) {
-		return getTagAsBytes(tag).length;
-	}
-	
-	public static int getLengthLength(int length) {
-		return getLengthAsBytes(length).length;
-	}
-	
-	/**
-	 * The tag bytes of this object.
-	 * 
-	 * @return the tag bytes of this object.
-	 */
-	public static byte[] getTagAsBytes(int tag) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		int byteCount = (int)(Math.log(tag) / Math.log(256)) + 1;
-		for (int i = 0; i < byteCount; i++) {
-			int pos = 8 * (byteCount - i - 1);
-			out.write((tag & (0xFF << pos)) >> pos);
-		}
-		byte[] tagBytes = out.toByteArray();
-		switch (getTagClass(tag)) {
-		case APPLICATION_CLASS:
-			tagBytes[0] |= 0x40;
-			break;
-		case CONTEXT_SPECIFIC_CLASS:
-			tagBytes[0] |= 0x80;
-			break;
-		case PRIVATE_CLASS:
-			tagBytes[0] |= 0xC0;
-			break;
-		}
-		if (!isPrimitive(tag)) {
-			tagBytes[0] |= 0x20;
-		}
-		return tagBytes;
-	}
 
-	/**
-	 * The length bytes of this object.
-	 * 
-	 * @return length of encoded value as bytes
-	 */
-	public static byte[] getLengthAsBytes(int length) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		if (length < 0x80) {
-			/* short form */
-			out.write(length);
-		} else {
-			int byteCount = log(length, 256);
-			out.write(0x80 | byteCount);
-			for (int i = 0; i < byteCount; i++) {
-				int pos = 8 * (byteCount - i - 1);
-				out.write((length & (0xFF << pos)) >> pos);
-			}
-		}
-		return out.toByteArray();
-	}
-	
-	private static int log(int n, int base) {
-		int result = 0;
-		while (n > 0) {
-			n = n / base;
-			result ++;
-		}
-		return result;
-	}
+
 
 	/**
 	 * The value of this object as a byte array. Almost the same as getEncoded(),
@@ -541,7 +342,7 @@ public class BERTLVObject
 			System.out.println("DEBUG: object has no value: tag == "
 					+ Integer.toHexString(tag));
 		}
-		if (isPrimitive(tag)) {
+		if (TLVUtil.isPrimitive(tag)) {
 			if (value instanceof byte[]) {
 				return (byte[])value;
 			} else if (value instanceof String) {
