@@ -12,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
@@ -123,7 +126,7 @@ public class VascoTester
 			service.open();
 			long startTime = System.currentTimeMillis();
 			logger.info("opened " + service);
-			experiment(service instanceof SIMService ? (SIMService)service : new SIMService(service), 200);
+			experiment(service instanceof SIMService ? (SIMService)service : new SIMService(service), 30000);
 			service.close();
 			logger.info("closed (" + (System.currentTimeMillis() - startTime) / 1000 + " seconds)");
 		} catch (Exception e) {
@@ -141,25 +144,32 @@ public class VascoTester
 	}
 
 	private void experiment(SIMService service, int n) throws CardServiceException {
-		int[][] digits = new int[6][10];
-		for (int i = 0; i < n; i++) {
-			String otp = experiment(service);
-			try {
-				for (int digitNr = 0; digitNr < 6; digitNr ++) {
-					int digitValue = Integer.parseInt(otp.substring(digitNr, digitNr + 1));
-					digits[digitNr][digitValue] ++;
+		try {
+			int[][] digits = new int[6][10];
+			DataOutputStream out = new DataOutputStream(new FileOutputStream("/t:/dp.txt"));
+			for (int i = 0; i < n; i++) {
+				String otp = experiment(service);
+				out.writeUTF(otp + "\n");
+				try {
+					for (int digitNr = 0; digitNr < 6; digitNr ++) {
+						int digitValue = Integer.parseInt(otp.substring(digitNr, digitNr + 1));
+						digits[digitNr][digitValue] ++;
+					}
+				} catch (NumberFormatException nfe) {
+					throw new IllegalStateException(nfe.getMessage());
 				}
-			} catch (NumberFormatException nfe) {
-				throw new IllegalStateException(nfe.getMessage());
+				System.out.println((i + 1) + ". " + otp);
 			}
-			System.out.println((i + 1) + ". " + otp);
-		}
-		for (int digitValue = 0; digitValue < 10; digitValue++) {
-			System.out.print(digitValue + ":");
-			for (int digitNr = 0; digitNr < 6; digitNr++) {
-				System.out.print(" " + digits[digitNr][digitValue]);
+			out.close();
+			for (int digitValue = 0; digitValue < 10; digitValue++) {
+				System.out.print(digitValue + "\t");
+				for (int digitNr = 0; digitNr < 6; digitNr++) {
+					System.out.print("\t" + digits[digitNr][digitValue]);
+				}
+				System.out.println();
 			}
-			System.out.println();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 
