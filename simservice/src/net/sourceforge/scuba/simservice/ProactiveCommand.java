@@ -5,7 +5,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.scuba.tlv.BERTLVInputStream;
+import net.sourceforge.scuba.tlv.TLVInputStream;
 
 public abstract class ProactiveCommand {
 
@@ -56,7 +56,7 @@ public abstract class ProactiveCommand {
 		try {
 			int commandId = -1;
 			List<SimpleTLVObject> simpleTLVs = new ArrayList<SimpleTLVObject>();
-			BERTLVInputStream tlvIn = new BERTLVInputStream(in);
+			TLVInputStream tlvIn = new TLVInputStream(in);
 			int commandTag = tlvIn.readTag();
 			if (commandTag != 0xD0) {
 				throw new IllegalArgumentException("Expected tag 0xD0, found " + Integer.toHexString(commandTag));

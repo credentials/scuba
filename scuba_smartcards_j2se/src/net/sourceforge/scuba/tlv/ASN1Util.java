@@ -7,7 +7,6 @@ import net.sourceforge.scuba.util.Hex;
 
 public class ASN1Util implements ASN1Constants {
 
-
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyMMddhhmmss'Z'");	
 	
 	/*
@@ -91,5 +90,4 @@ public class ASN1Util implements ASN1Constants {
 		}
 		return "'0x" + Hex.intToHexString(tag) + "'";
 	}
-	
 }

@@ -46,6 +46,8 @@ import net.sourceforge.scuba.util.Hex;
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @version $Revision: 227 $
+ * 
+ * @deprecated Please use {@link TLVInputStream} and {@link TLVOutputStream} where possible.
  */
 public class BERTLVObject implements ASN1Constants
 {
@@ -114,7 +116,7 @@ public class BERTLVObject implements ASN1Constants
 	
 	public static BERTLVObject getInstance(
 			InputStream in) throws IOException {
-		BERTLVInputStream tlvIn = (in instanceof BERTLVInputStream) ? (BERTLVInputStream)in : new BERTLVInputStream(in);
+		TLVInputStream tlvIn = (in instanceof TLVInputStream) ? (TLVInputStream)in : new TLVInputStream(in);
 		int tag = tlvIn.readTag();
 		tlvIn.readLength();
 		byte[] valueBytes = tlvIn.readValue();
@@ -141,7 +143,7 @@ public class BERTLVObject implements ASN1Constants
 	private static BERTLVObject[] interpretCompoundValue(int tag, byte[] valueBytes)
 	throws IOException {
 		Collection<BERTLVObject> subObjects = new ArrayList<BERTLVObject>();
-		BERTLVInputStream in = new BERTLVInputStream(new ByteArrayInputStream(valueBytes));
+		TLVInputStream in = new TLVInputStream(new ByteArrayInputStream(valueBytes));
 		int length = valueBytes.length;
 		try {
 			while (length > 0) {

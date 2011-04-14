@@ -1,7 +1,7 @@
 /*
  * SCUBA smart card framework.
  *
- * Copyright (C) 2009  The SCUBA team.
+ * Copyright (C) 2009 - 2011  The SCUBA team.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,10 @@ import java.util.Stack;
  * TLV input stream.
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
+ * 
+ * @version $Revision: $
  */
-public class BERTLVInputStream extends InputStream
+public class TLVInputStream extends InputStream
 {
 	/** Carrier. */
 	private DataInputStream in;
@@ -44,7 +46,7 @@ public class BERTLVInputStream extends InputStream
 	 * 
 	 * @param in a TLV object
 	 */
-	public BERTLVInputStream(InputStream in) {
+	public TLVInputStream(InputStream in) {
 		this.in = new DataInputStream(in);
 		state = new TLVState();
 		markedState = null;
@@ -85,7 +87,7 @@ public class BERTLVInputStream extends InputStream
 				tag = b;
 			break;
 			}
-			state.setTagRead(tag, bytesRead);
+			state.setTagProcessed(tag, bytesRead);
 			return tag;
 		} catch (IOException e) {
 			throw e;
@@ -118,7 +120,7 @@ public class BERTLVInputStream extends InputStream
 					length |= b;
 				}
 			}
-			state.setLengthRead(length, bytesRead);
+			state.setLengthProcessed(length, bytesRead);
 			return length;
 		} catch (IOException e) {
 			throw e;
@@ -137,7 +139,7 @@ public class BERTLVInputStream extends InputStream
 			int length = state.getLength();
 			byte[] value = new byte[length];
 			in.readFully(value);
-			state.updateValueBytesRead(length);
+			state.updateValueBytesProcessed(length);
 			return value;
 		} catch (IOException e) {
 			throw e;
@@ -167,15 +169,15 @@ public class BERTLVInputStream extends InputStream
 				/* Nothing. */
 			} else if (state.isAtStartOfLength()) {
 				readLength();
-				if (isPrimitive(state.getTag())) { skipValue(); }
+				if (TLVUtil.isPrimitive(state.getTag())) { skipValue(); }
 			} else {
-				if (isPrimitive(state.getTag())) { skipValue(); }
+				if (TLVUtil.isPrimitive(state.getTag())) { skipValue(); }
 
 			}
 			tag = readTag();
 			if  (tag == searchTag) { return; }
 
-			if (isPrimitive(tag)) {
+			if (TLVUtil.isPrimitive(tag)) {
 				int length = readLength();
 				int skippedBytes = (int)skipValue();
 				if (skippedBytes >= length) {
@@ -213,7 +215,7 @@ public class BERTLVInputStream extends InputStream
 	public int read() throws IOException {
 		int result = in.read();
 		if (result < 0) { return -1; }
-		state.updateValueBytesRead(1);
+		state.updateValueBytesProcessed(1);
 		return result;
 	}
 
@@ -227,7 +229,7 @@ public class BERTLVInputStream extends InputStream
 	public long skip(long n) throws IOException {
 		if (n <= 0) { return 0; }
 		long result = in.skip(n);
-		state.updateValueBytesRead((int)result);
+		state.updateValueBytesProcessed((int)result);
 		return result;
 	}
 
@@ -278,14 +280,5 @@ public class BERTLVInputStream extends InputStream
 		return state.toString();
 	}
 
-	private static boolean isPrimitive(int tag) {
-		int i = 3;
-		for (; i >= 0; i--) {
-			int mask = (0xFF << (8 * i));
-			if ((tag & mask) != 0x00) { break; }
-		}
-		int msByte = (((tag & (0xFF << (8 * i))) >> (8 * i)) & 0xFF);
-		boolean result = ((msByte & 0x20) == 0x00);
-		return result;
-	}
+
 }

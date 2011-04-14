@@ -2,9 +2,10 @@ package net.sourceforge.scuba.tlv;
 
 import java.io.ByteArrayOutputStream;
 
+/* FIXME: make class package visible only. */
+
 public class TLVUtil implements ASN1Constants {
-
-
+	
 	public static boolean isPrimitive(int tag) {
 		int i = 3;
 		for (; i >= 0; i--) {

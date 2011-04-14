@@ -3,9 +3,9 @@ package net.sourceforge.scuba.tlv;
 import java.util.Stack;
 
 /**
- * State keeps track of where we are in the TLV stream.
+ * State keeps track of where we are in a TLV stream.
  */
-public class TLVState implements Cloneable
+class TLVState implements Cloneable
 {
 	/** Which tags have we seen thus far? */
 	private Stack<TLStruct> state;
@@ -43,7 +43,7 @@ public class TLVState implements Cloneable
 		return isAtStartOfLength;
 	}
 	
-	public boolean isReadingValue() {
+	public boolean isProcessingValue() {
 		return isReadingValue;
 	}
 
@@ -57,35 +57,35 @@ public class TLVState implements Cloneable
 
 	public int getLength() {
 		if (state.isEmpty()) {
-			throw new IllegalStateException("Length not yet read.");
+			throw new IllegalStateException("Length not yet known.");
 		}
 		TLStruct currentObject = state.peek();
 		int length = currentObject.getLength();
 		if (length < 0) {
-			throw new IllegalStateException("Length not yet read.");
+			throw new IllegalStateException("Length not yet knwon.");
 		}
 		return length;
 	}
 
 	public int getValueBytesLeft() {
 		if (state.isEmpty()) {
-			throw new IllegalStateException("Not yet reading value.");
+			throw new IllegalStateException("Not yet processing value.");
 		}
 		TLStruct currentObject = state.peek();
 		int currentLength = currentObject.getLength();
 		if (currentLength < 0) {
-			throw new IllegalStateException("Not yet reading value.");
+			throw new IllegalStateException("Not yet processing value.");
 		}
 		int currentBytesRead = currentObject.getValueBytesRead();
 		return currentLength - currentBytesRead;
 	}
 
-	public void setTagRead(int tag, int bytesRead) {
+	public void setTagProcessed(int tag, int byteCount) {
 		/* Length is set to -1, we will update it when we encounter it */
 		TLStruct obj = new TLStruct(tag, -1, 0);
 		if (!state.isEmpty()) {
 			TLStruct parent = state.peek();
-			parent.updateValueBytesRead(bytesRead);
+			parent.updateValueBytesRead(byteCount);
 		}
 		state.push(obj);
 		isAtStartOfTag = false;
@@ -93,14 +93,14 @@ public class TLVState implements Cloneable
 		isReadingValue = false;
 	}
 
-	public void setLengthRead(int length, int bytesRead) {
+	public void setLengthProcessed(int length, int byteCount) {
 		if (length < 0) {
 			throw new IllegalArgumentException("Cannot set negative length (length = " + length + ").");
 		}
 		TLStruct obj = state.pop();
 		if (!state.isEmpty()) {
 			TLStruct parent = state.peek();
-			parent.updateValueBytesRead(bytesRead);
+			parent.updateValueBytesRead(byteCount);
 		}
 		obj.setLength(length);
 		state.push(obj);
@@ -109,19 +109,19 @@ public class TLVState implements Cloneable
 		isReadingValue = true;
 	}
 
-	public void updateValueBytesRead(int n) {
+	public void updateValueBytesProcessed(int byteCount) {
 		if (state.isEmpty()) { return; }
 		TLStruct currentObject = state.peek();
 		int bytesLeft = currentObject.getLength() - currentObject.getValueBytesRead();
-		if (n > bytesLeft) {
-			throw new IllegalArgumentException("Cannot read " + n + " bytes! Only " + bytesLeft + " bytes left in this TLV object " + currentObject);
+		if (byteCount > bytesLeft) {
+			throw new IllegalArgumentException("Cannot process " + byteCount + " bytes! Only " + bytesLeft + " bytes left in this TLV object " + currentObject);
 		}
-		currentObject.updateValueBytesRead(n);
+		currentObject.updateValueBytesRead(byteCount);
 		int currentLength = currentObject.getLength();
 		if (currentObject.getValueBytesRead() == currentLength) {
 			state.pop();
 			/* Stand back! I'm going to try recursion! Update parent(s)... */
-			updateValueBytesRead(currentLength);
+			updateValueBytesProcessed(currentLength);
 			isAtStartOfTag = true;
 			isAtStartOfLength = false;
 			isReadingValue = false;
