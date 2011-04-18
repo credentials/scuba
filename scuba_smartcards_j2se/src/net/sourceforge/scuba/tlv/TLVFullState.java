@@ -117,6 +117,11 @@ class TLVFullState implements Cloneable
 		isReadingValue = true;
 		/* NOTE: doesn't call setLength, so that isLengthSet in stackFrame will remain false. */
 	}
+	
+	public boolean isLengthSet() {
+		if (state.isEmpty()) { return false; }
+		return state.peek().isLengthSet();
+	}
 
 	public void setLengthProcessed(int length) {
 		if (length < 0) {
@@ -138,6 +143,9 @@ class TLVFullState implements Cloneable
 	public void updatePreviousLength(int byteCount) {
 		if (state.isEmpty()) { return; }
 		TLVStruct currentObject = state.peek();
+		
+		if (currentObject.isLengthSet && currentObject.getLength() == byteCount) { return; }
+
 		currentObject.setLength(byteCount);
 		
 		if (currentObject.getValueBytesProcessed() == currentObject.getLength()) {

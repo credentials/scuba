@@ -52,10 +52,10 @@ public class TLVOutputStream extends OutputStream {
 
 	public void writeLength(int length) throws IOException {
 		byte[] lengthAsBytes = TLVUtil.getLengthAsBytes(length);
+		state.setLengthProcessed(length);
 		if (state.canBeWritten()) {
 			out.write(lengthAsBytes);
 		}
-		state.setLengthProcessed(length);
 	}
 
 	/**
@@ -69,8 +69,15 @@ public class TLVOutputStream extends OutputStream {
 	 * @throws IOException on error writing to the underlying output stream
 	 */
 	public void writeValue(byte[] value) throws IOException {
-		write(value);
-		writeValueEnd();
+		if (value == null) { throw new IllegalArgumentException("Cannot write null."); }
+		if (state.isAtStartOfTag()) { throw new IllegalStateException("Cannot write value bytes yet. Need to write a tag first."); }
+		if (state.isAtStartOfLength()) {
+			writeLength(value.length);
+			write(value);
+		} else {
+			write(value);
+			state.updatePreviousLength(value.length);
+		}
 	}
 
 	public void write(int b) throws IOException {
@@ -95,6 +102,8 @@ public class TLVOutputStream extends OutputStream {
 	}
 
 	public void writeValueEnd() throws IOException {
+		if (state.isAtStartOfTag()) { return; }
+		if (state.isAtStartOfLength()) { throw new IllegalStateException("Not processing value yet."); }
 		byte[] bufferedValueBytes = state.getValue();
 		int length = bufferedValueBytes.length;
 		state.updatePreviousLength(length);

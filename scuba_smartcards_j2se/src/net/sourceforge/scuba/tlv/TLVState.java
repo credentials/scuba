@@ -115,14 +115,6 @@ class TLVState implements Cloneable
 		isReadingValue = true;
 	}
 	
-	public void updatePreviousLength(int byteCount) {
-		if (state.isEmpty()) { return; }
-		TLStruct currentObject = state.peek();
-		int currentLength = currentObject.getLength();
-		if (currentLength >= 0) { throw new IllegalStateException("Length already set."); }
-		currentObject.setLength(byteCount);
-	}
-	
 	public void updateValueBytesProcessed(int byteCount) {
 		if (state.isEmpty()) { return; }
 		TLStruct currentObject = state.peek();
