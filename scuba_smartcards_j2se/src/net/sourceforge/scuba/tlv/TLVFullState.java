@@ -118,9 +118,9 @@ class TLVFullState implements Cloneable
 		/* NOTE: doesn't call setLength, so that isLengthSet in stackFrame will remain false. */
 	}
 	
-	public boolean isLengthSet() {
+	public boolean isDummyLengthSet() {
 		if (state.isEmpty()) { return false; }
-		return state.peek().isLengthSet();
+		return !state.peek().isLengthSet();
 	}
 
 	public void setLengthProcessed(int length) {
@@ -173,7 +173,7 @@ class TLVFullState implements Cloneable
 		if (currentObject.getValueBytesProcessed() == currentObject.getLength()) {
 			/* Stand back! I'm going to try recursion! Update parent(s)... */
 			state.pop();
-			updateValueBytesProcessed(bytes, offset, length);
+			updateValueBytesProcessed(currentObject.getValue(), 0, currentObject.getLength());
 			isAtStartOfTag = true;
 			isAtStartOfLength = false;
 			isReadingValue = false;
@@ -202,6 +202,9 @@ class TLVFullState implements Cloneable
 		return state.toString();
 	}
 
+	/*
+	 * TODO: ?? canBeWritten() <==> (state.size() == 1 && state.peek().isLengthSet()
+	 */
 	public boolean canBeWritten() {
 		for (TLVStruct stackFrame: state) {
 			if (!stackFrame.isLengthSet()) { return false; }

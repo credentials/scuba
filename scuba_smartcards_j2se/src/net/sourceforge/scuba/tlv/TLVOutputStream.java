@@ -102,8 +102,10 @@ public class TLVOutputStream extends OutputStream {
 	}
 
 	public void writeValueEnd() throws IOException {
-		if (state.isAtStartOfTag()) { return; }
 		if (state.isAtStartOfLength()) { throw new IllegalStateException("Not processing value yet."); }
+		if (state.isAtStartOfTag() && !state.isDummyLengthSet()) {
+			return; /* TODO: check if this case ever happens. */
+		}
 		byte[] bufferedValueBytes = state.getValue();
 		int length = bufferedValueBytes.length;
 		state.updatePreviousLength(length);
