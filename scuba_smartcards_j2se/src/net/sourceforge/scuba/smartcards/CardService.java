@@ -138,6 +138,4 @@ public abstract class CardService implements Serializable
 	public void setListenersState(boolean state) {
 		listeners = state;       
 	}
-
-
 }

@@ -25,10 +25,11 @@ import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
 /**
- * Wrapper interface for command Apdu wrapping.
+ * Wrapper interface for command APDU wrapping.
  * 
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
+ * 
  * @version $Revision: 206 $
  */
 public interface APDUWrapper

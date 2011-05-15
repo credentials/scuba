@@ -51,6 +51,13 @@ public class Files
 		public String getDescription() { return "CV Certificate files"; }              
 	};
 
+	public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
+		public boolean accept(File f) { return f.isDirectory()
+			|| f.getName().endsWith("txt") || f.getName().endsWith("TXT"); }
+		public String getDescription() { return "Text files"; }              
+	};
+
+	
 	public static final FileFilter KEY_FILE_FILTER = new FileFilter() {
 		public boolean accept(File f) { return f.isDirectory()
 			|| f.getName().endsWith("cer") || f.getName().endsWith("CER")
