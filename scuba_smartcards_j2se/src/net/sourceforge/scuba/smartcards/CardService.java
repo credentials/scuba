@@ -53,8 +53,6 @@ public abstract class CardService implements Serializable
 	 */
 	protected int state;
 
-	protected boolean listeners = true;
-
 	/**
 	 * Creates a new service.
 	 */
@@ -128,14 +126,8 @@ public abstract class CardService implements Serializable
 	 * @param capdu APDU event
 	 */
 	protected void notifyExchangedAPDU(CommandAPDU capdu, ResponseAPDU rapdu) {
-		if(listeners) {
-			for (APDUListener listener: apduListeners) {
-				listener.exchangedAPDU(new APDUEvent(this, capdu, rapdu));
-			}
+		for (APDUListener listener: apduListeners) {
+			listener.exchangedAPDU(new APDUEvent(this, capdu, rapdu));
 		}
-	}
-
-	public void setListenersState(boolean state) {
-		listeners = state;       
 	}
 }

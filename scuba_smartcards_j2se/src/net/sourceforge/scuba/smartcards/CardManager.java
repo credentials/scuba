@@ -52,7 +52,6 @@ import javax.smartcardio.TerminalFactory;
  */
 public class CardManager
 {
-
 	private static final CardManager INSTANCE = new CardManager();
 	private static final int POLL_INTERVAL = 450;
 	private static final Comparator<CardTerminal> TERMINAL_COMPARATOR = new Comparator<CardTerminal>() {
