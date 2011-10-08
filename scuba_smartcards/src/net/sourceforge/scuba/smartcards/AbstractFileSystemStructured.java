@@ -21,7 +21,6 @@
 
 package net.sourceforge.scuba.smartcards;
 
-import net.sourceforge.scuba.util.Hex;
 
 /**
  * This class implements some basic file selection / reading / writing 
@@ -60,15 +59,7 @@ public abstract class AbstractFileSystemStructured<C,R> implements FileSystemStr
         return selectedFID;
     }
 
-    public byte[] readBinary(int offset, int length)
-            throws CardServiceException {
-        byte[] p1p2 = Hex.hexStringToBytes(Hex.shortToHexString((short)offset));        
-        
-        //unused?
-        //new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_READ_BINARY, p1p2[0], p1p2[1], length);
-        
-        return null;
-    }
+    public abstract byte[] readBinary(int offset, int length);
 
     private void selectFile(byte[] data, int p1) throws CardServiceException {
         C command = createSelectFileAPDU(p1, p2, data, selectLe);
@@ -81,7 +72,7 @@ public abstract class AbstractFileSystemStructured<C,R> implements FileSystemStr
         byte[] respData = r.getData();
         
         if( respSW != ISO7816.SW_NO_ERROR) {
-            throw new CardServiceException("File could not be selected. (File ID "+Hex.bytesToHexString(data)+", SW: "+Hex.shortToHexString((short)respSW)+")");
+            throw new CardServiceException("File could not be selected.", respSW);
         }
         // store selected fid:
         // 0, 4, 8 absolute

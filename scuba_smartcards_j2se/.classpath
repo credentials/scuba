@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/scuba_data"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scuba_storage_j2se"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scuba_util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scuba_sc_indep"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

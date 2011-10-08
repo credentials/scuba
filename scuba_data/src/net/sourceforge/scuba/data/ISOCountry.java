@@ -18,7 +18,7 @@ public class ISOCountry extends Country implements Serializable
 {
 	private static final long serialVersionUID = 7220597933847617859L;
 
-	public static final ISOCountry
+	public static final Country
 	AD = new ISOCountry(0x020, "AD", "AND", "Andorra"),
 	AE = new ISOCountry(0x784, "AE", "ARE", "United Arab Emirates"),
 	AF = new ISOCountry(0x004, "AF", "AFG", "Afghanistan"),
@@ -265,8 +265,8 @@ public class ISOCountry extends Country implements Serializable
 	ZA = new ISOCountry(0x710, "ZA", "ZAF", "South Africa"),
 	ZM = new ISOCountry(0x894, "ZM", "ZMB", "Zambia"),
 	ZW = new ISOCountry(0x716, "ZW", "ZWE", "Zimbabwe");
-
-	private static final ISOCountry[] VALUES =
+	
+	private static final Country[] VALUES =
 	{
 		AW, AF, AO, AI, AX, AL, AD, AN, AE, AR, AM, AS, AQ, TF, AG, AU,
 		AT, AZ, BI, BE, BJ, BF, BD, BG, BH, BS, BA, BL, BY, BZ, BM, BO,
@@ -294,14 +294,14 @@ public class ISOCountry extends Country implements Serializable
 	private ISOCountry() {
 	}
 	
-	private ISOCountry(int code, String alpha2Code, String alpha3Code, String name) {
+	ISOCountry(int code, String alpha2Code, String alpha3Code, String name) {
 		this.code = code;
 		this.alpha2Code = alpha2Code;
 		this.alpha3Code = alpha3Code;
 		this.name = name;
 	}
 
-	public static ISOCountry[] values() {
+	public static Country[] values() {
 		return VALUES;
 	}
 

@@ -116,7 +116,7 @@ public class CertificateChainPanel extends JPanel
 
 	private static String principalToString(X500Principal principal) {
 		StringBuffer result = new StringBuffer();
-		String subject = principal.getName(X500Principal.RFC1779);
+		String subject = principal.getName(X500Principal.CANONICAL);
 		Scanner scanner = new Scanner(subject);
 		scanner.useDelimiter(",");
 		while (scanner.hasNext()) {
