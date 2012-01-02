@@ -32,6 +32,7 @@ public class ImageUtil
 		while (readers.hasNext()) {
 			try {
 				ImageReader reader = readers.next();
+				System.out.println("DEBUG: reader = " + reader + " : " + reader.getClass().getCanonicalName());
 				ImageInputStream iis = ImageIO.createImageInputStream(in);
 				long posBeforeImage = iis.getStreamPosition();
 				reader.setInput(iis);
@@ -42,6 +43,7 @@ public class ImageUtil
 				}
 				if (image != null) { return image; }
 			} catch (Exception e) {
+				e.printStackTrace();
 				/* NOTE: this reader doesn't work? Try next one... */
 				continue;
 			}
