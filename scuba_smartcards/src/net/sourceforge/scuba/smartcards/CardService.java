@@ -43,7 +43,7 @@ public abstract class CardService<C,R> implements Serializable
 
 	/** The apduListeners. */
 	private Collection<APDUListener<C,R>> apduListeners;
-
+	
 	/*
 	 * @ invariant state == SESSION_STOPPED_STATE || state ==
 	 * SESSION_STARTED_STATE;
@@ -122,9 +122,9 @@ public abstract class CardService<C,R> implements Serializable
 	 * 
 	 * @param capdu APDU event
 	 */
-	protected void notifyExchangedAPDU(C capdu, R rapdu) {
+	protected void notifyExchangedAPDU(int count, C capdu, R rapdu) {
 		for (APDUListener<C,R> listener: apduListeners) {
-			listener.exchangedAPDU(new APDUEvent<C,R>(this, capdu, rapdu));
+			listener.exchangedAPDU(new APDUEvent<C,R>(this, "RAW", count, capdu, rapdu));
 		}
 	}
 }

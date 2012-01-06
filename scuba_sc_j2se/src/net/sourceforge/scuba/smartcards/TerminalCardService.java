@@ -45,6 +45,7 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
 	private Card card;
 	private CardChannel channel;
 	private long lastActiveTime;
+	private int apduCount;
 
 	/**
 	 * Constructs a new card service.
@@ -54,6 +55,7 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
 	public TerminalCardService(CardTerminal terminal) {
 		this.terminal = terminal;
 		lastActiveTime = System.currentTimeMillis();
+		apduCount = 0;
 	}
 
 	public void open() throws CardServiceException {
@@ -85,7 +87,7 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
 				throw new CardServiceException("channel == null");
 			}
 			ResponseAPDU ourResponseAPDU = channel.transmit(ourCommandAPDU);
-			notifyExchangedAPDU(ourCommandAPDU, ourResponseAPDU);
+			notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
 			lastActiveTime = System.currentTimeMillis();
 			return ourResponseAPDU;
 		} catch (CardException ce) {
