@@ -43,7 +43,7 @@ public abstract class CardService<C,R> implements Serializable
 
 	/** The apduListeners. */
 	private Collection<APDUListener<C,R>> apduListeners;
-	
+
 	/*
 	 * @ invariant state == SESSION_STOPPED_STATE || state ==
 	 * SESSION_STARTED_STATE;
@@ -64,7 +64,7 @@ public abstract class CardService<C,R> implements Serializable
 	 * @param l the listener to add
 	 */
 	public void addAPDUListener(APDUListener<C,R> l) {
-		apduListeners.add(l);
+		if (apduListeners != null) { apduListeners.add(l); }
 	}
 
 	/**
@@ -73,7 +73,7 @@ public abstract class CardService<C,R> implements Serializable
 	 * @param l the listener to remove
 	 */
 	public void removeAPDUListener(APDUListener<C,R> l) {
-		apduListeners.remove(l);
+		if (apduListeners != null) { apduListeners.remove(l); }
 	}
 
 	/**
