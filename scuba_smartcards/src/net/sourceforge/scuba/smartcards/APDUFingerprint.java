@@ -104,7 +104,7 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 				
 				ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
 					
-				short sw = (short)( sc.accesR(rapdu).getSW() & 0xFFFF);
+				short sw = (short)(sc.accesR(rapdu).getSW());
 				if (sw != ISO7816.SW_NO_ERROR) {
 					put(capdu, sw);
 				}
