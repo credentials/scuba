@@ -33,15 +33,33 @@ import java.io.IOException;
  * 
  * @version $Id: $
  */
-public class FontUtil
-{
+public class FontUtil {
+
+	/** Private constructor to prevent accidental instantiation of this class. */
+	private FontUtil() { }
+	
+	/**
+	 * Gets a font from file.
+	 *
+	 * @param fontFileName the font file name (without the path)
+	 * @param style the style of the font (<code>PLAIN</code>, <code>ITALIC</code>, <code>BOLD</code>)
+	 * @param size the size of the font
+	 * @return the font
+	 * 
+	 * @throws FontFormatException if the font could not be created
+	 */
 	public static Font getFont(String fontFileName, int style, float size) throws FontFormatException {
 		try {
-			File fontDir = new File(Files.getBaseDirAsFile(), "fonts");
-			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontDir, fontFileName));
+			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, new File(getFontsDir(), fontFileName));
 			return baseFont.deriveFont(style, size);
 		} catch (IOException e) {
 			throw new FontFormatException("Could not open font file");
 		}
+	}
+	
+	/* ONLY PRIVATE METHODS BELOW */
+
+	private static File getFontsDir() {
+		return new File(FileUtil.getBaseDirAsFile(), "fonts");
 	}
 }

@@ -56,38 +56,27 @@ import net.sourceforge.scuba.data.Country;
  * 
  * @version $Id: $
  */
-public class IconUtil
-{	
-	private static final Image DEFAULT_16X16_IMAGE =  new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB),
+public class IconUtil {
+
+	private static final Image
+	DEFAULT_16X16_IMAGE =  new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB),
 	DEFAULT_16X11_IMAGE =  new BufferedImage(16, 11, BufferedImage.TYPE_INT_ARGB);
 
 	private static Map<String, Image> famFamFamSilkCache = new HashMap<String, Image>();
 	private static Map<Country, Image> flagCache = new HashMap<Country, Image>();
 
-	private static URL getImagesDir() {
-		try {
-			URL basePathURL = Files.getBaseDir();
-			URL imagesDirURL = new URL(basePathURL + "/images");
-			return imagesDirURL;
-		} catch (Exception e) {
-			return null;
-		}
-	}
+	/** Private constructor to prevent accidental instantiation of this class. */
+	private IconUtil() { }
 	
-	private static URL getImagesDir(Class<?> c) {
-		try {
-			URL basePathURL = Files.getBaseDir(c);
-			URL imagesDirURL = new URL(basePathURL + "/images");
-			return imagesDirURL;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	private static URL getIconsDir() {
-		return getImagesDir(IconUtil.class);
-	}
-
+	/**
+	 * Gets an image from file (residing in the images folder
+	 * of the application/project to which <code>c</code> belongs).
+	 * 
+	 * @param imageName the name of the image (without the extension)
+	 * @param c a class
+	 * 
+	 * @return the image
+	 */
 	public static Image getImage(String imageName, Class<?> c) {
 		try {
 			URL imagesDir = getImagesDir(c);
@@ -99,6 +88,14 @@ public class IconUtil
 		}
 	}
 	
+	/**
+	 * Gets an image from file
+	 * from the application's images folder.
+	 * 
+	 * @param imageName the name of the image (without extension)
+	 * 
+	 * @return the image
+	 */
 	public static Image getImage(String imageName) {
 		try {
 			URL imagesDir = getImagesDir();
@@ -110,6 +107,13 @@ public class IconUtil
 		}
 	}
 
+	/**
+	 * Gets a flag image of a country from file.
+	 * 
+	 * @param country the country
+	 *
+	 * @return the image
+	 */
 	public static Image getFlagImage(Country country) {
 		Image image = flagCache.get(country);
 		if (image != null) { return image; }
@@ -119,7 +123,7 @@ public class IconUtil
 	}
 
 	/**
-	 * Gets icon from file.
+	 * Gets an icon from file.
 	 * 
 	 * @param iconName name without the .png or .gif
 	 * @return an image
@@ -131,6 +135,8 @@ public class IconUtil
 		famFamFamSilkCache.put(iconName, image);
 		return image;
 	}
+
+	/* ONLY PRIVATE METHODS BELOW */
 	
 	private static Image getImageFromCollection(String collectionName, String imageName, Image defaultImage) {
 		/* TODO: check if directory with name collectionName or zip file with name collectionName.zip exists */
@@ -155,5 +161,29 @@ public class IconUtil
 			return defaultImage;
 		}
 		return defaultImage;
+	}
+	
+	private static URL getImagesDir() {
+		try {
+			URL basePathURL = FileUtil.getBaseDir();
+			URL imagesDirURL = new URL(basePathURL + "/images");
+			return imagesDirURL;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private static URL getImagesDir(Class<?> c) {
+		try {
+			URL basePathURL = FileUtil.getBaseDir(c);
+			URL imagesDirURL = new URL(basePathURL + "/images");
+			return imagesDirURL;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private static URL getIconsDir() {
+		return getImagesDir(IconUtil.class);
 	}
 }

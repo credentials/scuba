@@ -55,6 +55,16 @@ import javax.swing.ImageIcon;
  */
 public class ImageUtil
 {
+	/**
+	 * Reads an image.
+	 * 
+	 * @param in an input stream
+	 * @param imageLength the length of the encoded image
+	 * @param mimeType the mime-type of the encoded image
+	 * @return the image
+	 * 
+	 * @throws IOException if the image cannot be read
+	 */
 	public static BufferedImage read(InputStream in, long imageLength, String mimeType) throws IOException {
 		Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mimeType);
 		while (readers.hasNext()) {
@@ -79,6 +89,15 @@ public class ImageUtil
 		throw new IOException("Could not decode \"" + mimeType + "\" image!");
 	}
 
+	/**
+	 * Writes an image.
+	 * 
+	 * @param image the image to write
+	 * @param mimeType the mime-type of the encoded image
+	 * @param out the output stream to write to
+	 * 
+	 * @throws IOException if the image cannot be written
+	 */
 	public static void write(Image image, String mimeType, OutputStream out) throws IOException {
 		Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType(mimeType);
 		if (!writers.hasNext()) {
@@ -103,9 +122,12 @@ public class ImageUtil
 		}
 	}
 
+	/* ONLY PRIVATE METHODS BELOW */
+	
 	/**
-	 * This method returns a buffered image with the contents of an image
-	 * From Java Developers Almanac site. TODO: Check license.
+	 * This method returns a buffered image with the contents of an image.
+	 * From Java Developers Almanac site.
+	 * TODO: Check license.
 	 */
 	private static BufferedImage toBufferedImage(Image image) {
 		if (image instanceof BufferedImage) {

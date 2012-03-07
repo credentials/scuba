@@ -35,8 +35,8 @@ import javax.swing.filechooser.FileFilter;
  * 
  * @version $Id: $
  */
-public class Files
-{
+public class FileUtil {
+
 	public static final FileFilter CERTIFICATE_FILE_FILTER = new FileFilter() {
 		public boolean accept(File f) { return f.isDirectory()
 			|| f.getName().endsWith("pem") || f.getName().endsWith("PEM")
@@ -83,7 +83,7 @@ public class Files
 		public String getDescription() { return "Image files"; }				
 	};
 
-	private Files() {
+	private FileUtil() {
 	}
 
 	/**
@@ -121,7 +121,8 @@ public class Files
 	/**
 	 * Gets the base directory where class <code>c</code> resides.
 	 *
-	 * @param c
+	 * @param c a class
+	 * 
 	 * @return the base directory
 	 */
 	public static URL getBaseDir(Class<?> c) {
@@ -149,7 +150,13 @@ public class Files
 			return null;
 		}
 	}
-
+	/**
+	 * Gets the base directory where class <code>c</code> resides.
+	 * 
+	 * @param c a class
+	 * 
+	 * @return the base directory as URI
+	 */
 	public static URI getBaseDirAsURI(Class<?> c) {
 		try {
 
@@ -177,10 +184,22 @@ public class Files
 		//		return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), path, url.getQuery(), url.getRef());
 	}
 
+	/**
+	 * Gets base directory.
+	 * 
+	 * @return the base directory as file
+	 */
 	public static File getBaseDirAsFile() {
 		return toFile(getBaseDir());
 	}
 
+	/**
+	 * Gets application directory.
+	 * 
+	 * @param appName the name of the application
+	 *
+	 * @return the application directory as file.
+	 */
 	public static File getApplicationDataDir(String appName) {
 		String osName = System.getProperty("os.name").toLowerCase();
 		String userHomeName = System.getProperty("user.home");
@@ -199,6 +218,13 @@ public class Files
 		}
 	}
 
+	/**
+	 * Converts a URL to file.
+	 *
+	 * @param url a URL
+	 *
+	 * @return the file
+	 */
 	public static File toFile(URL url) {
 		File file = null;
 		try {
