@@ -1,3 +1,7 @@
+/*
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.swing;
 
 import java.awt.Component;
@@ -16,7 +20,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import net.sourceforge.scuba.data.Country;
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 public class CountryEntryField extends Box
 {
@@ -86,7 +90,7 @@ public class CountryEntryField extends Box
 
 	private Icon getIcon(Country country) {
 		ImageIcon flagIcon = new ImageIcon();
-		Image flagImage = Icons.getFlagImage(country);
+		Image flagImage = IconUtil.getFlagImage(country);
 		if (flagImage != null) { flagIcon.setImage(flagImage); }
 		return flagIcon;
 	}

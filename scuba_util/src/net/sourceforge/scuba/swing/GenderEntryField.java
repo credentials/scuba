@@ -1,3 +1,7 @@
+/*
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.swing;
 
 import java.awt.Component;
@@ -13,16 +17,16 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import net.sourceforge.scuba.data.Gender;
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 public class GenderEntryField extends Box
 {
 	private static final long serialVersionUID = 7546245397652016137L;
 
-	private static final Icon MALE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("male"));
-	private static final Icon FEMALE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("female"));
-	private static final Icon UNKNOWN_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("error"));
-	private static final Icon UNSPECIFIED_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("error"));
+	private static final Icon MALE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("male"));
+	private static final Icon FEMALE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("female"));
+	private static final Icon UNKNOWN_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("error"));
+	private static final Icon UNSPECIFIED_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("error"));
 
 	private JLabel iconLabel;
 	private JComboBox comboBox;

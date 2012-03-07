@@ -1,3 +1,7 @@
+/*
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.swing;
 
 import java.awt.BorderLayout;
@@ -25,7 +29,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 /**
  * A GUI component for composing and editing a list of URIs.
@@ -34,10 +38,10 @@ public class URIListEditor extends JPanel
 {
 	private static final long serialVersionUID = 4150380293406768361L;
 
-	private static final Icon TABLE_ROW_DELETE_SMALL_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("table_row_delete"));
-	private static final Icon TABLE_ROW_DELETE_LARGE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("table_row_delete"));
-	private static final Icon TABLE_ROW_INSERT_SMALL_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("table_row_insert"));
-	private static final Icon TABLE_ROW_INSERT_LARGE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("table_row_insert"));
+	private static final Icon TABLE_ROW_DELETE_SMALL_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("table_row_delete"));
+	private static final Icon TABLE_ROW_DELETE_LARGE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("table_row_delete"));
+	private static final Icon TABLE_ROW_INSERT_SMALL_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("table_row_insert"));
+	private static final Icon TABLE_ROW_INSERT_LARGE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("table_row_insert"));
 	
 	private Collection<ActionListener> actionListeners;
 	private URIListModel uriList;

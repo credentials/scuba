@@ -1,3 +1,7 @@
+/*
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.swing;
 
 import java.awt.BorderLayout;
@@ -17,15 +21,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 public class CertificateChainPanel extends JPanel
 {
 	private static final long serialVersionUID = -1109469067988004321L;
 
 	private static final Image
-	VALID_ICON = Icons.getFamFamFamSilkIcon("tick"),
-	INVALID_ICON = Icons.getFamFamFamSilkIcon("cross");
+	VALID_ICON = IconUtil.getFamFamFamSilkIcon("tick"),
+	INVALID_ICON = IconUtil.getFamFamFamSilkIcon("cross");
 
 	private List<Certificate> certificates;
 	private JTabbedPane tabbedPane;

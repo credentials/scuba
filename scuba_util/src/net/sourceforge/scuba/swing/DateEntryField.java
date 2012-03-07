@@ -26,7 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 /**
  * Component for setting date (just day, month, year for now).
@@ -47,7 +47,7 @@ public class DateEntryField extends Box
 	YEAR_4_SDF = new SimpleDateFormat("yyyy");
 
 	private static final Font FONT = new Font("Monospaced", Font.PLAIN, 12);
-	private static final Icon DATE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("date"));
+	private static final Icon DATE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("date"));
 
 	private int yearMode;
 	private Calendar cal;

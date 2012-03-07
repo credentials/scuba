@@ -1,7 +1,7 @@
 /*
  * SCUBA smart card framework.
  *
- * Copyright (C) 2009 - 2010  The SCUBA team.
+ * Copyright (C) 2009 - 2012  The SCUBA team.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,9 @@ import javax.swing.filechooser.FileFilter;
 /**
  * Some helper methods for handling the local file system.
  * 
- * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
+ * @author The JMRTD team (info@jmrtd.org)
+ * 
+ * @version $Id: $
  */
 public class Files
 {

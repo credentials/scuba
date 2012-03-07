@@ -1,3 +1,7 @@
+/*
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.swing;
 
 import java.awt.Font;
@@ -11,7 +15,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 public class DateLabel extends Box
 {
@@ -22,7 +26,7 @@ public class DateLabel extends Box
 	PARSER_6_DIGITS_SDF = new SimpleDateFormat("yyMMdd"),
 	PARSER_8_DIGITS_SDF = new SimpleDateFormat("yyyyMMdd");
 
-	private static final Icon DATE_ICON = new ImageIcon(Icons.getFamFamFamSilkIcon("date"));
+	private static final Icon DATE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("date"));
 
 	private Date date;
 	private JLabel textLabel;

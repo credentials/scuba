@@ -1,3 +1,7 @@
+/*
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.swing;
 
 import java.awt.Font;
@@ -9,7 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import net.sourceforge.scuba.data.Gender;
-import net.sourceforge.scuba.util.Icons;
+import net.sourceforge.scuba.util.IconUtil;
 
 public class GenderLabel extends Box
 {
@@ -24,10 +28,10 @@ public class GenderLabel extends Box
 		String name = null;
 		Image image = null;
 		switch (gender) {
-		case MALE: name = "Male"; image = Icons.getFamFamFamSilkIcon("male"); break;
-		case FEMALE: name = "Female"; image = Icons.getFamFamFamSilkIcon("female"); break;
-		case UNKNOWN: name = "Unknown"; image = Icons.getFamFamFamSilkIcon("error"); break;
-		case UNSPECIFIED: name = "Unspecified"; Icons.getFamFamFamSilkIcon("error"); break;
+		case MALE: name = "Male"; image = IconUtil.getFamFamFamSilkIcon("male"); break;
+		case FEMALE: name = "Female"; image = IconUtil.getFamFamFamSilkIcon("female"); break;
+		case UNKNOWN: name = "Unknown"; image = IconUtil.getFamFamFamSilkIcon("error"); break;
+		case UNSPECIFIED: name = "Unspecified"; IconUtil.getFamFamFamSilkIcon("error"); break;
 		}
 		if (name != null) {	
 			if (image != null) {

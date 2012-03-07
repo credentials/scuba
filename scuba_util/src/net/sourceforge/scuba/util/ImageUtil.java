@@ -1,3 +1,24 @@
+/*
+ * SCUBA smart card framework.
+ *
+ * Copyright (C) 2009 - 2012  The SCUBA team.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * $Id: $
+ */
+
 package net.sourceforge.scuba.util;
 
 import java.awt.Graphics;
@@ -25,6 +46,13 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.ImageIcon;
 
+/**
+ * Utility class for managing images.
+ * 
+ * @author The JMRTD team (info@jmrtd.org)
+ *
+ * @version $Id: $
+ */
 public class ImageUtil
 {
 	public static BufferedImage read(InputStream in, long imageLength, String mimeType) throws IOException {
@@ -32,7 +60,6 @@ public class ImageUtil
 		while (readers.hasNext()) {
 			try {
 				ImageReader reader = readers.next();
-				System.out.println("DEBUG: reader = " + reader + " : " + reader.getClass().getCanonicalName());
 				ImageInputStream iis = ImageIO.createImageInputStream(in);
 				long posBeforeImage = iis.getStreamPosition();
 				reader.setInput(iis);

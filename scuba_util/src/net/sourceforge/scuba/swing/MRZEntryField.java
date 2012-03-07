@@ -1,5 +1,5 @@
 /*
- * $Id: NumField.java,v 1.1 2003/01/10 15:09:29 martijno Exp $
+ * $Id: $
  */
 
 package net.sourceforge.scuba.swing;
