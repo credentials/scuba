@@ -54,12 +54,29 @@ public abstract class Country
 
 	public abstract int valueOf();
 
+	/**
+	 * Gets the full name of the country.
+	 * 
+	 * @return a country name
+	 */
 	public abstract String getName();
 
+	/**
+	 * Gets the two-digit country code.
+	 * 
+	 * @return a two-digit country code
+	 */
 	public abstract String toAlpha2Code();
 
+	/**
+	 * Gets the three-digit country code.
+	 * 
+	 * @return a three-digit country code
+	 */
 	public abstract String toAlpha3Code();
 
+	/* ONLY PRIVATE METHODS BELOW */
+	
 	private static Country fromAlpha2(String code) {
 		for (Country country: values()) {
 			if (country.toAlpha2Code().equals(code)) { return country; }
