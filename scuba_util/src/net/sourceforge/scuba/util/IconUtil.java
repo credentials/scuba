@@ -23,6 +23,7 @@ package net.sourceforge.scuba.util;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -156,6 +157,8 @@ public class IconUtil {
 					return flagImage;
 				}
 			}
+		} catch (FileNotFoundException fnfe) {
+			return defaultImage;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return defaultImage;

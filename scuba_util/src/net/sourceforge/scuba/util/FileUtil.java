@@ -200,6 +200,7 @@ public class FileUtil {
 	 *
 	 * @return the application directory as file.
 	 */
+	/* FIXME: case for MacOS X? */
 	public static File getApplicationDataDir(String appName) {
 		String osName = System.getProperty("os.name").toLowerCase();
 		String userHomeName = System.getProperty("user.home");

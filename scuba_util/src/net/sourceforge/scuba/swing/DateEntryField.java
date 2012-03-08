@@ -42,9 +42,9 @@ public class DateEntryField extends Box
 	private static final SimpleDateFormat
 	PRESENTATION_SDF = new SimpleDateFormat("dd MMM yyyy"),
 	PARSER_6_DIGITS_SDF = new SimpleDateFormat("yyMMdd"),
-	PARSER_8_DIGITS_SDF = new SimpleDateFormat("yyyyMMdd"),
-	YEAR_2_SDF = new SimpleDateFormat("yy"),
-	YEAR_4_SDF = new SimpleDateFormat("yyyy");
+	PARSER_8_DIGITS_SDF = new SimpleDateFormat("yyyyMMdd");
+//	YEAR_2_SDF = new SimpleDateFormat("yy"),
+//	YEAR_4_SDF = new SimpleDateFormat("yyyy")
 
 	private static final Font FONT = new Font("Monospaced", Font.PLAIN, 12);
 	private static final Icon DATE_ICON = new ImageIcon(IconUtil.getFamFamFamSilkIcon("date"));
