@@ -239,7 +239,6 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
         public boolean waitForChange(long timeout) throws CardException {
             return terminal.waitForChange(timeout);
         }
-
     }
 
     private class ACR122CardTerminal extends CardTerminal {
@@ -303,7 +302,7 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
                     if (!terminal.getName().contains("ACR122")
                     		/*
                         	 * FIXME: On WinXP with ACS supplied drivers (October 2010)
-                        	 * the one of my tikitag readers presents itself as " CCID USB Reader 0"
+                        	 *  one of my tikitag readers presents itself as " CCID USB Reader 0"
                         	 * (instead of "ACR 122 USB Reader").
                         	 * 
                         	 * Is there some other way to positively identify a 122U? -- MO
