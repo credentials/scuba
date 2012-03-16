@@ -55,7 +55,7 @@ import net.sourceforge.scuba.data.Country;
  * 
  * @author The JMRTD team (info@jmrtd.org)
  * 
- * @version $Id: $
+ * @version $Revision: $
  */
 public class IconUtil {
 

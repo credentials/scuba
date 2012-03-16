@@ -59,7 +59,7 @@ public class FileUtil {
 		public String getDescription() { return "Text files"; }              
 	};
 
-	
+
 	public static final FileFilter KEY_FILE_FILTER = new FileFilter() {
 		public boolean accept(File f) { return f.isDirectory()
 			|| f.getName().endsWith("cer") || f.getName().endsWith("CER")
@@ -200,7 +200,6 @@ public class FileUtil {
 	 *
 	 * @return the application directory as file.
 	 */
-	/* FIXME: case for MacOS X? */
 	public static File getApplicationDataDir(String appName) {
 		String osName = System.getProperty("os.name").toLowerCase();
 		String userHomeName = System.getProperty("user.home");
@@ -208,7 +207,17 @@ public class FileUtil {
 			String appDataDirName = System.getenv("APPDATA");   
 			File appDataDir = appDataDirName != null ? new File(appDataDirName) : new File (userHomeName, "Application Data");
 			File myAppDataDir = new File(appDataDir, appName.toUpperCase());
-			if (!myAppDataDir.isDirectory()) { myAppDataDir.mkdirs(); }
+			if (!myAppDataDir.isDirectory()) {
+				if (!myAppDataDir.mkdirs()) { /* FIXME: throw exception? */ }
+			}
+			return myAppDataDir;
+		} else if (osName.indexOf("mac os x") > -1) {
+			/* See http://developer.apple.com/library/mac/#qa/qa1170/_index.html */
+			File appDataDirName = new File(userHomeName, "Library");
+			File myAppDataDir = new File(appDataDirName, appName);
+			if (!myAppDataDir.isDirectory()) {
+				if (!myAppDataDir.mkdirs()) { /* FIXME: throw exception? */ }
+			}
 			return myAppDataDir;
 		} else {
 			File myAppDataDir = new File(userHomeName, "." + appName.toLowerCase());

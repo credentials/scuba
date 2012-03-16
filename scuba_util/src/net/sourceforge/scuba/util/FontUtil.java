@@ -31,7 +31,7 @@ import java.io.IOException;
  * 
  * @author The JMRTD team (info@jmrtd.org)
  * 
- * @version $Id: $
+ * @version $Revision: $
  */
 public class FontUtil {
 

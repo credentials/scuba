@@ -51,16 +51,17 @@ import javax.swing.ImageIcon;
  * 
  * @author The JMRTD team (info@jmrtd.org)
  *
- * @version $Id: $
+ * @version $Revision: $
  */
-public class ImageUtil
-{
+public class ImageUtil {
+
 	/**
 	 * Reads an image.
 	 * 
 	 * @param in an input stream
 	 * @param imageLength the length of the encoded image
 	 * @param mimeType the mime-type of the encoded image
+	 *
 	 * @return the image
 	 * 
 	 * @throws IOException if the image cannot be read
