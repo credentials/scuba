@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -55,6 +56,13 @@ import javax.swing.ImageIcon;
  */
 public class ImageUtil {
 
+	public static String
+	JPEG_MIME_TYPE = "image/jpeg",
+	JPEG2000_MIME_TYPE = "image/jpeg2000",
+	WSQ_MIME_TYPE = "image/x-raw";
+	
+	private static final Logger LOGGER = Logger.getLogger("net.sourceforge.scuba.util");
+	
 	/**
 	 * Reads an image.
 	 * 
@@ -67,24 +75,25 @@ public class ImageUtil {
 	 * @throws IOException if the image cannot be read
 	 */
 	public static BufferedImage read(InputStream in, long imageLength, String mimeType) throws IOException {
+
 		Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mimeType);
+		ImageInputStream iis = ImageIO.createImageInputStream(in);
 		while (readers.hasNext()) {
 			try {
 				ImageReader reader = readers.next();
-				ImageInputStream iis = ImageIO.createImageInputStream(in);
-				long posBeforeImage = iis.getStreamPosition();
-				reader.setInput(iis);
-				BufferedImage image = reader.read(0);
-				long posAfterImage = iis.getStreamPosition();
-				if ((posAfterImage - posBeforeImage) != imageLength) {
-					throw new IOException("Image may not have been correctly read");
-				}
+				LOGGER.info("Using image reader " + reader + " for type " + mimeType);
+				BufferedImage image = read(iis, imageLength, reader);
 				if (image != null) { return image; }
 			} catch (Exception e) {
 				e.printStackTrace();
 				/* NOTE: this reader doesn't work? Try next one... */
 				continue;
 			}
+		}
+		if (JPEG2000_MIME_TYPE.equals(mimeType) || "image/jp2".equals(mimeType)) {
+			/* NOTE: JAI failed, try jj2000 directly... */
+			LOGGER.warning("JAI failed, trying jj2000 directly");
+			return JJ2000Util.read(in);
 		}
 		/* Tried all readers */
 		throw new IOException("Could not decode \"" + mimeType + "\" image!");
@@ -108,14 +117,11 @@ public class ImageUtil {
 		while (writers.hasNext()) {
 			try {
 				ImageWriter writer = (ImageWriter)writers.next();
-				writer.setOutput(ios);
-				ImageWriteParam pm = writer.getDefaultWriteParam();
-				RenderedImage renderedImage = toBufferedImage(image);
-				pm.setSourceRegion(new Rectangle(0, 0, renderedImage.getWidth(), renderedImage.getHeight()));
-				writer.write(renderedImage);
+				write(image, ios, writer);
 				return;
 			} catch (Exception e) {
 				e.printStackTrace();
+				/* NOTE: this writer doesn't work? Try next one... */
 				continue;
 			} finally {
 				ios.flush();
@@ -124,7 +130,26 @@ public class ImageUtil {
 	}
 
 	/* ONLY PRIVATE METHODS BELOW */
-	
+
+	private static BufferedImage read(ImageInputStream iis, long imageLength, ImageReader reader) throws IOException {
+		long posBeforeImage = iis.getStreamPosition();
+		reader.setInput(iis);
+		BufferedImage image = reader.read(0);
+		long posAfterImage = iis.getStreamPosition();
+		if ((posAfterImage - posBeforeImage) != imageLength) {
+			throw new IOException("Image may not have been correctly read");
+		}
+		return image;
+	}
+
+	private static void write(Image image, ImageOutputStream ios, ImageWriter writer) throws IOException {
+		writer.setOutput(ios);
+		ImageWriteParam pm = writer.getDefaultWriteParam();
+		RenderedImage renderedImage = toBufferedImage(image);
+		pm.setSourceRegion(new Rectangle(0, 0, renderedImage.getWidth(), renderedImage.getHeight()));
+		writer.write(renderedImage);
+	}
+
 	/**
 	 * This method returns a buffered image with the contents of an image.
 	 * From Java Developers Almanac site.
