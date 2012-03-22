@@ -75,12 +75,13 @@ public class ImageUtil {
 	 * @throws IOException if the image cannot be read
 	 */
 	public static BufferedImage read(InputStream in, long imageLength, String mimeType) throws IOException {
-
+		System.out.println("DEBUG: looking for \"" + mimeType + "\" reader, imageLength = " + imageLength);
 		Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mimeType);
 		ImageInputStream iis = ImageIO.createImageInputStream(in);
 		while (readers.hasNext()) {
 			try {
 				ImageReader reader = readers.next();
+				System.out.println("DEBUG: looking for \"" + mimeType + "\" reader, found " + reader);
 				LOGGER.info("Using image reader " + reader + " for type " + mimeType);
 				BufferedImage image = read(iis, imageLength, reader);
 				if (image != null) { return image; }
@@ -89,11 +90,6 @@ public class ImageUtil {
 				/* NOTE: this reader doesn't work? Try next one... */
 				continue;
 			}
-		}
-		if (JPEG2000_MIME_TYPE.equals(mimeType) || "image/jp2".equals(mimeType)) {
-			/* NOTE: JAI failed, try jj2000 directly... */
-			LOGGER.warning("JAI failed, trying jj2000 directly");
-			return JJ2000Util.read(in);
 		}
 		/* Tried all readers */
 		throw new IOException("Could not decode \"" + mimeType + "\" image!");
