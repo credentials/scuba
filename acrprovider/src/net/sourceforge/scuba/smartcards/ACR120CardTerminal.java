@@ -44,7 +44,7 @@ import acs.jni.ACR120U;
  * 
  * @version $Revision: $
  */
-public class ACR120UCardTerminal extends CardTerminal
+public class ACR120CardTerminal extends CardTerminal
 {
 	public static final int
 	ACR120_USB1 = ACR120U.ACR120_USB1,	  
@@ -75,7 +75,7 @@ public class ACR120UCardTerminal extends CardTerminal
 	private boolean isBasicChannelOpen;
 	private final Object terminal;
 
-	public ACR120UCardTerminal(int readerPort) throws CardException {
+	public ACR120CardTerminal(int readerPort) throws CardException {
 		terminal = this;
 		synchronized(terminal) {
 			switch (readerPort) {

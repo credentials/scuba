@@ -37,24 +37,24 @@ import javax.smartcardio.TerminalFactorySpi;
  * 
  * @version $Revision: $
  */
-public class ACR120UTerminalFactorySpi  extends TerminalFactorySpi
+public class ACR120TerminalFactorySpi  extends TerminalFactorySpi
 {
 	private static final Map<Integer, CardTerminal> TERMINALS = new HashMap<Integer, CardTerminal>();
 
-	public ACR120UTerminalFactorySpi(Object parameter) {
-		addReader(ACR120UCardTerminal.ACR120_USB1);
-		addReader(ACR120UCardTerminal.ACR120_USB2);
-		addReader(ACR120UCardTerminal.ACR120_USB3);
-		addReader(ACR120UCardTerminal.ACR120_USB4);
-		addReader(ACR120UCardTerminal.ACR120_USB5);
-		addReader(ACR120UCardTerminal.ACR120_USB6);
-		addReader(ACR120UCardTerminal.ACR120_USB7);
-		addReader(ACR120UCardTerminal.ACR120_USB8);
+	public ACR120TerminalFactorySpi(Object parameter) {
+		addReader(ACR120CardTerminal.ACR120_USB1);
+		addReader(ACR120CardTerminal.ACR120_USB2);
+		addReader(ACR120CardTerminal.ACR120_USB3);
+		addReader(ACR120CardTerminal.ACR120_USB4);
+		addReader(ACR120CardTerminal.ACR120_USB5);
+		addReader(ACR120CardTerminal.ACR120_USB6);
+		addReader(ACR120CardTerminal.ACR120_USB7);
+		addReader(ACR120CardTerminal.ACR120_USB8);
 	}
 
 	private void addReader(int port) {
 		try {
-			if (!TERMINALS.containsKey(port)) { TERMINALS.put(port, new ACR120UCardTerminal(port)); }
+			if (!TERMINALS.containsKey(port)) { TERMINALS.put(port, new ACR120CardTerminal(port)); }
 		} catch (CardException ce) {
 			/* NOTE: Reader not connected? Fine, don't add it to list. */
 		}
