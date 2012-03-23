@@ -24,7 +24,6 @@ package net.sourceforge.scuba.util;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,9 +81,10 @@ public class IconUtil {
 		try {
 			URL imagesDir = getImagesDir(c);
 			String fileName = imageName.toLowerCase() + ".png";
-			Image image = ImageIO.read(new URL(imagesDir + "/" + fileName));
+			URL imageFile = new URL(imagesDir + "/" + fileName);
+			Image image = ImageIO.read(imageFile);
 			return image;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -101,9 +101,10 @@ public class IconUtil {
 		try {
 			URL imagesDir = getImagesDir();
 			String fileName = imageName.toLowerCase() + ".png";
-			Image image = ImageIO.read(new URL(imagesDir + "/" + fileName));
+			URL imageFile = new URL(imagesDir + "/" + fileName);
+			Image image = ImageIO.read(imageFile);
 			return image;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
