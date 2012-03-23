@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="acr122provider" default="dist" basedir=".">
+
+	<description>
+		Card terminal provider for ACR 122
+	</description>
+
+	<!-- Global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
+
+	<target name="compile" depends="" description="Compiles the source ">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" />
+	</target>
+
+	<target name="dist" depends="compile" description="Generates the distribution .jar file">
+		
+		<mkdir dir="META-INF/services" />
+		<echo file="META-INF/services/javax.smartcardio.TerminalFactorySpi" append="false">net.sourceforge.scuba.smartcards.ACR122TerminalFactorySpi</echo>
+
+		<!-- Create the distribution jar file -->
+		<jar jarfile="acr122provider.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name} on ${os.name} ${os.arch}" />
+				<attribute name="Built-Date" value="${TODAY}" />
+				<attribute name="Implementation-Vendor" value="SCUBA"/>
+				<attribute name="Implementation-Title" value="acr122provider"/>
+				<attribute name="Implementation-Version" value="0.0.1"/>
+			</manifest>
+			<fileset dir="${build}/" includes="net/sourceforge/scuba/smartcards/*.class" />
+			<fileset dir="" includes="META-INF/**/*" />					
+		</jar>	
+	</target>
+
+</project>
