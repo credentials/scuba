@@ -101,10 +101,14 @@ public class FileUtil {
 			ClassLoader cl = c.getClassLoader();
 			URL url = cl.getResource(".");
 
+			if (url == null) {
+				return getBaseDir(c);
+			}
+
 			String protocol = url.getProtocol().toLowerCase();
 			String host = url.getHost().toLowerCase();
 			String basePathString = url.getFile();
-
+			
 			if (basePathString.endsWith("/bin")
 					|| basePathString.endsWith("/bin/")
 					|| basePathString.endsWith("/build")

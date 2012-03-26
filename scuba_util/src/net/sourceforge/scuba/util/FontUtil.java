@@ -25,6 +25,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Utility class with static methods for getting fonts.
@@ -37,7 +39,7 @@ public class FontUtil {
 
 	/** Private constructor to prevent accidental instantiation of this class. */
 	private FontUtil() { }
-	
+
 	/**
 	 * Gets a font from file.
 	 *
@@ -50,16 +52,25 @@ public class FontUtil {
 	 */
 	public static Font getFont(String fontFileName, int style, float size) throws FontFormatException {
 		try {
-			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, new File(getFontsDir(), fontFileName));
+//			File fontFile = new File(getFontsDir(), fontFileName);
+//			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+
+			URL fontURI = new URL(getFontsURL() + "/" + fontFileName);
+			Font baseFont = Font.createFont(Font.TRUETYPE_FONT, fontURI.openStream());
 			return baseFont.deriveFont(style, size);
 		} catch (IOException e) {
 			throw new FontFormatException("Could not open font file");
 		}
 	}
-	
+
 	/* ONLY PRIVATE METHODS BELOW */
 
 	private static File getFontsDir() {
 		return new File(FileUtil.getBaseDirAsFile(), "fonts");
+	}
+
+	private static URL getFontsURL() throws MalformedURLException {
+		URL baseURI = FileUtil.getBaseDir();
+		return new URL(baseURI + "/fonts");
 	}
 }

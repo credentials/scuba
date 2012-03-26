@@ -58,8 +58,8 @@ public class ImageUtil {
 
 	public static String
 	JPEG_MIME_TYPE = "image/jpeg",
-	JPEG2000_MIME_TYPE = "image/jpeg2000",
-	WSQ_MIME_TYPE = "image/x-raw";
+	JPEG2000_MIME_TYPE = "image/jp2",
+	WSQ_MIME_TYPE = "image/x-wsq";
 	
 	private static final Logger LOGGER = Logger.getLogger("net.sourceforge.scuba.util");
 	
