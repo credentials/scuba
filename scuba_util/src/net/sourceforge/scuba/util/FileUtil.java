@@ -165,15 +165,6 @@ public class FileUtil {
 		try {
 
 			URL url = getBaseDir(c);
-
-			System.out.println("DEBUG: url.getProtocol() = " + url.getProtocol());
-			System.out.println("DEBUG: url.getUserInfo() = " + url.getUserInfo());
-			System.out.println("DEBUG: url.getHost() = " + url.getHost());
-			System.out.println("DEBUG: url.getPort() = " + url.getPort());
-			System.out.println("DEBUG: url.getPath() = " + url.getPath());			
-			System.out.println("DEBUG: url.getQuery() = " + url.getQuery());
-			System.out.println("DEBUG: url.getRef() = " + url.getRef());
-
 			String protocol = url.getProtocol();
 			if (protocol.equalsIgnoreCase("file")) {
 				File file = new File(url.getPath().replace("%20", " "));
