@@ -6,6 +6,10 @@ import java.io.ByteArrayOutputStream;
 
 public class TLVUtil implements ASN1Constants {
 	
+	/** Hide from public interface. */
+	private TLVUtil() {
+	}
+	
 	public static boolean isPrimitive(int tag) {
 		int i = 3;
 		for (; i >= 0; i--) {

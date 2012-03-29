@@ -35,7 +35,7 @@ import java.io.InputStream;
 public class TLVInputStream extends InputStream
 {
 	/** Carrier. */
-	private DataInputStream in;
+	private DataInputStream inputStream;
 
 	private TLVInputState state;
 	private TLVInputState markedState;
@@ -43,10 +43,10 @@ public class TLVInputStream extends InputStream
 	/**
 	 * Constructs a new TLV stream based on another stream.
 	 * 
-	 * @param in a TLV object
+	 * @param inputStream a TLV object
 	 */
-	public TLVInputStream(InputStream in) {
-		this.in = new DataInputStream(in);
+	public TLVInputStream(InputStream inputStream) {
+		this.inputStream = new DataInputStream(inputStream);
 		state = new TLVInputState();
 		markedState = null;
 	}
@@ -63,18 +63,18 @@ public class TLVInputStream extends InputStream
 		int tag = -1;
 		int bytesRead = 0;
 		try {
-			int b = in.readUnsignedByte(); bytesRead++;
+			int b = inputStream.readUnsignedByte(); bytesRead++;
 			while (b == 0x00 || b == 0xFF) {
-				b = in.readUnsignedByte(); bytesRead++; /* skip 00 and FF */
+				b = inputStream.readUnsignedByte(); bytesRead++; /* skip 00 and FF */
 			}
 			switch (b & 0x1F) {
 			case 0x1F:
 				tag = b; /* We store the first byte including LHS nibble */
-				b = in.readUnsignedByte(); bytesRead++;
+				b = inputStream.readUnsignedByte(); bytesRead++;
 				while ((b & 0x80) == 0x80) {
 					tag <<= 8;
 					tag |= (b & 0x7F);
-					b = in.readUnsignedByte(); bytesRead++;
+					b = inputStream.readUnsignedByte(); bytesRead++;
 				}
 				tag <<= 8;
 				tag |= (b & 0x7F);
@@ -106,7 +106,7 @@ public class TLVInputStream extends InputStream
 			if (!state.isAtStartOfLength()) { throw new IllegalStateException("Not at start of length"); }
 			int bytesRead = 0;
 			int length = 0;
-			int b = in.readUnsignedByte(); bytesRead++;
+			int b = inputStream.readUnsignedByte(); bytesRead++;
 			if ((b & 0x80) == 0x00) {
 				/* short form */
 				length = b;
@@ -115,7 +115,7 @@ public class TLVInputStream extends InputStream
 				int count = b & 0x7F;
 				length = 0;
 				for (int i = 0; i < count; i++) {
-					b = in.readUnsignedByte(); bytesRead++;
+					b = inputStream.readUnsignedByte(); bytesRead++;
 					length <<= 8;
 					length |= b;
 				}
@@ -139,7 +139,7 @@ public class TLVInputStream extends InputStream
 			if (!state.isProcessingValue()) { throw new IllegalStateException("Not yet processing value!"); }
 			int length = state.getLength();
 			byte[] value = new byte[length];
-			in.readFully(value);
+			inputStream.readFully(value);
 			state.updateValueBytesProcessed(length);
 			return value;
 		} catch (IOException e) {
@@ -203,7 +203,7 @@ public class TLVInputStream extends InputStream
 	 * @throws IOException if something goes wrong
 	 */
 	public int available() throws IOException {
-		return in.available();
+		return inputStream.available();
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class TLVInputStream extends InputStream
 	 * @throws IOException if reading goes wrong
 	 */
 	public int read() throws IOException {
-		int result = in.read();
+		int result = inputStream.read();
 		if (result < 0) { return -1; }
 		state.updateValueBytesProcessed(1);
 		return result;
@@ -229,7 +229,7 @@ public class TLVInputStream extends InputStream
 	 */
 	public long skip(long n) throws IOException {
 		if (n <= 0) { return 0; }
-		long result = in.skip(n);
+		long result = inputStream.skip(n);
 		state.updateValueBytesProcessed((int)result);
 		return result;
 	}
@@ -240,7 +240,7 @@ public class TLVInputStream extends InputStream
 	 * @param readLimit limit for marking
 	 */
 	public synchronized void mark(int readLimit) {
-		in.mark(readLimit);
+		inputStream.mark(readLimit);
 		markedState = (TLVInputState)state.clone();
 	}
 
@@ -251,7 +251,7 @@ public class TLVInputStream extends InputStream
 	 * @return whether mark and reset are supported
 	 */
 	public boolean markSupported() {
-		return in.markSupported();
+		return inputStream.markSupported();
 	}
 
 	/**
@@ -263,7 +263,7 @@ public class TLVInputStream extends InputStream
 		if (!markSupported()) {
 			throw new IOException("mark/reset not supported");
 		}
-		in.reset();
+		inputStream.reset();
 		state = markedState;
 		markedState = null;
 	}
@@ -274,7 +274,7 @@ public class TLVInputStream extends InputStream
 	 * @throws IOException if something goes wrong
 	 */
 	public void close() throws IOException {
-		in.close();
+		inputStream.close();
 	}
 	
 	public String toString() {

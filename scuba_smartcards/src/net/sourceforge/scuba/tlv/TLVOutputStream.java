@@ -37,8 +37,8 @@ public class TLVOutputStream extends OutputStream {
 	private DataOutputStream out;
 	private TLVOutputState state;
 
-	public TLVOutputStream(OutputStream out) {
-		this.out = out instanceof DataOutputStream ? (DataOutputStream)out : new DataOutputStream(out);
+	public TLVOutputStream(OutputStream outputStream) {
+		this.out = outputStream instanceof DataOutputStream ? (DataOutputStream)outputStream : new DataOutputStream(outputStream);
 		this.state = new TLVOutputState();
 	}
 

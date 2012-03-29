@@ -32,10 +32,6 @@ public interface ASN1Constants {
 	/** Private tag class. */
 	public static final int PRIVATE_CLASS = 3;			/* 11 x xxxxx */
 
-	
-	
-	
-
 	/**
 	 * Universal tag type (tag number).
 	 * Rightmost 5 bits, should be prefixed
