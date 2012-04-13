@@ -1,0 +1,27 @@
+
+# /acr120provider/
+/acr120provider/META-INF
+/acr120provider/acr120provider.jar
+
+# /acr122provider/
+/acr122provider/META-INF
+/acr122provider/acr122provider.jar
+
+# /crefprovider/
+/crefprovider/bin
+
+# /jcopprovider/
+/jcopprovider/bin
+
+# /scuba_sc_indep/
+/scuba_sc_indep/bin
+
+# /scuba_sc_j2se/
+/scuba_sc_j2se/bin
+
+# /scuba_smartcards/
+/scuba_smartcards/bin
+
+# /scuba_util/
+/scuba_util/dist
+/scuba_util/bin
