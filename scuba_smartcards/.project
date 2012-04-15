@@ -3,6 +3,7 @@
 	<name>scuba_smartcards</name>
 	<comment></comment>
 	<projects>
+		<project>scuba_util</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
