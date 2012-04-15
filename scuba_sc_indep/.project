@@ -3,6 +3,8 @@
 	<name>scuba_sc_indep</name>
 	<comment></comment>
 	<projects>
+		<project>scuba_smartcards</project>
+		<project>scuba_util</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
