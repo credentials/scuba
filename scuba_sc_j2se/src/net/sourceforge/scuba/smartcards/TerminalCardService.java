@@ -58,6 +58,10 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
 		apduCount = 0;
 	}
 
+	public ISCFactory<CommandAPDU, ResponseAPDU> getAPDUFactory() {
+		return new SCFactory();
+	}
+	
 	public void open() throws CardServiceException {
 		if (isOpen()) { return; }
 		try {

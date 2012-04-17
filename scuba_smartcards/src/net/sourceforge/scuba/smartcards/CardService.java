@@ -76,6 +76,8 @@ public abstract class CardService<C,R> implements Serializable
 		if (apduListeners != null) { apduListeners.remove(l); }
 	}
 
+	public abstract ISCFactory getAPDUFactory();
+	
 	/**
 	 * Opens a session with the card. Selects a reader. Connects to the card.
 	 * Notifies any interested apduListeners.
