@@ -56,10 +56,18 @@ public class TerminalCardService extends CardService {
 		lastActiveTime = System.currentTimeMillis();
 		apduCount = 0;
 	}
+<<<<<<< HEAD
 	
 	/**
 	 * Opens a session with the card.
 	 */
+=======
+
+	public ISCFactory<CommandAPDU, ResponseAPDU> getAPDUFactory() {
+		return new SCFactory();
+	}
+	
+>>>>>>> Added getFactory to CardService and fixed for TerminalCardService
 	public void open() throws CardServiceException {
 		if (isOpen()) { return; }
 		try {
