@@ -36,7 +36,7 @@ import javax.smartcardio.CardTerminal;
  * 
  * @version $Revision$
  */
-public class TerminalCardService extends CardService {
+public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> {
 
 	private static final long serialVersionUID = 7918176921505623791L;
 
@@ -56,18 +56,10 @@ public class TerminalCardService extends CardService {
 		lastActiveTime = System.currentTimeMillis();
 		apduCount = 0;
 	}
-<<<<<<< HEAD
-	
+
 	/**
 	 * Opens a session with the card.
 	 */
-=======
-
-	public ISCFactory<CommandAPDU, ResponseAPDU> getAPDUFactory() {
-		return new SCFactory();
-	}
-	
->>>>>>> Added getFactory to CardService and fixed for TerminalCardService
 	public void open() throws CardServiceException {
 		if (isOpen()) { return; }
 		try {
@@ -96,7 +88,7 @@ public class TerminalCardService extends CardService {
 	 * @return the response from the card, including the status word
 	 * @throws CardServiceException - if the card operation failed 
 	 */
-	public IResponseAPDU transmit(ICommandAPDU ourCommandAPDU) 
+	public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) 
 	throws CardServiceException {
 		try {
 			if (channel == null) {
