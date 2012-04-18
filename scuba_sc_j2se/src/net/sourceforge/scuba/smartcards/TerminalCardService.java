@@ -37,8 +37,8 @@ import javax.smartcardio.ResponseAPDU;
  * 
  * @version $Revision$
  */
-public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
-{
+public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> {
+
 	private static final long serialVersionUID = 7918176921505623791L;
 
 	private CardTerminal terminal;
@@ -58,22 +58,34 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
 		apduCount = 0;
 	}
 
+	/**
+	 * Return the factory which should be used to construct APDUs for this 
+	 * service.
+	 */
 	public ISCFactory<CommandAPDU, ResponseAPDU> getAPDUFactory() {
 		return new SCFactory();
 	}
 	
+	/**
+	 * Opens a session with the card.
+	 */
 	public void open() throws CardServiceException {
 		if (isOpen()) { return; }
 		try {
 			card = terminal.connect("*");
 			channel = card.getBasicChannel();
-			if (channel == null) { throw new CardServiceException("channel == null"); }
+			if (channel == null) { 
+				throw new CardServiceException("channel == null"); 
+			}
 			state = SESSION_STARTED_STATE;
 		} catch (CardException ce) {
 			throw new CardServiceException(ce.toString());
 		}
 	}
 
+	/**
+	 * Whether there is an open session with the card.
+	 */
 	public boolean isOpen() {
 		return (state != SESSION_STOPPED_STATE);
 	}
@@ -85,7 +97,8 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU>
 	 * @return the response from the card, including the status word
 	 * @throws CardServiceException - if the card operation failed 
 	 */
-	public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) throws CardServiceException {
+	public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) 
+	throws CardServiceException {
 		try {
 			if (channel == null) {
 				throw new CardServiceException("channel == null");

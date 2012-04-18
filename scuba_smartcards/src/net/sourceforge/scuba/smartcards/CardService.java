@@ -31,14 +31,13 @@ import java.util.HashSet;
  * 
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
+ * @author Pim Vullers (pim@cs.ru.nl)
  * @version $Revision: 259 $
  */
-public abstract class CardService<C,R> implements Serializable
-{
+public abstract class CardService<C,R> implements Serializable {
 	private static final long serialVersionUID = 5618527358158494957L;
 
 	static protected final int SESSION_STOPPED_STATE = 0;
-
 	static protected final int SESSION_STARTED_STATE = 1;
 
 	/** The apduListeners. */
@@ -76,7 +75,23 @@ public abstract class CardService<C,R> implements Serializable
 		if (apduListeners != null) { apduListeners.remove(l); }
 	}
 
-	public abstract ISCFactory getAPDUFactory();
+	/**
+	 * Notifies listeners about APDU event.
+	 * 
+	 * @param capdu APDU event
+	 */
+	protected void notifyExchangedAPDU(int count, C capdu, R rapdu) {
+		for (APDUListener<C,R> listener: apduListeners) {
+			listener.exchangedAPDU(
+					new APDUEvent<C,R>(this, "RAW", count, capdu, rapdu));
+		}
+	}
+
+	/**
+	 * Return the factory which should be used to construct APDUs for this 
+	 * service.
+	 */
+	public abstract ISCFactory<C,R> getAPDUFactory();
 	
 	/**
 	 * Opens a session with the card. Selects a reader. Connects to the card.
@@ -88,13 +103,17 @@ public abstract class CardService<C,R> implements Serializable
 	 */
 	public abstract void open() throws CardServiceException;
 
+	/**
+	 * Whether there is a session started with the card.
+	 */
 	/*
 	 * @ ensures \result == (state == SESSION_STARTED_STATE);
 	 */
 	public abstract boolean isOpen();
 
 	/**
-	 * Sends and apdu to the card. Notifies any interested apduListeners.
+	 * Sends an apdu to the card. Notifies any interested apduListeners.
+	 * 
 	 * This method does not throw a CardServiceException if the ResponseAPDU
 	 * is status word indicating error.
 	 * 
@@ -103,8 +122,8 @@ public abstract class CardService<C,R> implements Serializable
 	 * @throws CardServiceException - if the card operation failed 
 	 */
 	/*
-	 * @ requires state == SESSION_STARTED_STATE; @ ensures state ==
-	 * SESSION_STARTED_STATE;
+	 * @ requires state == SESSION_STARTED_STATE; 
+	 * @ ensures state == SESSION_STARTED_STATE;
 	 */
 	public abstract R transmit(C apdu) throws CardServiceException;
 
@@ -113,20 +132,8 @@ public abstract class CardService<C,R> implements Serializable
 	 * Notifies any interested apduListeners.
 	 */
 	/*
-	 * @ requires state == SESSION_STARTED_STATE; @ ensures state ==
-	 * SESSION_STOPPED_STATE;
+	 * @ requires state == SESSION_STARTED_STATE; 
+	 * @ ensures state == SESSION_STOPPED_STATE;
 	 */
 	public abstract void close();
-
-
-	/**
-	 * Notifies listeners about APDU event.
-	 * 
-	 * @param capdu APDU event
-	 */
-	protected void notifyExchangedAPDU(int count, C capdu, R rapdu) {
-		for (APDUListener<C,R> listener: apduListeners) {
-			listener.exchangedAPDU(new APDUEvent<C,R>(this, "RAW", count, capdu, rapdu));
-		}
-	}
 }
