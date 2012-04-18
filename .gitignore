@@ -5,6 +5,7 @@
 /crefprovider/bin
 /jcopprovider/bin
 
+/scuba_sc_android/bin
 /scuba_sc_indep/bin
 /scuba_sc_j2se/bin
 /scuba_smartcards/bin
