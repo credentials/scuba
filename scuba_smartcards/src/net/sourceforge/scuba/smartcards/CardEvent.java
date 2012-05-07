@@ -30,7 +30,7 @@ import java.util.EventObject;
  *
  * @version $Revision: $
  */
-public class CardEvent<C, R> extends EventObject
+public class CardEvent extends EventObject
 {
 	private static final long serialVersionUID = -5645277246646615351L;
 
@@ -38,7 +38,7 @@ public class CardEvent<C, R> extends EventObject
 	public static final int REMOVED = 0, INSERTED = 1;
 
 	private int type;
-	private CardService<C, R> service;
+	private CardService service;
 
 	/**
 	 * Creates an event.
@@ -46,7 +46,7 @@ public class CardEvent<C, R> extends EventObject
 	 * @param type event type
 	 * @param service event source
 	 */
-	public CardEvent(int type, CardService<C, R> service) {
+	public CardEvent(int type, CardService service) {
 		super(service);
 		this.type = type;
 		this.service = service;
@@ -66,7 +66,7 @@ public class CardEvent<C, R> extends EventObject
 	 *
 	 * @return event source
 	 */
-	public CardService<C, R> getService() {
+	public CardService getService() {
 		return service;
 	}
 
@@ -93,8 +93,7 @@ public class CardEvent<C, R> extends EventObject
 			if (other == null) { return false; }
 			if (other == this) { return true; }
 			if (!other.getClass().equals(this.getClass())) { return false; }
-			@SuppressWarnings("unchecked")
-			CardEvent<C, R> otherCardEvent = (CardEvent<C, R>)other;
+			CardEvent otherCardEvent = (CardEvent)other;
 			return type == otherCardEvent.type && service.equals(otherCardEvent.service);
 		} catch (ClassCastException cce) {
 			return false;

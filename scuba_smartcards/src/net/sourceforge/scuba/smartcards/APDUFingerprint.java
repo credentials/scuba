@@ -45,9 +45,10 @@ import net.sourceforge.scuba.util.Hex;
  * @author Henning Richter (hrichter@fh-lausitz.de)
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public class APDUFingerprint<C,R> implements CardFingerprint
+public class APDUFingerprint implements CardFingerprint
 {
 	/** The fingerprint directory contains txt and png files. We only consider the txt ones. */
+	@SuppressWarnings("unused")
 	private static final FilenameFilter HENNING_FILE_FILENAME_FILTER = new FilenameFilter() {
 		public boolean accept(File dir, String name) {
 			return name.endsWith("txt") || name.endsWith("TXT");
@@ -59,16 +60,15 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 	 * The set of commands to send to card to create a fingerprint.
 	 * TODO: Perhaps make this a parameter to the constructor? -- MO
 	 */
-	private final Collection<C> FINGERPRINT_COMMANDS = new LinkedList<C>();
+	private final Collection<ICommandAPDU> FINGERPRINT_COMMANDS = new LinkedList<ICommandAPDU>();
 	private void prepareFingerpringCommands() {
-		ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU((byte)0x00, (byte)0x44, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU((byte)0x00, (byte)0x82, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU( (byte)0x00, (byte)0x84, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU( (byte)0x00, (byte)0x88, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU( (byte)0x00, (byte)0xB0, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU( (byte)0x00, (byte)0xA4, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
-		FINGERPRINT_COMMANDS.add( sc.createCommandAPDU( (byte)0x00, (byte)0xB1, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU((byte)0x00, (byte)0x44, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU((byte)0x00, (byte)0x82, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU( (byte)0x00, (byte)0x84, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU( (byte)0x00, (byte)0x88, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU( (byte)0x00, (byte)0xB0, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU( (byte)0x00, (byte)0xA4, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
+		FINGERPRINT_COMMANDS.add( new CommandAPDU( (byte)0x00, (byte)0xB1, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
 	}
 
 	/** Fingerprints to compare with are read from file during static init. */
@@ -78,13 +78,13 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 //	};
 
 	/** Maps commands (headers) to responses (status words). */
-	private Map<C, Short> commandResponsePairs;
+	private Map<ICommandAPDU, Short> commandResponsePairs;
 
 	/**
 	 * Constructs an empty fingerprint.
 	 */
 	public APDUFingerprint() {
-		commandResponsePairs = new HashMap<C, Short>();
+		commandResponsePairs = new HashMap<ICommandAPDU, Short>();
 	}
 
 	/**
@@ -93,18 +93,16 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 	 *
 	 * @param service some card service
 	 */
-	public APDUFingerprint(CardService<C,R> service) {
+	public APDUFingerprint(CardService service) {
 		this();
 		prepareFingerpringCommands();
 		try {
 			if (service.isOpen()) { service.close(); }
 			service.open();
-			for (C capdu: FINGERPRINT_COMMANDS) {
-				R rapdu = service.transmit(capdu);
+			for (ICommandAPDU capdu: FINGERPRINT_COMMANDS) {
+				IResponseAPDU rapdu = service.transmit(capdu);
 				
-				ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
-					
-				short sw = (short)(sc.accesR(rapdu).getSW());
+				short sw = (short) rapdu.getSW();
 				if (sw != ISO7816.SW_NO_ERROR) {
 					put(capdu, sw);
 				}
@@ -120,9 +118,8 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 	 * @param capdu command
 	 * @param rapdu response
 	 */
-	public void put(C capdu, R rapdu) {
-		ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
-		put(capdu, (short)(sc.accesR(rapdu).getSW() & 0xFFFF));
+	public void put(ICommandAPDU capdu, IResponseAPDU rapdu) {
+		put(capdu, (short) (rapdu.getSW() & 0xFFFF));
 	}
 	
 	/**
@@ -131,7 +128,7 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 	 * @param capdu command apdu
 	 * @param sw response
 	 */
-	public void put(C capdu, short sw) {
+	public void put(ICommandAPDU capdu, short sw) {
 		commandResponsePairs.put(capdu, sw);
 	}
 
@@ -228,6 +225,7 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 //		return result;
 //	}
 
+	@SuppressWarnings("unused")
 	private static int getByteValue(String key, String line) {
 		try {
 			String value = getValue(key, line);
@@ -237,6 +235,7 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static int getShortValue(String key, String line) {
 		try {
 			return Integer.parseInt(getValue(key, line), 16) & 0xFFFF;
@@ -263,7 +262,7 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 		return value.toString();
 	}
 
-	private int getResponse(C capdu) {
+	private int getResponse(ICommandAPDU capdu) {
 		Short r = commandResponsePairs.get(capdu);
 		if (r == null) {
 			return -1;
@@ -276,9 +275,9 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 	 * @param otherPrint pattern
 	 * @return
 	 */
-	private boolean isAllowedBy(APDUFingerprint<C,R> thisPrint, APDUFingerprint otherPrint) {
-		for (C c: thisPrint.commandResponsePairs.keySet()) {
-			C otherC = getSimilarCommandAPDU(c, otherPrint);
+	private boolean isAllowedBy(APDUFingerprint thisPrint, APDUFingerprint otherPrint) {
+		for (ICommandAPDU c: thisPrint.commandResponsePairs.keySet()) {
+			ICommandAPDU otherC = getSimilarCommandAPDU(c, otherPrint);
 			if (otherC == null) { continue; }
 			if (!isAllowedBy(c, otherC)) { return false; }
 			int response = thisPrint.getResponse(c);
@@ -290,18 +289,15 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 		return true;
 	}
 
-	private C getSimilarCommandAPDU(C capdu, APDUFingerprint<C,R> print) {
-		ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
-		for (C c: print.commandResponsePairs.keySet()) {
-			if ( sc.accesC(capdu).getINS() == sc.accesC(c).getINS()) { return c; }
+	private ICommandAPDU getSimilarCommandAPDU(ICommandAPDU capdu, APDUFingerprint print) {
+		for (ICommandAPDU c: print.commandResponsePairs.keySet()) {
+			if ( capdu.getINS() == c.getINS()) { return c; }
 		}
 		return null;
 	}
 
-	private boolean isAllowedBy(C capdu, C otherCapdu) {
-		ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
-		
-		return isAllowedBy( sc.accesC(capdu).getINS(), sc.accesC(otherCapdu).getINS());
+	private boolean isAllowedBy(ICommandAPDU capdu, ICommandAPDU otherCapdu) {		
+		return isAllowedBy( capdu.getINS(), otherCapdu.getINS());
 	}
 
 	private static boolean isAllowedBy(int a, int b) {
@@ -324,11 +320,10 @@ public class APDUFingerprint<C,R> implements CardFingerprint
 		StringBuffer result = new StringBuffer();
 		int i = 0, n = commandResponsePairs.size();
 		result.append("[");
-		for (C c: commandResponsePairs.keySet()) {
+		for (ICommandAPDU c: commandResponsePairs.keySet()) {
 			short sw = commandResponsePairs.get(c);
-			ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
 			
-			result.append(Hex.bytesToHexString( sc.accesC(c).getBytes()) + " -> " + Hex.shortToHexString((short)(sw & 0xFFFF)));
+			result.append(Hex.bytesToHexString( c.getBytes()) + " -> " + Hex.shortToHexString((short)(sw & 0xFFFF)));
 			i++;
 			if (i < n) { result.append(", "); }
 		}

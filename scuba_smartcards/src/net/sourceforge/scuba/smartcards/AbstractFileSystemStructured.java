@@ -30,22 +30,22 @@ package net.sourceforge.scuba.smartcards;
  *  
  * @author woj
  */
-public abstract class AbstractFileSystemStructured<C,R> implements FileSystemStructured {
+public abstract class AbstractFileSystemStructured implements FileSystemStructured {
     
     public static short MF_ID = 0x3F00;
     
-    private CardService<C,R> service = null;
+    private CardService service = null;
     private short selectedFID = 0;
     private int length = -1;
     private int p2 = 0;
     private int selectLe = 256;
     private ISOFileInfo fileInfo = null;
     
-    public AbstractFileSystemStructured(CardService<C,R> service) {
+    public AbstractFileSystemStructured(CardService service) {
         this.service = service;
     }
 
-    public AbstractFileSystemStructured(CardService<C,R> service, boolean fileInfo) {
+    public AbstractFileSystemStructured(CardService service, boolean fileInfo) {
         this.service = service;
         this.p2 = fileInfo ? 0x00 : 0x0C;
         this.selectLe = fileInfo ? 256 : 0;
@@ -62,14 +62,11 @@ public abstract class AbstractFileSystemStructured<C,R> implements FileSystemStr
     public abstract byte[] readBinary(int offset, int length);
 
     private void selectFile(byte[] data, int p1) throws CardServiceException {
-        C command = createSelectFileAPDU(p1, p2, data, selectLe);
-        R response = service.transmit(command);
+        CommandAPDU command = createSelectFileAPDU(p1, p2, data, selectLe);
+        IResponseAPDU response = service.transmit(command);
         
-        ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
-
-        IResponseAPDU r = sc.accesR(response);
-        int respSW = r.getSW();
-        byte[] respData = r.getData();
+        int respSW = response.getSW();
+        byte[] respData = response.getData();
         
         if( respSW != ISO7816.SW_NO_ERROR) {
             throw new CardServiceException("File could not be selected.", respSW);
@@ -124,14 +121,13 @@ public abstract class AbstractFileSystemStructured<C,R> implements FileSystemStr
         selectFile(path, 0x09);        
     } 
     
-    private C createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
-    	ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
+    private CommandAPDU createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
     	if( le == 0)
-    		return sc.createCommandAPDU( ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data );
+    		return new CommandAPDU( ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data );
     		//return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data);
         else
         	//return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data, le);
-        	return sc.createCommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data, le);
+        	return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data, le);
     }
 
 }

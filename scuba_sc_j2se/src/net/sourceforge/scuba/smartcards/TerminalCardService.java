@@ -25,8 +25,7 @@ import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
+
 
 /**
  * Card service implementation for sending APDUs to a terminal using the
@@ -37,7 +36,7 @@ import javax.smartcardio.ResponseAPDU;
  * 
  * @version $Revision$
  */
-public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> {
+public class TerminalCardService extends CardService {
 
 	private static final long serialVersionUID = 7918176921505623791L;
 
@@ -56,14 +55,6 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> 
 		this.terminal = terminal;
 		lastActiveTime = System.currentTimeMillis();
 		apduCount = 0;
-	}
-
-	/**
-	 * Return the factory which should be used to construct APDUs for this 
-	 * service.
-	 */
-	public ISCFactory<CommandAPDU, ResponseAPDU> getAPDUFactory() {
-		return new SCFactory();
 	}
 	
 	/**
@@ -97,13 +88,16 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> 
 	 * @return the response from the card, including the status word
 	 * @throws CardServiceException - if the card operation failed 
 	 */
-	public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) 
+	public IResponseAPDU transmit(ICommandAPDU ourCommandAPDU) 
 	throws CardServiceException {
 		try {
 			if (channel == null) {
 				throw new CardServiceException("channel == null");
 			}
-			ResponseAPDU ourResponseAPDU = channel.transmit(ourCommandAPDU);
+			javax.smartcardio.CommandAPDU command = 
+					new javax.smartcardio.CommandAPDU(ourCommandAPDU.getBytes());
+			javax.smartcardio.ResponseAPDU response = channel.transmit(command);
+			IResponseAPDU ourResponseAPDU = new ResponseAPDU(response.getBytes());
 			notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
 			lastActiveTime = System.currentTimeMillis();
 			return ourResponseAPDU;

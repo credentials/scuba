@@ -34,14 +34,14 @@ import java.util.HashSet;
  * @author Pim Vullers (pim@cs.ru.nl)
  * @version $Revision: 259 $
  */
-public abstract class CardService<C,R> implements Serializable {
+public abstract class CardService implements Serializable {
 	private static final long serialVersionUID = 5618527358158494957L;
 
 	static protected final int SESSION_STOPPED_STATE = 0;
 	static protected final int SESSION_STARTED_STATE = 1;
 
 	/** The apduListeners. */
-	private Collection<APDUListener<C,R>> apduListeners;
+	private Collection<APDUListener> apduListeners;
 
 	/*
 	 * @ invariant state == SESSION_STOPPED_STATE || state ==
@@ -53,7 +53,7 @@ public abstract class CardService<C,R> implements Serializable {
 	 * Creates a new service.
 	 */
 	public CardService() {
-		apduListeners = new HashSet<APDUListener<C,R>>();
+		apduListeners = new HashSet<APDUListener>();
 		state = SESSION_STOPPED_STATE;
 	}
 
@@ -62,7 +62,7 @@ public abstract class CardService<C,R> implements Serializable {
 	 * 
 	 * @param l the listener to add
 	 */
-	public void addAPDUListener(APDUListener<C,R> l) {
+	public void addAPDUListener(APDUListener l) {
 		if (apduListeners != null) { apduListeners.add(l); }
 	}
 
@@ -71,7 +71,7 @@ public abstract class CardService<C,R> implements Serializable {
 	 * 
 	 * @param l the listener to remove
 	 */
-	public void removeAPDUListener(APDUListener<C,R> l) {
+	public void removeAPDUListener(APDUListener l) {
 		if (apduListeners != null) { apduListeners.remove(l); }
 	}
 
@@ -80,19 +80,13 @@ public abstract class CardService<C,R> implements Serializable {
 	 * 
 	 * @param capdu APDU event
 	 */
-	protected void notifyExchangedAPDU(int count, C capdu, R rapdu) {
-		for (APDUListener<C,R> listener: apduListeners) {
+	protected void notifyExchangedAPDU(int count, ICommandAPDU capdu, IResponseAPDU rapdu) {
+		for (APDUListener listener: apduListeners) {
 			listener.exchangedAPDU(
-					new APDUEvent<C,R>(this, "RAW", count, capdu, rapdu));
+					new APDUEvent(this, "RAW", count, capdu, rapdu));
 		}
 	}
 
-	/**
-	 * Return the factory which should be used to construct APDUs for this 
-	 * service.
-	 */
-	public abstract ISCFactory<C,R> getAPDUFactory();
-	
 	/**
 	 * Opens a session with the card. Selects a reader. Connects to the card.
 	 * Notifies any interested apduListeners.
@@ -125,7 +119,7 @@ public abstract class CardService<C,R> implements Serializable {
 	 * @ requires state == SESSION_STARTED_STATE; 
 	 * @ ensures state == SESSION_STARTED_STATE;
 	 */
-	public abstract R transmit(C apdu) throws CardServiceException;
+	public abstract IResponseAPDU transmit(ICommandAPDU apdu) throws CardServiceException;
 
 	/**
 	 * Closes the session with the card. Disconnects from the card and reader.

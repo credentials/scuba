@@ -1,4 +1,4 @@
-package net.sourceforge.scuba.smartcards.indep;
+package net.sourceforge.scuba.smartcards;
 
 /*
  * Copyright 2005-2006 Sun Microsystems, Inc.  All Rights Reserved.
@@ -27,7 +27,6 @@ package net.sourceforge.scuba.smartcards.indep;
 
 import java.util.Arrays;
 
-import net.sourceforge.scuba.smartcards.ICommandAPDU;
 
 /**
  * A command APDU following the structure defined in ISO/IEC 7816-4.
@@ -65,7 +64,8 @@ public final class CommandAPDU implements java.io.Serializable, ICommandAPDU {
 
     private static final long serialVersionUID = 398698301286670877L;
 
-    private static final int MAX_APDU_SIZE = 65544;
+    @SuppressWarnings("unused")
+	private static final int MAX_APDU_SIZE = 65544;
 
     /** @serial */
     private byte[] apdu;
