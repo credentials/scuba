@@ -36,7 +36,7 @@ import javax.smartcardio.CardTerminal;
  * 
  * @version $Revision$
  */
-public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> {
+public class TerminalCardService extends CardService {
 
 	private static final long serialVersionUID = 7918176921505623791L;
 
@@ -88,7 +88,7 @@ public class TerminalCardService extends CardService<CommandAPDU, ResponseAPDU> 
 	 * @return the response from the card, including the status word
 	 * @throws CardServiceException - if the card operation failed 
 	 */
-	public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) 
+	public IResponseAPDU transmit(ICommandAPDU ourCommandAPDU) 
 	throws CardServiceException {
 		try {
 			if (channel == null) {
