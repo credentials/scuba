@@ -30,12 +30,12 @@ import java.util.EventListener;
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @version $Revision: 214 $
  */
-public interface APDUListener<C, R> extends EventListener
+public interface APDUListener extends EventListener
 {
    /**
     * Is called after an apdu was exchanged.
     * 
     * @param e an APDU event containing the exchanged APDUs
     */
-   void exchangedAPDU(APDUEvent<C, R> e);
+   void exchangedAPDU(APDUEvent e);
 }

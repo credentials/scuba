@@ -30,19 +30,19 @@ import java.util.EventListener;
  *
  * @version $Revision: $
  */
-public interface CardTerminalListener<C, R> extends EventListener
+public interface CardTerminalListener extends EventListener
 {
 	/**
 	 * Called when card inserted.
 	 *
 	 * @param ce insertion event
 	 */
-	void cardInserted(CardEvent<C, R> ce);
+	void cardInserted(CardEvent ce);
 
 	/**
 	 * Called when card removed.
 	 *
 	 * @param ce removal event
 	 */
-	void cardRemoved(CardEvent<C, R> ce);
+	void cardRemoved(CardEvent ce);
 }

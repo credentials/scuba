@@ -32,7 +32,7 @@ import net.sourceforge.scuba.util.Hex;
  * @author Wojciech Mostowski <woj@cs.ru.nl>
  *
  */
-public class DummyAcceptingCardService<C,R> extends CardService<C,R>
+public class DummyAcceptingCardService extends CardService
 {
 	private static final long serialVersionUID = 959248891375637853L;
 
@@ -57,14 +57,13 @@ public class DummyAcceptingCardService<C,R> extends CardService<C,R>
     public void open() throws CardServiceException {
     }
 
-    public R transmit(C apdu) throws CardServiceException {
-        ScubaSmartcards<C, R> sc = ScubaSmartcards.getInstance();
+    public IResponseAPDU transmit(ICommandAPDU apdu) throws CardServiceException {
     	
-    	String c = Hex.bytesToHexString( sc.accesC(apdu).getBytes());
+    	String c = Hex.bytesToHexString( apdu.getBytes());
         String r = "9000";
         out.println("==> "+c);
         out.println("<== "+r);
-        R response = sc.createResponseAPDU(Hex.hexStringToBytes(r));
+        IResponseAPDU response = new ResponseAPDU(Hex.hexStringToBytes(r));
         return response;
     }
 

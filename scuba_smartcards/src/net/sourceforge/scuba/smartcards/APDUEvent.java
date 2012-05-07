@@ -2,16 +2,16 @@ package net.sourceforge.scuba.smartcards;
 
 import java.util.EventObject;
 
-public class APDUEvent<C,R> extends EventObject
+public class APDUEvent extends EventObject
 {
 	private static final long serialVersionUID = 7152351242541552732L;
 
 	private Object type;
 	private int sequenceNumber;
-	private C capdu;
-	private R rapdu;
+	private ICommandAPDU capdu;
+	private IResponseAPDU rapdu;
 
-	public APDUEvent(Object source, Object type, int sequenceNumber, C capdu, R rapdu) {
+	public APDUEvent(Object source, Object type, int sequenceNumber, ICommandAPDU capdu, IResponseAPDU rapdu) {
 		super(source);
 		this.type = type;
 		this.sequenceNumber = sequenceNumber;
@@ -23,7 +23,7 @@ public class APDUEvent<C,R> extends EventObject
 	
 	public int getSequenceNumber() { return sequenceNumber; }
 	
-	public C getCommandAPDU() { return capdu; }
+	public ICommandAPDU getCommandAPDU() { return capdu; }
 
-	public R getResponseAPDU() { return rapdu; }
+	public IResponseAPDU getResponseAPDU() { return rapdu; }
 }
