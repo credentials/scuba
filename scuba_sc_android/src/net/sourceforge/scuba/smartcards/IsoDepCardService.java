@@ -1,6 +1,9 @@
 /*
  * SCUBA smart card framework.
  *
+ * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com)
+ * for aJMRTD (an Android client for JMRTD).
+ *
  * Copyright (C) 2012  The SCUBA team.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,37 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Based on work by Max Guenther (max.math.guenther@googlemail.com) for 
- * aJMRTD (An Android Client for JMRTD) who released it under the following
- * license:
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-
- * $Id: $
- */
 
 package net.sourceforge.scuba.smartcards;
 
 import android.nfc.tech.IsoDep;
 
 import java.io.IOException;
-
-import net.sourceforge.scuba.smartcards.indep.CommandAPDU;
-import net.sourceforge.scuba.smartcards.indep.ResponseAPDU;
-import net.sourceforge.scuba.smartcards.indep.SCFactory;
 
 /**
  * Card service implementation for sending APDUs to a terminal using the
@@ -57,7 +35,7 @@ import net.sourceforge.scuba.smartcards.indep.SCFactory;
  * 
  * @version $Revision$
  */
-public class IsoDepCardService extends CardService<CommandAPDU,ResponseAPDU> {
+public class IsoDepCardService extends CardService {
 
 	private static final long serialVersionUID = -8123218195642784731L;
 	
@@ -73,15 +51,7 @@ public class IsoDepCardService extends CardService<CommandAPDU,ResponseAPDU> {
         this.nfc = nfc;
         apduCount = 0;
     }
-    
-	/**
-	 * Return the factory which should be used to construct APDUs for this 
-	 * service.
-	 */
-    public ISCFactory<CommandAPDU, ResponseAPDU> getAPDUFactory() {
-    	return new SCFactory();
-    }
-    
+       
 	/**
 	 * Opens a session with the card.
 	 */
@@ -89,7 +59,7 @@ public class IsoDepCardService extends CardService<CommandAPDU,ResponseAPDU> {
 		if (isOpen()) { return; }
         try {
             nfc.connect();
-            if (nfc.isConnected()) { 
+            if (!nfc.isConnected()) { 
             	throw new CardServiceException("failed to connect");
             }
 			state = SESSION_STARTED_STATE;
@@ -104,10 +74,11 @@ public class IsoDepCardService extends CardService<CommandAPDU,ResponseAPDU> {
     public boolean isOpen() {
     	if (nfc.isConnected()) {
     		state = SESSION_STARTED_STATE;
+    		return true;
     	} else {
     		state = SESSION_STOPPED_STATE;
+    		return false;
     	}
-        return (state != SESSION_STOPPED_STATE);
     }
 
 	/**
@@ -117,13 +88,13 @@ public class IsoDepCardService extends CardService<CommandAPDU,ResponseAPDU> {
 	 * @return the response from the card, including the status word
 	 * @throws CardServiceException - if the card operation failed 
 	 */
-    public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) 
+    public IResponseAPDU transmit(ICommandAPDU ourCommandAPDU) 
     throws CardServiceException {
         try {
         	if (!nfc.isConnected()) {
         		throw new CardServiceException("not connected");
         	}
-        	ResponseAPDU ourResponseAPDU = new ResponseAPDU(
+        	IResponseAPDU ourResponseAPDU = new ResponseAPDU(
         			nfc.transceive(ourCommandAPDU.getBytes()));
 			notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
 			return ourResponseAPDU;

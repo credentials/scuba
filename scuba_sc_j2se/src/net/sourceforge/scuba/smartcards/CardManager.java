@@ -37,8 +37,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 import javax.smartcardio.TerminalFactory;
 
 /**
@@ -73,8 +71,8 @@ public class CardManager
 	private Map<TerminalFactory, FactoryPoller> factories;
 	private Map<CardTerminal, TerminalPoller> terminals;
 	private Collection<TerminalFactoryListener> terminalFactoryListeners;
-	private Collection<CardTerminalListener<CommandAPDU, ResponseAPDU>> cardTerminalListeners;
-	private Collection<APDUListener<CommandAPDU, ResponseAPDU>> apduListeners;
+	private Collection<CardTerminalListener> cardTerminalListeners;
+	private Collection<APDUListener> apduListeners;
 
 	private Lock terminalFactoryListenersLock;
 	private Condition notWaitingForFirstTerminalFactoryListenerCondition;
@@ -85,8 +83,8 @@ public class CardManager
 	private CardManager() {	   
 		try {
 			terminalFactoryListeners = new HashSet<TerminalFactoryListener>();
-			cardTerminalListeners = new HashSet<CardTerminalListener<CommandAPDU, ResponseAPDU>>();
-			apduListeners = new HashSet<APDUListener<CommandAPDU, ResponseAPDU>>();
+			cardTerminalListeners = new HashSet<CardTerminalListener>();
+			apduListeners = new HashSet<APDUListener>();
 			terminalFactoryListenersLock = new ReentrantLock(true);
 			notWaitingForFirstTerminalFactoryListenerCondition = terminalFactoryListenersLock.newCondition();
 			cardTerminalListenersLock = new ReentrantLock(true);
@@ -220,10 +218,10 @@ public class CardManager
 	 *
 	 * @return a card service or <code>null</code>
 	 */
-	public CardService<CommandAPDU, ResponseAPDU> getService(CardTerminal terminal) {
+	public CardService getService(CardTerminal terminal) {
 		TerminalPoller poller = terminals.get(terminal);
 		if (poller == null) { return null; }
-		CardService<CommandAPDU, ResponseAPDU> service = poller.getService();
+		CardService service = poller.getService();
 		return service;
 	}
 	/**
@@ -342,7 +340,7 @@ public class CardManager
 	 * 
 	 * @param l the listener to add
 	 */
-	public void addCardTerminalListener(CardTerminalListener<CommandAPDU, ResponseAPDU> l) {
+	public void addCardTerminalListener(CardTerminalListener l) {
 		cardTerminalListenersLock.lock();
 		try {
 			cardTerminalListeners.add(l);
@@ -366,7 +364,7 @@ public class CardManager
 	 * 
 	 * @param l the listener to remove
 	 */
-	public void removeCardTerminalListener(CardTerminalListener<CommandAPDU, ResponseAPDU> l) {
+	public void removeCardTerminalListener(CardTerminalListener l) {
 		cardTerminalListeners.remove(l);
 	}
 
@@ -375,12 +373,12 @@ public class CardManager
 	 * 
 	 * @param l the listener to add
 	 */
-	public void addAPDUListener(APDUListener<CommandAPDU, ResponseAPDU> l) {
+	public void addAPDUListener(APDUListener l) {
 		apduListeners.add(l);
 		for (CardTerminal terminal: terminals.keySet()) {
 			TerminalPoller poller = terminals.get(terminal);
 			if (poller != null) {
-				CardService<CommandAPDU, ResponseAPDU> service = poller.getService();
+				CardService service = poller.getService();
 				if (service != null) {
 					service.addAPDUListener(l);
 				}
@@ -393,12 +391,12 @@ public class CardManager
 	 * 
 	 * @param l the listener to remove
 	 */
-	public void removeAPDUListener(APDUListener<CommandAPDU, ResponseAPDU> l) {
+	public void removeAPDUListener(APDUListener l) {
 		apduListeners.remove(l);
 		for (CardTerminal terminal: terminals.keySet()) {
 			TerminalPoller poller = terminals.get(terminal);
 			if (poller != null) {
-				CardService<CommandAPDU, ResponseAPDU> service = poller.getService();
+				CardService service = poller.getService();
 				if (service != null) {
 					service.removeAPDUListener(l);
 				}
@@ -419,8 +417,8 @@ public class CardManager
 		}
 	}
 
-	private void notifyCardEvent(final CardEvent<CommandAPDU, ResponseAPDU> ce) {
-		for (final CardTerminalListener<CommandAPDU, ResponseAPDU> l : cardTerminalListeners) { 
+	private void notifyCardEvent(final CardEvent ce) {
+		for (final CardTerminalListener l : cardTerminalListeners) { 
 			(new Thread(new Runnable() {
 				public void run() {
 					switch (ce.getType()) {
@@ -719,7 +717,7 @@ public class CardManager
 			}
 		}
 
-		public CardService<CommandAPDU, ResponseAPDU> getService() {
+		public CardService getService() {
 			return service;
 		}
 
@@ -757,7 +755,7 @@ public class CardManager
 								try {
 									if (terminal.isCardPresent()) {
 										service = new TerminalCardService(terminal);
-										for (APDUListener<CommandAPDU, ResponseAPDU> l: cm.apduListeners) { service.addAPDUListener(l); }
+										for (APDUListener l: cm.apduListeners) { service.addAPDUListener(l); }
 									}
 								} catch (Exception e) {
 									if (service != null) { service.close(); }
@@ -774,14 +772,14 @@ public class CardManager
 							}
 							if (wasCardPresent && !isCardPresent) {
 								if (service != null) {
-									final CardEvent<CommandAPDU, ResponseAPDU> ce = new CardEvent<CommandAPDU, ResponseAPDU>(CardEvent.REMOVED, service);
+									final CardEvent ce = new CardEvent(CardEvent.REMOVED, service);
 									notifyCardEvent(ce);
 									service.close();
 								}
 								service = null;
 							} else if (!wasCardPresent && isCardPresent) {
 								if (service != null) {
-									final CardEvent<CommandAPDU, ResponseAPDU> ce = new CardEvent<CommandAPDU, ResponseAPDU>(CardEvent.INSERTED, service);
+									final CardEvent ce = new CardEvent(CardEvent.INSERTED, service);
 									notifyCardEvent(ce);
 								}
 							}

@@ -1,4 +1,4 @@
-package net.sourceforge.scuba.smartcards.indep;
+package net.sourceforge.scuba.smartcards;
 
 
 /*
@@ -28,7 +28,6 @@ package net.sourceforge.scuba.smartcards.indep;
 
 import java.util.Arrays;
 
-import net.sourceforge.scuba.smartcards.IResponseAPDU;
 
 /**
  * A response APDU as defined in ISO/IEC 7816-4. It consists of a conditional
