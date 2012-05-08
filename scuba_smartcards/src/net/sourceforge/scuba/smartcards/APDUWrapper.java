@@ -29,7 +29,7 @@ package net.sourceforge.scuba.smartcards;
  * 
  * @version $Revision: 206 $
  */
-public interface APDUWrapper<C,R>
+public interface APDUWrapper
 {
    /**
     * Wraps the command apdu buffer.
@@ -39,7 +39,7 @@ public interface APDUWrapper<C,R>
     *           not specified).
     * @return wrapped apdu buffer
     */
-   C wrap(C capdu);
+   ICommandAPDU wrap(ICommandAPDU capdu);
    
-   R unwrap(R rapdu, int len);
+   IResponseAPDU unwrap(IResponseAPDU rapdu, int len);
 }
