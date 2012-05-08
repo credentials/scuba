@@ -7,6 +7,7 @@ public class WrappingCardService extends CardService {
 
 	private static final long serialVersionUID = -1872209495542386286L;
 
+	private boolean enabled;
 	private CardService service;
 	private APDUWrapper wrapper;
 	
@@ -25,12 +26,27 @@ public class WrappingCardService extends CardService {
 
 	public IResponseAPDU transmit(ICommandAPDU capdu)
 	throws CardServiceException {
-		ICommandAPDU wrappedC = wrapper.wrap(capdu);
-		IResponseAPDU rapdu = service.transmit(wrappedC);
-		return wrapper.unwrap(rapdu, rapdu.getBytes().length);
+		if (enabled) {
+			IResponseAPDU rapdu = service.transmit(wrapper.wrap(capdu));
+			return wrapper.unwrap(rapdu, rapdu.getBytes().length);
+		} else {
+			return service.transmit(capdu);
+		}
 	}
 
 	public void close() {
 		service.close();
+	}
+	
+	public void enable() {
+		enabled = true;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public void disable() {
+		enabled = false;
 	}
 }
