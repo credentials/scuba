@@ -108,6 +108,24 @@ public class TerminalCardService extends CardService {
 	}
 
 	/**
+	 * Sends a control command to the terminal
+	 *
+	 * @param controlCode the control code to send
+	 * @param command the command data for the terminal
+	 * @return response from the terminal/card
+	 * @throws CardServiceException - if the card operation failed
+	 */
+	public byte[] transmitControlCommand(int controlCode, byte[] command)
+	throws CardServiceException {
+		try {
+			return card.transmitControlCommand(controlCode, command);
+		} catch (CardException ce) {
+			ce.printStackTrace();
+			throw new CardServiceException(ce.toString());
+		}
+	}
+
+	/**
 	 * Closes the session with the card.
 	 */
 	public void close() {
