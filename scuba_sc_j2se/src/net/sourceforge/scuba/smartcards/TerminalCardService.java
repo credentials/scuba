@@ -56,7 +56,7 @@ public class TerminalCardService extends CardService {
 		lastActiveTime = System.currentTimeMillis();
 		apduCount = 0;
 	}
-
+	
 	/**
 	 * Opens a session with the card.
 	 */
