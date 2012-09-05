@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TerminalCardService.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: TerminalCardService.java 185 2012-09-05 09:22:58Z pimvullers $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -33,7 +33,7 @@ import javax.smartcardio.CardTerminal;
  * 
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * 
- * @version $Revision: 183 $
+ * @version $Revision: 185 $
  */
 public class TerminalCardService extends CardService {
 

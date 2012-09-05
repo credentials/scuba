@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: FileUtil.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: FileUtil.java 185 2012-09-05 09:22:58Z pimvullers $
  */
 
 package net.sourceforge.scuba.util;
@@ -33,7 +33,7 @@ import javax.swing.filechooser.FileFilter;
  * 
  * @author The JMRTD team (info@jmrtd.org)
  * 
- * @version $Revision$
+ * @version $Revision: 185 $
  */
 public class FileUtil {
 
