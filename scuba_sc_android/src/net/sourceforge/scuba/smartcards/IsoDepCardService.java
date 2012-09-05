@@ -1,23 +1,25 @@
-/*
- * SCUBA smart card framework.
+/* 
+ * This file is part of the SCUBA smart card framework.
+ * 
+ * SCUBA is free software: you can redistribute it and/or modify it under the 
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * SCUBA. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com) for 
+ * aJMRTD (an Android client for JMRTD, released under the LGPL license).
  *
- * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com)
- * for aJMRTD (an Android client for JMRTD).
- *
- * Copyright (C) 2012  The SCUBA team.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2012 The SCUBA team.
+ * 
+ * $Id: IsoDepCardService.java 184 2012-09-04 21:17:15Z pimvullers $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -33,7 +35,7 @@ import java.io.IOException;
  * 
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision$
+ * @version $Revision: 184 $
  */
 public class IsoDepCardService extends CardService {
 
