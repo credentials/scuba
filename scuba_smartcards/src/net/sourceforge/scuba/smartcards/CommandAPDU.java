@@ -1,14 +1,12 @@
-package net.sourceforge.scuba.smartcards;
-
 /*
- * Copyright 2005-2006 Sun Microsystems, Inc.  All Rights Reserved.
+ * Copyright (c) 2005, 2006, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
+ * published by the Free Software Foundation.  Oracle designates this
  * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
+ * by Oracle in the LICENSE file that accompanied this code.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -20,13 +18,16 @@ package net.sourceforge.scuba.smartcards;
  * 2 along with this work; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
  */
+
+package net.sourceforge.scuba.smartcards;
 
 import java.util.Arrays;
 
+import java.nio.ByteBuffer;
 
 /**
  * A command APDU following the structure defined in ISO/IEC 7816-4.
@@ -55,6 +56,7 @@ import java.util.Arrays;
  * via byte arrays, defensive cloning is performed.
  *
  * @see ResponseAPDU
+ * @see CardChannel#transmit CardChannel.transmit
  *
  * @since   1.6
  * @author  Andreas Sterbenz
@@ -141,27 +143,27 @@ public final class CommandAPDU implements java.io.Serializable, ICommandAPDU {
         }
     }
 
-//    /**
-//     * Creates a CommandAPDU from the ByteBuffer containing the complete APDU
-//     * contents (header and body).
-//     * The buffer's <code>position</code> must be set to the start of the APDU,
-//     * its <code>limit</code> to the end of the APDU. Upon return, the buffer's
-//     * <code>position</code> is equal to its limit; its limit remains unchanged.
-//     *
-//     * <p>Note that the data in the ByteBuffer is copied to protect against
-//     * subsequent modification.
-//     *
-//     * @param apdu the ByteBuffer containing the complete APDU
-//     *
-//     * @throws NullPointerException if apdu is null
-//     * @throws IllegalArgumentException if apdu does not contain a valid
-//     *   command APDU
-//     */
-//    public CommandAPDU(ByteBuffer apdu) {
-//        this.apdu = new byte[apdu.remaining()];
-//        apdu.get(this.apdu);
-//        parse();
-//    }
+    /**
+     * Creates a CommandAPDU from the ByteBuffer containing the complete APDU
+     * contents (header and body).
+     * The buffer's <code>position</code> must be set to the start of the APDU,
+     * its <code>limit</code> to the end of the APDU. Upon return, the buffer's
+     * <code>position</code> is equal to its limit; its limit remains unchanged.
+     *
+     * <p>Note that the data in the ByteBuffer is copied to protect against
+     * subsequent modification.
+     *
+     * @param apdu the ByteBuffer containing the complete APDU
+     *
+     * @throws NullPointerException if apdu is null
+     * @throws IllegalArgumentException if apdu does not contain a valid
+     *   command APDU
+     */
+    public CommandAPDU(ByteBuffer apdu) {
+        this.apdu = new byte[apdu.remaining()];
+        apdu.get(this.apdu);
+        parse();
+    }
 
     /**
      * Constructs a CommandAPDU from the four header bytes. This is case 1
@@ -239,7 +241,8 @@ public final class CommandAPDU implements java.io.Serializable, ICommandAPDU {
      *   negative or if dataOffset + dataLength are greater than data.length
      *   or if dataLength is greater than 65535
      */
-    public CommandAPDU(int cla, int ins, int p1, int p2, byte[] data, int dataOffset, int dataLength) {
+    public CommandAPDU(int cla, int ins, int p1, int p2, byte[] data,
+            int dataOffset, int dataLength) {
         this(cla, ins, p1, p2, data, dataOffset, dataLength, 0);
     }
 
@@ -477,74 +480,103 @@ public final class CommandAPDU implements java.io.Serializable, ICommandAPDU {
         apdu[3] = (byte)p2;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getCLA()
-	 */
+    /**
+     * Returns the value of the class byte CLA.
+     *
+     * @return the value of the class byte CLA.
+     */
     public int getCLA() {
         return apdu[0] & 0xff;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getINS()
-	 */
+    /**
+     * Returns the value of the instruction byte INS.
+     *
+     * @return the value of the instruction byte INS.
+     */
     public int getINS() {
         return apdu[1] & 0xff;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getP1()
-	 */
+    /**
+     * Returns the value of the parameter byte P1.
+     *
+     * @return the value of the parameter byte P1.
+     */
     public int getP1() {
         return apdu[2] & 0xff;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getP2()
-	 */
+    /**
+     * Returns the value of the parameter byte P2.
+     *
+     * @return the value of the parameter byte P2.
+     */
     public int getP2() {
         return apdu[3] & 0xff;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getNc()
-	 */
+    /**
+     * Returns the number of data bytes in the command body (Nc) or 0 if this
+     * APDU has no body. This call is equivalent to
+     * <code>getData().length</code>.
+     *
+     * @return the number of data bytes in the command body or 0 if this APDU
+     * has no body.
+     */
     public int getNc() {
         return nc;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getData()
-	 */
+    /**
+     * Returns a copy of the data bytes in the command body. If this APDU as
+     * no body, this method returns a byte array with length zero.
+     *
+     * @return a copy of the data bytes in the command body or the empty
+     *    byte array if this APDU has no body.
+     */
     public byte[] getData() {
         byte[] data = new byte[nc];
         System.arraycopy(apdu, dataOffset, data, 0, nc);
         return data;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getNe()
-	 */
+    /**
+     * Returns the maximum number of expected data bytes in a response
+     * APDU (Ne).
+     *
+     * @return the maximum number of expected data bytes in a response APDU.
+     */
     public int getNe() {
         return ne;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#getBytes()
-	 */
+    /**
+     * Returns a copy of the bytes in this APDU.
+     *
+     * @return a copy of the bytes in this APDU.
+     */
     public byte[] getBytes() {
         return apdu.clone();
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#toString()
-	 */
+    /**
+     * Returns a string representation of this command APDU.
+     *
+     * @return a String representation of this command APDU.
+     */
     public String toString() {
         return "CommmandAPDU: " + apdu.length + " bytes, nc=" + nc + ", ne=" + ne;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#equals(java.lang.Object)
-	 */
+    /**
+     * Compares the specified object with this command APDU for equality.
+     * Returns true if the given object is also a CommandAPDU and its bytes are
+     * identical to the bytes in this CommandAPDU.
+     *
+     * @param obj the object to be compared for equality with this command APDU
+     * @return true if the specified object is equal to this command APDU
+     */
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -556,9 +588,11 @@ public final class CommandAPDU implements java.io.Serializable, ICommandAPDU {
         return Arrays.equals(this.apdu, other.apdu);
      }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.ICommandAPDU#hashCode()
-	 */
+    /**
+     * Returns the hash code value for this command APDU.
+     *
+     * @return the hash code value for this command APDU.
+     */
     public int hashCode() {
         return Arrays.hashCode(apdu);
     }

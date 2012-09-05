@@ -1,15 +1,12 @@
-package net.sourceforge.scuba.smartcards;
-
-
 /*
- * Copyright 2005-2006 Sun Microsystems, Inc.  All Rights Reserved.
+ * Copyright (c) 2005, 2006, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
+ * published by the Free Software Foundation.  Oracle designates this
  * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
+ * by Oracle in the LICENSE file that accompanied this code.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -21,13 +18,14 @@ package net.sourceforge.scuba.smartcards;
  * 2 along with this work; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
  */
 
-import java.util.Arrays;
+package net.sourceforge.scuba.smartcards;
 
+import java.util.Arrays;
 
 /**
  * A response APDU as defined in ISO/IEC 7816-4. It consists of a conditional
@@ -39,6 +37,7 @@ import java.util.Arrays;
  * via byte arrays, defensive cloning is performed.
  *
  * @see CommandAPDU
+ * @see CardChannel#transmit CardChannel.transmit
  *
  * @since   1.6
  * @author  Andreas Sterbenz
@@ -75,61 +74,88 @@ public final class ResponseAPDU implements java.io.Serializable, IResponseAPDU {
         }
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#getNr()
-	 */
+    /**
+     * Returns the number of data bytes in the response body (Nr) or 0 if this
+     * APDU has no body. This call is equivalent to
+     * <code>getData().length</code>.
+     *
+     * @return the number of data bytes in the response body or 0 if this APDU
+     * has no body.
+     */
     public int getNr() {
         return apdu.length - 2;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#getData()
-	 */
+    /**
+     * Returns a copy of the data bytes in the response body. If this APDU as
+     * no body, this method returns a byte array with a length of zero.
+     *
+     * @return a copy of the data bytes in the response body or the empty
+     *    byte array if this APDU has no body.
+     */
     public byte[] getData() {
         byte[] data = new byte[apdu.length - 2];
         System.arraycopy(apdu, 0, data, 0, data.length);
         return data;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#getSW1()
-	 */
+    /**
+     * Returns the value of the status byte SW1 as a value between 0 and 255.
+     *
+     * @return the value of the status byte SW1 as a value between 0 and 255.
+     */
     public int getSW1() {
         return apdu[apdu.length - 2] & 0xff;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#getSW2()
-	 */
+    /**
+     * Returns the value of the status byte SW2 as a value between 0 and 255.
+     *
+     * @return the value of the status byte SW2 as a value between 0 and 255.
+     */
     public int getSW2() {
         return apdu[apdu.length - 1] & 0xff;
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#getSW()
-	 */
+    /**
+     * Returns the value of the status bytes SW1 and SW2 as a single
+     * status word SW.
+     * It is defined as
+     * <code>(getSW1() << 8) | getSW2()</code>.
+     *
+     * @return the value of the status word SW.
+     */
     public int getSW() {
         return (getSW1() << 8) | getSW2();
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#getBytes()
-	 */
+    /**
+     * Returns a copy of the bytes in this APDU.
+     *
+     * @return a copy of the bytes in this APDU.
+     */
     public byte[] getBytes() {
         return apdu.clone();
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#toString()
-	 */
+    /**
+     * Returns a string representation of this response APDU.
+     *
+     * @return a String representation of this response APDU.
+     */
     public String toString() {
         return "ResponseAPDU: " + apdu.length + " bytes, SW="
             + Integer.toHexString(getSW());
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#equals(java.lang.Object)
-	 */
+    /**
+     * Compares the specified object with this response APDU for equality.
+     * Returns true if the given object is also a ResponseAPDU and its bytes are
+     * identical to the bytes in this ResponseAPDU.
+     *
+     * @param obj the object to be compared for equality with this response APDU
+     * @return true if the specified object is equal to this response APDU
+     */
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -141,9 +167,11 @@ public final class ResponseAPDU implements java.io.Serializable, IResponseAPDU {
         return Arrays.equals(this.apdu, other.apdu);
     }
 
-    /* (non-Javadoc)
-	 * @see scuba.smartcards.indep.IResponseAPDU#hashCode()
-	 */
+    /**
+     * Returns the hash code value for this response APDU.
+     *
+     * @return the hash code value for this response APDU.
+     */
     public int hashCode() {
         return Arrays.hashCode(apdu);
     }

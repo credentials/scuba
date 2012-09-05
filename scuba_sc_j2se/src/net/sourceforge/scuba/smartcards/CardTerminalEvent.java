@@ -1,22 +1,22 @@
-/*
- * SCUBA smart card framework.
- *
- * Copyright (C) 2011  The SCUBA team.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * $Id: $
+/* 
+ * This file is part of the SCUBA smart card framework.
+ * 
+ * SCUBA is free software: you can redistribute it and/or modify it under the 
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * SCUBA. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (C) 2011-2012 The SCUBA team.
+ * 
+ * $Id: CardTerminalEvent.java 183 2012-09-04 18:54:58Z pimvullers $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -30,7 +30,7 @@ import javax.smartcardio.CardTerminal;
  *
  * @author Pim Vullers (pim@cs.ru.nl)
  *
- * @version $Revision: $
+ * @version $Revision: 183 $
  */
 public class CardTerminalEvent extends EventObject
 {

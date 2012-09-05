@@ -1,22 +1,22 @@
-/*
- * SCUBA smart card framework.
- *
- * Copyright (C) 2009  The SCUBA team.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * $Id: $
+/* 
+ * This file is part of the SCUBA smart card framework.
+ * 
+ * SCUBA is free software: you can redistribute it and/or modify it under the 
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * SCUBA. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (C) 2009-2012 The SCUBA team.
+ * 
+ * $Id: AbstractFileSystemStructured.java 183 2012-09-04 18:54:58Z pimvullers $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -62,7 +62,7 @@ public abstract class AbstractFileSystemStructured implements FileSystemStructur
     public abstract byte[] readBinary(int offset, int length);
 
     private void selectFile(byte[] data, int p1) throws CardServiceException {
-        CommandAPDU command = createSelectFileAPDU(p1, p2, data, selectLe);
+        ICommandAPDU command = createSelectFileAPDU(p1, p2, data, selectLe);
         IResponseAPDU response = service.transmit(command);
         
         int respSW = response.getSW();
@@ -121,7 +121,7 @@ public abstract class AbstractFileSystemStructured implements FileSystemStructur
         selectFile(path, 0x09);        
     } 
     
-    private CommandAPDU createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
+    private ICommandAPDU createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
     	if( le == 0)
     		return new CommandAPDU( ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data );
     		//return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data);
