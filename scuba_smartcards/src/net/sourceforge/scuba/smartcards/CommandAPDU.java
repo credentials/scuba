@@ -25,9 +25,10 @@
 
 package net.sourceforge.scuba.smartcards;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import java.nio.ByteBuffer;
+import javax.smartcardio.CardChannel;
 
 /**
  * A command APDU following the structure defined in ISO/IEC 7816-4.

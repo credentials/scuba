@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: ImageUtil.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: ImageUtil.java 187 2012-09-11 19:11:33Z martijno $
  */
 
 package net.sourceforge.scuba.util;
@@ -52,7 +52,7 @@ import javax.swing.ImageIcon;
  * 
  * @author The JMRTD team (info@jmrtd.org)
  *
- * @version $Revision: 183 $
+ * @version $Revision: 187 $
  */
 public class ImageUtil {
 
@@ -81,7 +81,7 @@ public class ImageUtil {
 		while (readers.hasNext()) {
 			try {
 				ImageReader reader = readers.next();
-				LOGGER.info("Using image reader " + reader + " for type " + mimeType);
+//				LOGGER.info("Using image reader " + reader + " for type " + mimeType);
 				BufferedImage image = read(iis, imageLength, reader);
 				if (image != null) { return image; }
 			} catch (Exception e) {

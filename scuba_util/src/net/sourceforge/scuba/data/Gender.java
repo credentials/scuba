@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: Gender.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: Gender.java 186 2012-09-11 15:24:38Z martijno $
  */
 
 package net.sourceforge.scuba.data;
@@ -28,8 +28,8 @@ package net.sourceforge.scuba.data;
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  * @author Cees-Bart Breunesse (ceesb@riscure.com)
  */
-public enum Gender
-{
+public enum Gender {
+
 	MALE { public int toInt() { return 0x01; } }, 
 	FEMALE {public int toInt() { return 0x02; }}, 
 	UNKNOWN { public int toInt() { return 0x03; } }, 

@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: Country.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: Country.java 186 2012-09-11 15:24:38Z martijno $
  */
 
 package net.sourceforge.scuba.data;
@@ -31,8 +31,8 @@ import java.util.List;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public abstract class Country
-{	
+public abstract class Country {
+
 	private static final Class<?>[] SUB_CLASSES = { ISOCountry.class, TestCountry.class };
 
 	public static Country getInstance(int code) {

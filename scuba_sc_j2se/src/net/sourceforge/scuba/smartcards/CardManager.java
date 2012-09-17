@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardManager.java 185 2012-09-05 09:22:58Z pimvullers $
+ * $Id: CardManager.java 187 2012-09-11 19:11:33Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -37,8 +37,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 import javax.smartcardio.TerminalFactory;
 
 /**
@@ -53,7 +51,7 @@ import javax.smartcardio.TerminalFactory;
  * @author Wojciech Mostowski (woj@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 185 $
+ * @version $Revision: 187 $
  */
 public class CardManager
 {

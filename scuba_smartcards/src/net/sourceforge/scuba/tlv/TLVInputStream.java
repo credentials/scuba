@@ -16,11 +16,13 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputStream.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: TLVInputStream.java 186 2012-09-11 15:24:38Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,12 +32,19 @@ import java.io.InputStream;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  * 
- * @version $Revision: 183 $
+ * @version $Revision: 186 $
  */
-public class TLVInputStream extends InputStream
-{
+public class TLVInputStream extends InputStream {
+
+	/* 64K ought to be enough for anybody. */
+	private static final int MAX_BUFFER_LENGTH = 65535; // Integer.MAX_VALUE;
+
+	private final InputStream originalInputStream;
+
 	/** Carrier. */
 	private DataInputStream inputStream;
+
+	private int bufferSize;
 
 	private TLVInputState state;
 	private TLVInputState markedState;
@@ -46,8 +55,18 @@ public class TLVInputStream extends InputStream
 	 * @param inputStream a TLV object
 	 */
 	public TLVInputStream(InputStream inputStream) {
-		this.inputStream = new DataInputStream(inputStream);
+		this.bufferSize = 0;
+		try {
+			if (inputStream instanceof BufferedInputStream || inputStream instanceof ByteArrayInputStream) {
+				this.bufferSize = inputStream.available();
+			}
+		} catch (IOException ioe) {
+			/* NOTE: if available fails, we leave buffer size at 0. */
+		}
+		this.originalInputStream = inputStream;
+		this.inputStream = inputStream instanceof DataInputStream ? (DataInputStream)inputStream : new DataInputStream(inputStream);
 		state = new TLVInputState();
+
 		markedState = null;
 	}
 
@@ -85,7 +104,7 @@ public class TLVInputStream extends InputStream
 				break;
 			default:
 				tag = b;
-			break;
+				break;
 			}
 			state.setTagProcessed(tag, bytesRead);
 			return tag;
@@ -121,6 +140,13 @@ public class TLVInputStream extends InputStream
 				}
 			}
 			state.setLengthProcessed(length, bytesRead);
+
+			/* We're buffering our carrier inputstream now that we know max length */
+			if (bufferSize < length && length < MAX_BUFFER_LENGTH) {
+				bufferSize = length;
+				this.inputStream = new DataInputStream(new BufferedInputStream(originalInputStream, bufferSize));
+			}
+
 			return length;
 		} catch (IOException e) {
 			throw e;
@@ -276,7 +302,7 @@ public class TLVInputStream extends InputStream
 	public void close() throws IOException {
 		inputStream.close();
 	}
-	
+
 	public String toString() {
 		return state.toString();
 	}
