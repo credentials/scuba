@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: AbstractFileSystemStructured.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: AbstractFileSystemStructured.java 188 2012-09-28 21:47:13Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -62,8 +62,8 @@ public abstract class AbstractFileSystemStructured implements FileSystemStructur
     public abstract byte[] readBinary(int offset, int length);
 
     private void selectFile(byte[] data, int p1) throws CardServiceException {
-        ICommandAPDU command = createSelectFileAPDU(p1, p2, data, selectLe);
-        IResponseAPDU response = service.transmit(command);
+        CommandAPDU command = createSelectFileAPDU(p1, p2, data, selectLe);
+        ResponseAPDU response = service.transmit(command);
         
         int respSW = response.getSW();
         byte[] respData = response.getData();
@@ -121,7 +121,7 @@ public abstract class AbstractFileSystemStructured implements FileSystemStructur
         selectFile(path, 0x09);        
     } 
     
-    private ICommandAPDU createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
+    private CommandAPDU createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
     	if( le == 0)
     		return new CommandAPDU( ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data );
     		//return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data);

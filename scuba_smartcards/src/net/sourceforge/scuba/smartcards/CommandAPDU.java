@@ -61,7 +61,7 @@ import java.util.Arrays;
  * @author  Andreas Sterbenz
  * @author  JSR 268 Expert Group
  */
-public final class CommandAPDU implements java.io.Serializable, ICommandAPDU {
+public final class CommandAPDU implements java.io.Serializable {
 
     private static final long serialVersionUID = 398698301286670877L;
 

@@ -16,14 +16,17 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardService.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: CardService.java 189 2012-09-30 19:26:17Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Default abstract service. Provides some functionality for observing apdu
@@ -33,7 +36,7 @@ import java.util.HashSet;
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 183 $
+ * @version $Revision: 189 $
  */
 public abstract class CardService implements Serializable {
 	private static final long serialVersionUID = 5618527358158494957L;
@@ -41,6 +44,15 @@ public abstract class CardService implements Serializable {
 	static protected final int SESSION_STOPPED_STATE = 0;
 	static protected final int SESSION_STARTED_STATE = 1;
 
+	
+	private static final Map<String, String> objectToServiceMap;
+	static {
+		objectToServiceMap = new HashMap<String, String>();
+		objectToServiceMap.put("javax.smartcardio.CardTerminal", "net.sourceforge.scuba.smartcards.TerminalCardService");
+		objectToServiceMap.put("android.nfc.tech.IsoDep", "net.sourceforge.scuba.smartcards.IsoDepCardService");
+	}
+
+	
 	/** The apduListeners. */
 	private Collection<APDUListener> apduListeners;
 
@@ -49,6 +61,26 @@ public abstract class CardService implements Serializable {
 	 * SESSION_STARTED_STATE;
 	 */
 	protected int state;
+
+	public static CardService getInstance(Object object) {
+		if (object == null) { throw new IllegalArgumentException(); }
+		Class<?> objectClass = object.getClass();
+		String objectClassName = objectClass.getCanonicalName();
+		for (Entry<String, String> entry: objectToServiceMap.entrySet()) {
+			String targetObjectClassName = entry.getKey();
+			String serviceClassName = entry.getValue();
+			if (targetObjectClassName.equals(objectClassName)) {
+				try {
+					Class<?> cardServiceClass = Class.forName(serviceClassName);
+					return (CardService)cardServiceClass.getConstructor(objectClass).newInstance(object);
+				} catch (Exception e) {
+					throw new IllegalArgumentException(e);
+				}
+				
+			}
+		}
+		throw new IllegalArgumentException("Could not find a CardService for object of class \"" + objectClassName + "\"");
+	}
 
 	/**
 	 * Creates a new service.
@@ -81,7 +113,7 @@ public abstract class CardService implements Serializable {
 	 * 
 	 * @param capdu APDU event
 	 */
-	protected void notifyExchangedAPDU(int count, ICommandAPDU capdu, IResponseAPDU rapdu) {
+	protected void notifyExchangedAPDU(int count, CommandAPDU capdu, ResponseAPDU rapdu) {
 		for (APDUListener listener: apduListeners) {
 			listener.exchangedAPDU(
 					new APDUEvent(this, "RAW", count, capdu, rapdu));
@@ -120,7 +152,7 @@ public abstract class CardService implements Serializable {
 	 * @ requires state == SESSION_STARTED_STATE; 
 	 * @ ensures state == SESSION_STARTED_STATE;
 	 */
-	public abstract IResponseAPDU transmit(ICommandAPDU apdu) throws CardServiceException;
+	public abstract ResponseAPDU transmit(CommandAPDU apdu) throws CardServiceException;
 
 	/**
 	 * Closes the session with the card. Disconnects from the card and reader.

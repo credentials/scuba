@@ -114,17 +114,12 @@ public class BERTLVObject implements ASN1Constants
 		}
 	}
 	
-	public static BERTLVObject getInstance(InputStream in) throws IOException {
-		TLVInputStream tlvIn;
-		if (in instanceof TLVInputStream) {
-			tlvIn = (TLVInputStream)in;
-		}else {
-			tlvIn = new TLVInputStream(in);
-		}
+	public static BERTLVObject getInstance(
+			InputStream in) throws IOException {
+		TLVInputStream tlvIn = (in instanceof TLVInputStream) ? (TLVInputStream)in : new TLVInputStream(in);
 		int tag = tlvIn.readTag();
 		tlvIn.readLength();
 		byte[] valueBytes = tlvIn.readValue();
-		tlvIn.close();
 		BERTLVObject result = new BERTLVObject(tag, valueBytes);
 		return result;
 	}

@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: APDUEvent.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: APDUEvent.java 188 2012-09-28 21:47:13Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -29,10 +29,10 @@ public class APDUEvent extends EventObject
 
 	private Object type;
 	private int sequenceNumber;
-	private ICommandAPDU capdu;
-	private IResponseAPDU rapdu;
+	private CommandAPDU capdu;
+	private ResponseAPDU rapdu;
 
-	public APDUEvent(Object source, Object type, int sequenceNumber, ICommandAPDU capdu, IResponseAPDU rapdu) {
+	public APDUEvent(Object source, Object type, int sequenceNumber, CommandAPDU capdu, ResponseAPDU rapdu) {
 		super(source);
 		this.type = type;
 		this.sequenceNumber = sequenceNumber;
@@ -44,7 +44,7 @@ public class APDUEvent extends EventObject
 	
 	public int getSequenceNumber() { return sequenceNumber; }
 	
-	public ICommandAPDU getCommandAPDU() { return capdu; }
+	public CommandAPDU getCommandAPDU() { return capdu; }
 
-	public IResponseAPDU getResponseAPDU() { return rapdu; }
+	public ResponseAPDU getResponseAPDU() { return rapdu; }
 }

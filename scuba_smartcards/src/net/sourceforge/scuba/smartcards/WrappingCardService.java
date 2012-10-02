@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2012 The SCUBA team.
  * 
- * $Id: WrappingCardService.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: WrappingCardService.java 188 2012-09-28 21:47:13Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -26,7 +26,7 @@ package net.sourceforge.scuba.smartcards;
  * 
  * @author Pim Vullers (pim@cs.ru.nl)
  *
- * @version $Revision: 183 $
+ * @version $Revision: 188 $
  */
 public class WrappingCardService extends CardService {
 
@@ -49,10 +49,10 @@ public class WrappingCardService extends CardService {
 		return service.isOpen();
 	}
 
-	public IResponseAPDU transmit(ICommandAPDU capdu)
+	public ResponseAPDU transmit(CommandAPDU capdu)
 	throws CardServiceException {
 		if (isEnabled()) {
-			IResponseAPDU rapdu = service.transmit(wrapper.wrap(capdu));
+			ResponseAPDU rapdu = service.transmit(wrapper.wrap(capdu));
 			return wrapper.unwrap(rapdu, rapdu.getBytes().length);
 		} else {
 			return service.transmit(capdu);

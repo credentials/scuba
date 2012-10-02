@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: APDUFingerprint.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: APDUFingerprint.java 188 2012-09-28 21:47:13Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -60,7 +60,7 @@ public class APDUFingerprint implements CardFingerprint
 	 * The set of commands to send to card to create a fingerprint.
 	 * TODO: Perhaps make this a parameter to the constructor? -- MO
 	 */
-	private final Collection<ICommandAPDU> FINGERPRINT_COMMANDS = new LinkedList<ICommandAPDU>();
+	private final Collection<CommandAPDU> FINGERPRINT_COMMANDS = new LinkedList<CommandAPDU>();
 	private void prepareFingerpringCommands() {
 		FINGERPRINT_COMMANDS.add( new CommandAPDU((byte)0x00, (byte)0x44, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
 		FINGERPRINT_COMMANDS.add( new CommandAPDU((byte)0x00, (byte)0x82, (byte)0x00, (byte)0x00, new byte[0], 0x00) );
@@ -78,13 +78,13 @@ public class APDUFingerprint implements CardFingerprint
 //	};
 
 	/** Maps commands (headers) to responses (status words). */
-	private Map<ICommandAPDU, Short> commandResponsePairs;
+	private Map<CommandAPDU, Short> commandResponsePairs;
 
 	/**
 	 * Constructs an empty fingerprint.
 	 */
 	public APDUFingerprint() {
-		commandResponsePairs = new HashMap<ICommandAPDU, Short>();
+		commandResponsePairs = new HashMap<CommandAPDU, Short>();
 	}
 
 	/**
@@ -99,8 +99,8 @@ public class APDUFingerprint implements CardFingerprint
 		try {
 			if (service.isOpen()) { service.close(); }
 			service.open();
-			for (ICommandAPDU capdu: FINGERPRINT_COMMANDS) {
-				IResponseAPDU rapdu = service.transmit(capdu);
+			for (CommandAPDU capdu: FINGERPRINT_COMMANDS) {
+				ResponseAPDU rapdu = service.transmit(capdu);
 				
 				short sw = (short) rapdu.getSW();
 				if (sw != ISO7816.SW_NO_ERROR) {
@@ -118,7 +118,7 @@ public class APDUFingerprint implements CardFingerprint
 	 * @param capdu command
 	 * @param rapdu response
 	 */
-	public void put(ICommandAPDU capdu, IResponseAPDU rapdu) {
+	public void put(CommandAPDU capdu, ResponseAPDU rapdu) {
 		put(capdu, (short) (rapdu.getSW() & 0xFFFF));
 	}
 	
@@ -128,7 +128,7 @@ public class APDUFingerprint implements CardFingerprint
 	 * @param capdu command apdu
 	 * @param sw response
 	 */
-	public void put(ICommandAPDU capdu, short sw) {
+	public void put(CommandAPDU capdu, short sw) {
 		commandResponsePairs.put(capdu, sw);
 	}
 
@@ -262,7 +262,7 @@ public class APDUFingerprint implements CardFingerprint
 		return value.toString();
 	}
 
-	private int getResponse(ICommandAPDU capdu) {
+	private int getResponse(CommandAPDU capdu) {
 		Short r = commandResponsePairs.get(capdu);
 		if (r == null) {
 			return -1;
@@ -276,8 +276,8 @@ public class APDUFingerprint implements CardFingerprint
 	 * @return
 	 */
 	private boolean isAllowedBy(APDUFingerprint thisPrint, APDUFingerprint otherPrint) {
-		for (ICommandAPDU c: thisPrint.commandResponsePairs.keySet()) {
-			ICommandAPDU otherC = getSimilarCommandAPDU(c, otherPrint);
+		for (CommandAPDU c: thisPrint.commandResponsePairs.keySet()) {
+			CommandAPDU otherC = getSimilarCommandAPDU(c, otherPrint);
 			if (otherC == null) { continue; }
 			if (!isAllowedBy(c, otherC)) { return false; }
 			int response = thisPrint.getResponse(c);
@@ -289,14 +289,14 @@ public class APDUFingerprint implements CardFingerprint
 		return true;
 	}
 
-	private ICommandAPDU getSimilarCommandAPDU(ICommandAPDU capdu, APDUFingerprint print) {
-		for (ICommandAPDU c: print.commandResponsePairs.keySet()) {
+	private CommandAPDU getSimilarCommandAPDU(CommandAPDU capdu, APDUFingerprint print) {
+		for (CommandAPDU c: print.commandResponsePairs.keySet()) {
 			if ( capdu.getINS() == c.getINS()) { return c; }
 		}
 		return null;
 	}
 
-	private boolean isAllowedBy(ICommandAPDU capdu, ICommandAPDU otherCapdu) {		
+	private boolean isAllowedBy(CommandAPDU capdu, CommandAPDU otherCapdu) {		
 		return isAllowedBy( capdu.getINS(), otherCapdu.getINS());
 	}
 
@@ -320,7 +320,7 @@ public class APDUFingerprint implements CardFingerprint
 		StringBuffer result = new StringBuffer();
 		int i = 0, n = commandResponsePairs.size();
 		result.append("[");
-		for (ICommandAPDU c: commandResponsePairs.keySet()) {
+		for (CommandAPDU c: commandResponsePairs.keySet()) {
 			short sw = commandResponsePairs.get(c);
 			
 			result.append(Hex.bytesToHexString( c.getBytes()) + " -> " + Hex.shortToHexString((short)(sw & 0xFFFF)));

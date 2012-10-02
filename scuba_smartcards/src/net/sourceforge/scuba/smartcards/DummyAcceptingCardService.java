@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: DummyAcceptingCardService.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: DummyAcceptingCardService.java 188 2012-09-28 21:47:13Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -57,13 +57,13 @@ public class DummyAcceptingCardService extends CardService
     public void open() throws CardServiceException {
     }
 
-    public IResponseAPDU transmit(ICommandAPDU apdu) throws CardServiceException {
+    public ResponseAPDU transmit(CommandAPDU apdu) throws CardServiceException {
     	
     	String c = Hex.bytesToHexString( apdu.getBytes());
         String r = "9000";
         out.println("==> "+c);
         out.println("<== "+r);
-        IResponseAPDU response = new ResponseAPDU(Hex.hexStringToBytes(r));
+        ResponseAPDU response = new ResponseAPDU(Hex.hexStringToBytes(r));
         return response;
     }
 
