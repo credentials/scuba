@@ -62,7 +62,6 @@ public class ImageUtil {
 	JPEG2000_ALT_MIME_TYPE = "image/jpeg2000",
 	WSQ_MIME_TYPE = "image/x-wsq";
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger("net.sourceforge.scuba.util");
 
 	/**

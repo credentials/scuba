@@ -65,7 +65,6 @@ public class FontUtil {
 
 	/* ONLY PRIVATE METHODS BELOW */
 
-	@SuppressWarnings("unused")
 	private static File getFontsDir() {
 		return new File(FileUtil.getBaseDirAsFile(), "fonts");
 	}

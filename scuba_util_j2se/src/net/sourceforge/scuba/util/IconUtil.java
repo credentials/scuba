@@ -155,7 +155,6 @@ public class IconUtil {
 				String entryName = entry.getName();
 				if (entryName != null && entryName.equals(fileName)) {
 					Image flagImage = ImageIO.read(zipIn);
-					zipIn.close();
 					return flagImage;
 				}
 			}
