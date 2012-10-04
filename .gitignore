@@ -1,5 +1,7 @@
 # /
 /.svn
+/bin
+/lib
 
 # /acr120provider/
 /acr120provider/META-INF

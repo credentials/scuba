@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="Idemix cryptographic library" default="all">
+  
+  <property file="build.properties" />
+
+  <target name="clean">
+    <delete dir="${bin.dir}" />
+  </target>
+
+  <target name="distclean" depends="clean">
+    <delete file="${jar.library.dir}/{jar.library.archive}" />
+    <delete file="${jar.source.dir}/{jar.source.archive}" />
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${bin.dir}" />
+    <javac destdir="${bin.dir}" includeantruntime="false">
+       <src path="${src.util.dir}" />
+       <src path="${src.util.j2se.dir}" />
+       <src path="${src.smartcards.dir}" />
+       <src path="${src.smartcards.j2se.dir}" />
+    </javac>
+  </target>
+
+  <target name="archive" depends="compile">
+    <jar destfile="${jar.source.dir}/${jar.source.archive}">
+      <fileset dir="${src.util.dir}" />
+      <fileset dir="${src.util.j2se.dir}" />
+      <fileset dir="${src.smartcards.dir}" />
+      <fileset dir="${src.smartcards.j2se.dir}" />
+    </jar>
+  </target>
+
+  <target name="library" depends="compile">
+    <jar destfile="${jar.library.dir}/${jar.library.archive}">
+      <fileset dir="${bin.dir}" />
+    </jar>
+  </target>
+  
+  <target name="all" depends="archive,library" />
+</project>
