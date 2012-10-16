@@ -1,7 +1,7 @@
 # /
 /.svn
 /bin
-/lib
+/scuba.*jar
 
 # /acr120provider/
 /acr120provider/META-INF

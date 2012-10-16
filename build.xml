@@ -8,8 +8,9 @@
   </target>
 
   <target name="distclean" depends="clean">
-    <delete file="${jar.library.dir}/{jar.library.archive}" />
-    <delete file="${jar.source.dir}/{jar.source.archive}" />
+    <delete file="${jar.development.dir}/${jar.development.archive}" />
+    <delete file="${jar.library.dir}/${jar.library.archive}" />
+    <delete file="${jar.source.dir}/${jar.source.archive}" />
   </target>
 
   <target name="compile">
