@@ -22,7 +22,7 @@
     </javac>
   </target>
 
-  <target name="archive" depends="compile">
+  <target name="archive">
     <jar destfile="${jar.source.dir}/${jar.source.archive}">
       <fileset dir="${src.util.dir}" />
       <fileset dir="${src.util.j2se.dir}" />
@@ -31,11 +31,21 @@
     </jar>
   </target>
 
+  <target name="development" depends="compile">
+    <jar destfile="${jar.development.dir}/${jar.development.archive}">
+      <fileset dir="${bin.dir}" />
+      <fileset dir="${src.util.dir}" />
+      <fileset dir="${src.util.j2se.dir}" />
+      <fileset dir="${src.smartcards.dir}" />
+      <fileset dir="${src.smartcards.j2se.dir}" />
+    </jar>
+  </target>
+  
   <target name="library" depends="compile">
     <jar destfile="${jar.library.dir}/${jar.library.archive}">
       <fileset dir="${bin.dir}" />
     </jar>
   </target>
   
-  <target name="all" depends="archive,library" />
+  <target name="all" depends="archive,development,library" />
 </project>
