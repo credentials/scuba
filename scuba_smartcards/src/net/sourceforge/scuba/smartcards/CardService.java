@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardService.java 189 2012-09-30 19:26:17Z martijno $
+ * $Id: CardService.java 193 2012-10-10 19:50:04Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -29,14 +29,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Default abstract service. Provides some functionality for observing apdu
- * events.
+ * Default abstract service.
+ * Provides a factory method for creating card services.
+ * Provides some functionality for observing apdu events.
  * 
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 189 $
+ * @version $Revision: 193 $
  */
 public abstract class CardService implements Serializable {
 	private static final long serialVersionUID = 5618527358158494957L;
@@ -44,7 +45,6 @@ public abstract class CardService implements Serializable {
 	static protected final int SESSION_STOPPED_STATE = 0;
 	static protected final int SESSION_STARTED_STATE = 1;
 
-	
 	private static final Map<String, String> objectToServiceMap;
 	static {
 		objectToServiceMap = new HashMap<String, String>();
@@ -52,7 +52,6 @@ public abstract class CardService implements Serializable {
 		objectToServiceMap.put("android.nfc.tech.IsoDep", "net.sourceforge.scuba.smartcards.IsoDepCardService");
 	}
 
-	
 	/** The apduListeners. */
 	private Collection<APDUListener> apduListeners;
 
@@ -68,15 +67,20 @@ public abstract class CardService implements Serializable {
 		String objectClassName = objectClass.getCanonicalName();
 		for (Entry<String, String> entry: objectToServiceMap.entrySet()) {
 			String targetObjectClassName = entry.getKey();
-			String serviceClassName = entry.getValue();
-			if (targetObjectClassName.equals(objectClassName)) {
-				try {
-					Class<?> cardServiceClass = Class.forName(serviceClassName);
-					return (CardService)cardServiceClass.getConstructor(objectClass).newInstance(object);
-				} catch (Exception e) {
-					throw new IllegalArgumentException(e);
+			try {
+				Class<?> targetObjectClass = Class.forName(targetObjectClassName);
+				String serviceClassName = entry.getValue();
+				if (targetObjectClass.isInstance(object)) {
+					try {
+						Class<?> cardServiceClass = Class.forName(serviceClassName);
+						return (CardService)cardServiceClass.getConstructor(targetObjectClass).newInstance(object);
+					} catch (Exception e) {
+						throw new IllegalArgumentException(e);
+					}
+
 				}
-				
+			} catch (ClassNotFoundException cnfe) {
+				continue;
 			}
 		}
 		throw new IllegalArgumentException("Could not find a CardService for object of class \"" + objectClassName + "\"");
