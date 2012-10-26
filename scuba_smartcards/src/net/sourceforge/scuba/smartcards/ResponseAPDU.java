@@ -27,6 +27,8 @@ package net.sourceforge.scuba.smartcards;
 
 import java.util.Arrays;
 
+import javax.smartcardio.CardChannel;
+
 /**
  * A response APDU as defined in ISO/IEC 7816-4. It consists of a conditional
  * body and a two byte trailer.

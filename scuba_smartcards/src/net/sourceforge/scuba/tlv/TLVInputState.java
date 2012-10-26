@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputState.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: TLVInputState.java 195 2012-10-16 20:01:46Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
@@ -25,9 +25,13 @@ import java.util.Stack;
 
 /**
  * State keeps track of where we are in a TLV stream.
+ * 
+ * @author The SCUBA team
+ * 
+ * @version $Revision: 195 $
  */
-class TLVInputState implements Cloneable
-{
+class TLVInputState implements Cloneable {
+
 	/**
 	 * Encodes tags, lengths, and number of valueBytes encountered thus far.
 	 */
@@ -158,18 +162,23 @@ class TLVInputState implements Cloneable
 			isReadingValue = true;
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public Object clone() {
-		return new TLVInputState((Stack<TLStruct>)state.clone(), isAtStartOfTag, isAtStartOfLength, isReadingValue);
+		/* NOTE: simply cloning the state (of type Stack) will only give a spine-deep copy. */
+		Stack<TLStruct> newState = new Stack<TLStruct>();
+		for (int i = 0; i < state.size(); i++) {
+			TLStruct tlStruct = state.get(i);
+			newState.add((TLStruct)tlStruct.clone());
+		}
+		return new TLVInputState(newState, isAtStartOfTag, isAtStartOfLength, isReadingValue);
 	}
 	
 	public String toString() {
 		return state.toString();
 	}
 
-	private class TLStruct implements Cloneable
-	{
+	private class TLStruct implements Cloneable {
+
 		private int tag, length, valueBytesRead;
 
 		public TLStruct(int tag) { this.tag = tag; this.length = Integer.MAX_VALUE; this.valueBytesRead = 0; }

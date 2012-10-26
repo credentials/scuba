@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: FileSystemStructured.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: FileSystemStructured.java 197 2012-10-22 21:50:55Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -28,8 +28,8 @@ package net.sourceforge.scuba.smartcards;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
-public interface FileSystemStructured
-{
+public interface FileSystemStructured {
+
 	/**
 	 * Selects a file.
 	 * 

@@ -16,15 +16,15 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: APDUEvent.java 188 2012-09-28 21:47:13Z martijno $
+ * $Id: APDUEvent.java 197 2012-10-22 21:50:55Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
 
 import java.util.EventObject;
 
-public class APDUEvent extends EventObject
-{
+public class APDUEvent extends EventObject {
+
 	private static final long serialVersionUID = 7152351242541552732L;
 
 	private Object type;

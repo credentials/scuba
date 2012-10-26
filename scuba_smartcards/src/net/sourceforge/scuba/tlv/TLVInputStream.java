@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputStream.java 192 2012-10-07 08:43:24Z martijno $
+ * $Id: TLVInputStream.java 195 2012-10-16 20:01:46Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
@@ -32,7 +32,7 @@ import java.io.InputStream;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  * 
- * @version $Revision: 192 $
+ * @version $Revision: 195 $
  */
 public class TLVInputStream extends InputStream {
 
@@ -268,6 +268,7 @@ public class TLVInputStream extends InputStream {
 	public synchronized void mark(int readLimit) {
 		inputStream.mark(readLimit);
 		markedState = (TLVInputState)state.clone();
+		System.out.println("DEBUG: mark(): markedState == " + markedState);
 	}
 
 	/**
@@ -289,6 +290,8 @@ public class TLVInputStream extends InputStream {
 		if (!markSupported()) {
 			throw new IOException("mark/reset not supported");
 		}
+		System.out.println("DEBUG: reset(): state == " + state);
+		System.out.println("DEBUG: reset(): markedState == " + markedState);
 		inputStream.reset();
 		state = markedState;
 		markedState = null;
