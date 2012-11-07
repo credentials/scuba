@@ -25,7 +25,6 @@
   <target name="archive">
     <jar destfile="${jar.source.dir}/${jar.source.archive}">
       <fileset dir="${src.util.dir}" />
-      <fileset dir="${src.util.j2se.dir}" />
       <fileset dir="${src.smartcards.dir}" />
       <fileset dir="${src.smartcards.j2se.dir}" />
     </jar>
