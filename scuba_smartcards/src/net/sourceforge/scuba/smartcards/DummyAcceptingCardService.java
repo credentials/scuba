@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: DummyAcceptingCardService.java 197 2012-10-22 21:50:55Z martijno $
+ * $Id: DummyAcceptingCardService.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;

@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardEvent.java 197 2012-10-22 21:50:55Z martijno $
+ * $Id: CardEvent.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -28,7 +28,7 @@ import java.util.EventObject;
  *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  *
- * @version $Revision: 197 $
+ * @version $Revision: 203 $
  */
 public class CardEvent extends EventObject {
 

@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardManager.java 187 2012-09-11 19:11:33Z martijno $
+ * $Id: CardManager.java 200 2012-11-02 14:51:17Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -51,10 +51,10 @@ import javax.smartcardio.TerminalFactory;
  * @author Wojciech Mostowski (woj@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 187 $
+ * @version $Revision: 200 $
  */
-public class CardManager
-{
+public class CardManager {
+
 	private static final CardManager INSTANCE = new CardManager();
 	private static final int FACTORY_POLL_INTERVAL = 950;
 	private static final int TERMINAL_POLL_INTERVAL = 450;
@@ -767,7 +767,7 @@ public class CardManager
 							} else {
 								try {
 									isCardPresent = terminal.isCardPresent();
-								} catch (IllegalStateException ise) {
+								} catch (Exception ise) {
 									isCardPresent = false;
 								}
 							}

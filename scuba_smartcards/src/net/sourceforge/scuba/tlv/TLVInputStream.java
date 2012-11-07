@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputStream.java 195 2012-10-16 20:01:46Z martijno $
+ * $Id: TLVInputStream.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
@@ -32,7 +32,7 @@ import java.io.InputStream;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  * 
- * @version $Revision: 195 $
+ * @version $Revision: 203 $
  */
 public class TLVInputStream extends InputStream {
 

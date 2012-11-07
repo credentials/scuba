@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="scuba_sc_j2se" default="dist" basedir=".">
+
+	<description>
+		SCUBA smartcards for J2SE. Includes scuba_smartcards, scuba_sc_j2se, scuba_util into one scuba.jar.
+	</description>
+
+	<property name="scuba_util" value="../scuba_util" />
+	<property name="scuba_sc_j2se" value="../scuba_sc_j2se" />
+	<property name="scuba_smartcards" value="../scuba_smartcards" />	
+	
+	<property name="src" location="src" />
+	<property name="build" value="tmp/bin" />
+			
+	<target name="compile" depends="" description="Compiles the source ">
+		<mkdir dir="${build}" />
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac target="1.6" srcdir="${scuba_util}/src" destdir="${build}" />		
+ 		<javac target="1.6" srcdir="${scuba_smartcards}/src" classpath="${build}" destdir="${build}" />
+		<javac target="1.6" srcdir="${scuba_sc_j2se}/src" classpath="${build}" destdir="${build}" />
+	</target>
+
+	<target name="dist" depends="compile" description="Generates the distribution .jar file">
+
+		<!-- Create the distribution jar file -->
+		<jar jarfile="scuba.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name} on ${os.name} ${os.arch}" />
+				<attribute name="Built-Date" value="${TODAY}" />
+				<attribute name="Implementation-Vendor" value="SCUBA"/>
+				<attribute name="Implementation-Title" value="scuba"/>
+				<attribute name="Implementation-Version" value="0.0.3"/>
+			</manifest>
+			<fileset dir="${build}" includes="net/sourceforge/scuba/**/*.class" />
+		</jar>	
+	</target>
+
+</project>

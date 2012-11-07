@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardService.java 197 2012-10-22 21:50:55Z martijno $
+ * $Id: CardService.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -37,7 +37,7 @@ import java.util.Map.Entry;
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 197 $
+ * @version $Revision: 203 $
  */
 public abstract class CardService implements Serializable {
 
@@ -78,7 +78,6 @@ public abstract class CardService implements Serializable {
 					} catch (Exception e) {
 						throw new IllegalArgumentException(e);
 					}
-
 				}
 			} catch (ClassNotFoundException cnfe) {
 				continue;

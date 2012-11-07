@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputState.java 195 2012-10-16 20:01:46Z martijno $
+ * $Id: TLVInputState.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
@@ -28,7 +28,7 @@ import java.util.Stack;
  * 
  * @author The SCUBA team
  * 
- * @version $Revision: 195 $
+ * @version $Revision: 203 $
  */
 class TLVInputState implements Cloneable {
 
