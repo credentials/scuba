@@ -6,10 +6,12 @@
 # /acr120provider/
 /acr120provider/META-INF
 /acr120provider/acr120provider.jar
+/acr120provider/bin
 
 # /acr122provider/
 /acr122provider/META-INF
 /acr122provider/acr122provider.jar
+/acr122provider/bin
 
 # /crefprovider/
 /crefprovider/bin

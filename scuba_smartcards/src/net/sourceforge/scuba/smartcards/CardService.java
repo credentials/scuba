@@ -49,6 +49,7 @@ public abstract class CardService implements Serializable {
 	static {
 		objectToServiceMap = new HashMap<String, String>();
 		objectToServiceMap.put("javax.smartcardio.CardTerminal", "net.sourceforge.scuba.smartcards.TerminalCardService");
+		objectToServiceMap.put("sun.security.smartcardio.TerminalImpl", "net.sourceforge.scuba.smartcards.TerminalCardService");
 		objectToServiceMap.put("android.nfc.tech.IsoDep", "net.sourceforge.scuba.smartcards.IsoDepCardService");
 	}
 
