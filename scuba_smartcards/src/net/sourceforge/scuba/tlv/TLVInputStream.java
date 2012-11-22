@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputStream.java 186 2012-09-11 15:24:38Z martijno $
+ * $Id: TLVInputStream.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
@@ -32,7 +32,7 @@ import java.io.InputStream;
  * 
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  * 
- * @version $Revision: 186 $
+ * @version $Revision: 203 $
  */
 public class TLVInputStream extends InputStream {
 
@@ -142,10 +142,10 @@ public class TLVInputStream extends InputStream {
 			state.setLengthProcessed(length, bytesRead);
 
 			/* We're buffering our carrier inputstream now that we know max length */
-			if (bufferSize < length && length < MAX_BUFFER_LENGTH) {
-				bufferSize = length;
-				this.inputStream = new DataInputStream(new BufferedInputStream(originalInputStream, bufferSize));
-			}
+//			if (bufferSize < length && length < MAX_BUFFER_LENGTH) {
+//				bufferSize = length;
+//				this.inputStream = new DataInputStream(new BufferedInputStream(originalInputStream, bufferSize));
+//			}
 
 			return length;
 		} catch (IOException e) {
@@ -268,6 +268,7 @@ public class TLVInputStream extends InputStream {
 	public synchronized void mark(int readLimit) {
 		inputStream.mark(readLimit);
 		markedState = (TLVInputState)state.clone();
+		System.out.println("DEBUG: mark(): markedState == " + markedState);
 	}
 
 	/**
@@ -289,6 +290,8 @@ public class TLVInputStream extends InputStream {
 		if (!markSupported()) {
 			throw new IOException("mark/reset not supported");
 		}
+		System.out.println("DEBUG: reset(): state == " + state);
+		System.out.println("DEBUG: reset(): markedState == " + markedState);
 		inputStream.reset();
 		state = markedState;
 		markedState = null;

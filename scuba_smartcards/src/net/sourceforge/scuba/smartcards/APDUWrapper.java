@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: APDUWrapper.java 188 2012-09-28 21:47:13Z martijno $
+ * $Id: APDUWrapper.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -27,10 +27,10 @@ package net.sourceforge.scuba.smartcards;
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * 
- * @version $Revision: 188 $
+ * @version $Revision: 203 $
  */
-public interface APDUWrapper
-{
+public interface APDUWrapper {
+
    /**
     * Wraps the command apdu buffer.
     * 

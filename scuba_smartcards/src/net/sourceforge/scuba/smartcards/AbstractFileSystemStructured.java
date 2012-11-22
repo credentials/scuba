@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: AbstractFileSystemStructured.java 188 2012-09-28 21:47:13Z martijno $
+ * $Id: AbstractFileSystemStructured.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -31,7 +31,7 @@ package net.sourceforge.scuba.smartcards;
  * @author woj
  */
 public abstract class AbstractFileSystemStructured implements FileSystemStructured {
-    
+
     public static short MF_ID = 0x3F00;
     
     private CardService service = null;

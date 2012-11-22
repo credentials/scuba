@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardTerminalListener.java 183 2012-09-04 18:54:58Z pimvullers $
+ * $Id: CardTerminalListener.java 203 2012-11-06 11:25:05Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -28,10 +28,10 @@ import java.util.EventListener;
  *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  *
- * @version $Revision: 183 $
+ * @version $Revision: 203 $
  */
-public interface CardTerminalListener extends EventListener
-{
+public interface CardTerminalListener extends EventListener {
+
 	/**
 	 * Called when card inserted.
 	 *

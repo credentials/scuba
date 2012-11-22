@@ -17,7 +17,6 @@
     <mkdir dir="${bin.dir}" />
     <javac destdir="${bin.dir}" includeantruntime="false">
        <src path="${src.util.dir}" />
-       <src path="${src.util.j2se.dir}" />
        <src path="${src.smartcards.dir}" />
        <src path="${src.smartcards.j2se.dir}" />
     </javac>
@@ -26,7 +25,6 @@
   <target name="archive">
     <jar destfile="${jar.source.dir}/${jar.source.archive}">
       <fileset dir="${src.util.dir}" />
-      <fileset dir="${src.util.j2se.dir}" />
       <fileset dir="${src.smartcards.dir}" />
       <fileset dir="${src.smartcards.j2se.dir}" />
     </jar>
@@ -36,7 +34,6 @@
     <jar destfile="${jar.development.dir}/${jar.development.archive}">
       <fileset dir="${bin.dir}" />
       <fileset dir="${src.util.dir}" />
-      <fileset dir="${src.util.j2se.dir}" />
       <fileset dir="${src.smartcards.dir}" />
       <fileset dir="${src.smartcards.j2se.dir}" />
     </jar>
