@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2012 The SCUBA team.
  * 
- * $Id: WrappingCardService.java 188 2012-09-28 21:47:13Z martijno $
+ * $Id: WrappingCardService.java 207 2012-11-14 08:20:57Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -26,7 +26,7 @@ package net.sourceforge.scuba.smartcards;
  * 
  * @author Pim Vullers (pim@cs.ru.nl)
  *
- * @version $Revision: 188 $
+ * @version $Revision: 207 $
  */
 public class WrappingCardService extends CardService {
 
@@ -57,6 +57,10 @@ public class WrappingCardService extends CardService {
 		} else {
 			return service.transmit(capdu);
 		}
+	}
+	
+	public byte[] getATR() throws CardServiceException {
+		return service.getATR();
 	}
 
 	public void close() {

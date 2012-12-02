@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TLVInputState.java 203 2012-11-06 11:25:05Z martijno $
+ * $Id: TLVInputState.java 209 2012-11-23 21:48:37Z martijno $
  */
 
 package net.sourceforge.scuba.tlv;
@@ -28,7 +28,7 @@ import java.util.Stack;
  * 
  * @author The SCUBA team
  * 
- * @version $Revision: 203 $
+ * @version $Revision: 209 $
  */
 class TLVInputState implements Cloneable {
 
@@ -126,7 +126,7 @@ class TLVInputState implements Cloneable {
 	
 	public void setLengthProcessed(int length, int byteCount) {
 		if (length < 0) {
-			throw new IllegalArgumentException("Cannot set negative length (length = " + length + ").");
+			throw new IllegalArgumentException("Cannot set negative length (length = " + length + ", 0x" + Integer.toHexString(length) + " for tag " + Integer.toHexString(getTag()) + ").");
 		}
 		TLStruct obj = state.pop();
 		if (!state.isEmpty()) {

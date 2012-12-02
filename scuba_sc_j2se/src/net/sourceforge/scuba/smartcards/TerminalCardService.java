@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TerminalCardService.java 188 2012-09-28 21:47:13Z martijno $
+ * $Id: TerminalCardService.java 207 2012-11-14 08:20:57Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -33,7 +33,7 @@ import javax.smartcardio.CardTerminal;
  * 
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * 
- * @version $Revision: 188 $
+ * @version $Revision: 207 $
  */
 public class TerminalCardService extends CardService {
 
@@ -93,8 +93,7 @@ public class TerminalCardService extends CardService {
 			if (channel == null) {
 				throw new CardServiceException("channel == null");
 			}
-			javax.smartcardio.CommandAPDU command = 
-					new javax.smartcardio.CommandAPDU(ourCommandAPDU.getBytes());
+			javax.smartcardio.CommandAPDU command = new javax.smartcardio.CommandAPDU(ourCommandAPDU.getBytes());
 			javax.smartcardio.ResponseAPDU response = channel.transmit(command);
 			ResponseAPDU ourResponseAPDU = new ResponseAPDU(response.getBytes());
 			notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
@@ -104,6 +103,11 @@ public class TerminalCardService extends CardService {
 			ce.printStackTrace();
 			throw new CardServiceException(ce.toString());
 		}
+	}
+	
+	public byte[] getATR() {
+		javax.smartcardio.ATR atr = channel.getCard().getATR();
+		return atr.getBytes();
 	}
 
 	/**

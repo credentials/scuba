@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardService.java 203 2012-11-06 11:25:05Z martijno $
+ * $Id: CardService.java 207 2012-11-14 08:20:57Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -37,7 +37,7 @@ import java.util.Map.Entry;
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 203 $
+ * @version $Revision: 207 $
  */
 public abstract class CardService implements Serializable {
 
@@ -159,6 +159,8 @@ public abstract class CardService implements Serializable {
 	 */
 	public abstract ResponseAPDU transmit(CommandAPDU apdu) throws CardServiceException;
 
+	public abstract byte[] getATR() throws CardServiceException;
+	
 	/**
 	 * Closes the session with the card. Disconnects from the card and reader.
 	 * Notifies any interested apduListeners.

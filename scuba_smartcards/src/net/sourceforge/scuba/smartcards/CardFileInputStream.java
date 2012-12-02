@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardFileInputStream.java 203 2012-11-06 11:25:05Z martijno $
+ * $Id: CardFileInputStream.java 207 2012-11-14 08:20:57Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -120,11 +120,11 @@ public class CardFileInputStream extends InputStream {
 	 * 
 	 * @return the length of the underlying card file.
 	 */
-	public int getFileLength() {
+	public int getLength() {
 		return fileLength;
 	}
 
-	public int getFilePos() {
+	public int getPostion() {
 		return offsetBufferInFile + offsetInBuffer;
 	}
 
@@ -140,8 +140,7 @@ public class CardFileInputStream extends InputStream {
 	 * 
 	 * @return the contents of the file.
 	 */
-	private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le)
-			throws CardServiceException {
+	private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le) throws CardServiceException {
 		synchronized (fs) {
 			if (le > buffer.length) {
 				throw new IllegalArgumentException("length too big");

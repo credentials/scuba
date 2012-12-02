@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: DummyAcceptingCardService.java 203 2012-11-06 11:25:05Z martijno $
+ * $Id: DummyAcceptingCardService.java 207 2012-11-14 08:20:57Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -67,4 +67,7 @@ public class DummyAcceptingCardService extends CardService {
         return response;
     }
 
+    public byte[] getATR() {
+    	return null; // FIXME
+    }
 }
