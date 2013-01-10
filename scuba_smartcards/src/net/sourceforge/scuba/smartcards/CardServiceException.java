@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardServiceException.java 203 2012-11-06 11:25:05Z martijno $
+ * $Id: CardServiceException.java 210 2013-01-02 21:14:04Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -58,11 +58,18 @@ public class CardServiceException extends Exception {
 		return serialVersionUID;
 	}
 
+	public String getMessage() {
+		if (sw == -1) {
+			return super.getMessage();
+		} else {
+			return super.getMessage() + " (SW = 0x" + Integer.toHexString(sw) + ")";
+		}
+	}
+
 	/**
 	 * @return The status word that caused this exception
 	 */
 	public int getSW() {
 		return sw;
 	}
-
 }
