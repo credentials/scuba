@@ -36,15 +36,8 @@ import java.io.InputStream;
  */
 public class TLVInputStream extends InputStream {
 
-	/* 64K ought to be enough for anybody. */
-	private static final int MAX_BUFFER_LENGTH = 65535; // Integer.MAX_VALUE;
-
-	private final InputStream originalInputStream;
-
 	/** Carrier. */
 	private DataInputStream inputStream;
-
-	private int bufferSize;
 
 	private TLVInputState state;
 	private TLVInputState markedState;
@@ -55,15 +48,13 @@ public class TLVInputStream extends InputStream {
 	 * @param inputStream a TLV object
 	 */
 	public TLVInputStream(InputStream inputStream) {
-		this.bufferSize = 0;
 		try {
 			if (inputStream instanceof BufferedInputStream || inputStream instanceof ByteArrayInputStream) {
-				this.bufferSize = inputStream.available();
+				inputStream.available();
 			}
 		} catch (IOException ioe) {
 			/* NOTE: if available fails, we leave buffer size at 0. */
 		}
-		this.originalInputStream = inputStream;
 		this.inputStream = inputStream instanceof DataInputStream ? (DataInputStream)inputStream : new DataInputStream(inputStream);
 		state = new TLVInputState();
 

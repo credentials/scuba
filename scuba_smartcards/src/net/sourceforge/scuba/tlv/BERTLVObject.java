@@ -116,6 +116,7 @@ public class BERTLVObject implements ASN1Constants
 	
 	public static BERTLVObject getInstance(
 			InputStream in) throws IOException {
+		@SuppressWarnings("resource")
 		TLVInputStream tlvIn = (in instanceof TLVInputStream) ? (TLVInputStream)in : new TLVInputStream(in);
 		int tag = tlvIn.readTag();
 		tlvIn.readLength();
