@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: CardFileInputStream.java 207 2012-11-14 08:20:57Z martijno $
+ * $Id: CardFileInputStream.java 215 2013-02-27 16:36:30Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -41,6 +41,14 @@ public class CardFileInputStream extends InputStream {
 	private int fileLength;
 	private FileSystemStructured fs;
 
+	/**
+	 * An input stream for reading from the currently selected file in the indicated file system.
+	 * 
+	 * @param maxBlockSize maximum block size to use for read binaries
+	 * @param fs the file system
+	 * 
+	 * @throws CardServiceException on error
+	 */
 	public CardFileInputStream(int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
 		this.fs = fs;
 		synchronized(fs) {
@@ -59,6 +67,16 @@ public class CardFileInputStream extends InputStream {
 
 	public int read() throws IOException {
 		synchronized(fs) {
+			if (!Arrays.equals(path, fs.getSelectedPath())) {
+				try {
+					for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
+				} catch (CardServiceException cse) {
+					/* ERROR: selecting proper path failed. */
+					cse.printStackTrace();
+					return 0; // FIXME: proper error handling here
+				}
+			}
+
 			int offsetInFile = offsetBufferInFile + offsetInBuffer;
 			if (offsetInFile >= fileLength) {
 				return -1;
@@ -80,18 +98,18 @@ public class CardFileInputStream extends InputStream {
 	}
 
 	public long skip(long n) {
-		int available = available();
-		if (n > available) {
-			n = available;
+		synchronized(fs) {
+			if (n < (bufferLength - offsetInBuffer)) {
+				offsetInBuffer += n;
+			} else {
+				int offsetInFile = offsetBufferInFile + offsetInBuffer;
+				offsetBufferInFile = (int) (offsetInFile + n); /* FIXME: shouldn't we check for EOF? We know fileLength... */
+				offsetInBuffer = 0;
+				bufferLength = 0;
+				offsetInFile = offsetBufferInFile + offsetInBuffer;
+			}
+			return n;
 		}
-		if (n < (buffer.length - offsetInBuffer)) {
-			offsetInBuffer += n;
-		} else {
-			int absoluteOffset = offsetBufferInFile + offsetInBuffer;
-			offsetBufferInFile = (int) (absoluteOffset + n);
-			offsetInBuffer = 0;
-		}
-		return n;
 	}
 
 	public synchronized int available() {
@@ -99,20 +117,26 @@ public class CardFileInputStream extends InputStream {
 	}
 
 	public void mark(int readLimit) {
-		markedOffset = offsetBufferInFile + offsetInBuffer;
+		synchronized(fs) {
+			markedOffset = offsetBufferInFile + offsetInBuffer;
+		}
 	}
 
 	public void reset() throws IOException {
-		if (markedOffset < 0) {
-			throw new IOException("Mark not set");
+		synchronized(fs) {
+			if (markedOffset < 0) {
+				throw new IOException("Mark not set");
+			}
+			offsetBufferInFile = markedOffset;
+			offsetInBuffer = 0;
+			bufferLength = 0;
 		}
-		offsetBufferInFile = markedOffset;
-		offsetInBuffer = 0;
-		bufferLength = 0;
 	}
 
 	public boolean markSupported() {
-		return true;
+		synchronized(fs) {
+			return true;
+		}
 	}
 
 	/**

@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: TerminalCardService.java 207 2012-11-14 08:20:57Z martijno $
+ * $Id: TerminalCardService.java 214 2013-02-19 22:03:49Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -33,7 +33,7 @@ import javax.smartcardio.CardTerminal;
  * 
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * 
- * @version $Revision: 207 $
+ * @version $Revision: 214 $
  */
 public class TerminalCardService extends CardService {
 
@@ -109,6 +109,10 @@ public class TerminalCardService extends CardService {
 		javax.smartcardio.ATR atr = channel.getCard().getATR();
 		return atr.getBytes();
 	}
+	
+	public boolean isExtendedAPDULengthSupported() {
+		return true; // FIXME: check ATR to see if really true
+	}
 
 	/**
 	 * Sends a control command to the terminal
@@ -127,7 +131,7 @@ public class TerminalCardService extends CardService {
 			throw new CardServiceException(ce.toString());
 		}
 	}
-
+	
 	/**
 	 * Closes the session with the card.
 	 */

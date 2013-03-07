@@ -19,7 +19,7 @@
  *
  * Copyright (C) 2012 The SCUBA team.
  * 
- * $Id: IsoDepCardService.java 208 2012-11-18 21:45:36Z martijno $
+ * $Id: IsoDepCardService.java 214 2013-02-19 22:03:49Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -35,7 +35,7 @@ import android.nfc.tech.IsoDep;
  * 
  * @author Pim Vullers (pim@cs.ru.nl)
  * 
- * @version $Revision: 208 $
+ * @version $Revision: 214 $
  */
 public class IsoDepCardService extends CardService {
 
@@ -109,6 +109,10 @@ public class IsoDepCardService extends CardService {
     	return null; // FIXME
     }
     
+	public boolean isExtendedAPDULengthSupported() {
+		return false; /* FIXME, from API 14 and up we can ask ISODep!! */
+	}
+	
 	/**
 	 * Closes the session with the card.
 	 */

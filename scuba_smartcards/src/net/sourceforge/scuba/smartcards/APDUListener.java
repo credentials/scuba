@@ -16,7 +16,7 @@
  * 
  * Copyright (C) 2009-2012 The SCUBA team.
  * 
- * $Id: APDUListener.java 203 2012-11-06 11:25:05Z martijno $
+ * $Id: APDUListener.java 214 2013-02-19 22:03:49Z martijno $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -28,14 +28,14 @@ import java.util.EventListener;
  * 
  * @author Engelbert Hubbers (hubbers@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
- * @version $Revision: 203 $
+ * @version $Revision: 214 $
  */
 public interface APDUListener extends EventListener {
 
-   /**
-    * Is called after an apdu was exchanged.
-    * 
-    * @param e an APDU event containing the exchanged APDUs
-    */
-   void exchangedAPDU(APDUEvent e);
+	/**
+	 * Is called after an apdu was exchanged.
+	 * 
+	 * @param e an APDU event containing the exchanged APDUs
+	 */
+	void exchangedAPDU(APDUEvent e);
 }
