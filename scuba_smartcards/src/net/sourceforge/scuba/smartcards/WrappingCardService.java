@@ -59,10 +59,20 @@ public class WrappingCardService extends CardService {
 		}
 	}
 	
+	public byte[] transmitControlCommand(int controlCode, byte[] command)
+	throws CardServiceException {
+		return service.transmitControlCommand(controlCode, command);
+	}
+
 	public byte[] getATR() throws CardServiceException {
 		return service.getATR();
 	}
 
+	public String getName() {
+		return "Wrapping [ " + wrapper.getClass().getName() + " ]: "
+				+ service.getName();
+	}
+	
 	public void close() {
 		service.close();
 	}

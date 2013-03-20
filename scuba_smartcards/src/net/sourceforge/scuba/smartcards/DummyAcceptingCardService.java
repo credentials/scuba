@@ -67,7 +67,16 @@ public class DummyAcceptingCardService extends CardService {
         return response;
     }
 
+	public byte[] transmitControlCommand(int controlCode, byte[] command)
+	throws CardServiceException {
+		return null;
+	}
+
     public byte[] getATR() {
-    	return null; // FIXME
+        return null; // FIXME
     }
+	
+	public String getName() {
+		return "DummyAcceptingCardService";
+	}
 }
