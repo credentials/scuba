@@ -33,7 +33,6 @@ import javax.smartcardio.ResponseAPDU;
 
 import com.ibm.jc.JCException;
 import com.ibm.jc.JCTerminal;
-import com.ibm.jc.terminal.RemoteJCTerminal;
 
 /**
  * CardTerminal implementation for NXP's JCOP emulator. This
@@ -59,7 +58,7 @@ public class JCOPEmulatorTerminal extends CardTerminal
 	private boolean wasCardPresent;
 	private EmulatedCard card;
 
-	private RemoteJCTerminal jcTerminal;
+	private JCTerminal jcTerminal;
 
 	/**
 	 * Listens for instances of the emulator on the specified host and port.
@@ -71,8 +70,7 @@ public class JCOPEmulatorTerminal extends CardTerminal
 		terminal = this;
 		this.hostName = hostName;
 		this.port = port;
-		jcTerminal = new RemoteJCTerminal();
-		jcTerminal.init(hostName.trim() + ":" + port);
+		jcTerminal = new JCTerminal("Remote", hostName.trim() + ":" + port);
 		heartBeat = System.currentTimeMillis();
 		isCheckingForCardPresent = false;
 	}
@@ -244,7 +242,7 @@ public class JCOPEmulatorTerminal extends CardTerminal
 			synchronized (terminal) {
 				this.card = card;
 				jcTerminal.open();
-				byte[] atrBytes = jcTerminal.waitForCard(1000);
+				byte[] atrBytes = jcTerminal.waitForCard(0);
 				atr = new ATR(atrBytes);
 				heartBeat = System.currentTimeMillis();
 			}
