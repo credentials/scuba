@@ -70,7 +70,7 @@ public class JCOPEmulatorTerminal extends CardTerminal
 		terminal = this;
 		this.hostName = hostName;
 		this.port = port;
-		jcTerminal = new JCTerminal("Remote", hostName.trim() + ":" + port);
+		jcTerminal = JCTerminal.getInstance("Remote", hostName.trim() + ":" + port);
 		heartBeat = System.currentTimeMillis();
 		isCheckingForCardPresent = false;
 	}
