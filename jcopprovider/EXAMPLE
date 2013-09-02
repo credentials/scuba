@@ -1,0 +1,33 @@
+
+static { java.security.Security.addProvider(new JCOPTerminalProvider()); }
+
+static final WAIT_TIMEOUT = 10000;
+static java.io.BufferedReader console = (new java.io.BufferedReader(new java.io.InputStreamReader(System.in)));
+
+public static CardService getCardService() throws CardException {
+    CardService service = null;
+    try {
+        System.out.print("Host? [localhost] ");
+        String host = console.readLine();
+        host.trim();
+        if (host.isEmpty()) { host = "localhost"; }
+
+        System.out.print("Port? [8050] ");
+        String port = console.readLine();
+        port.trim();
+        if (port.isEmpty()) { port = "8050"; }
+
+        CardTerminal terminal = TerminalFactory.getInstance("JCOP", host + port).terminals().list().get(0);
+        System.out.print("Terminal: " + terminal.getName() + "...");
+        terminal.waitForCardPresent(WAIT_TIMEOUT);
+        System.out.println((terminal.isCardPresent() ? " " : " not") + " connected");
+
+        service = new TerminalCardService(terminal);
+    } catch (Exception e) {
+        throw new CardException(e.getMessage() + " : " + e.toString());
+    }
+	
+    return service;
+}
+
+
