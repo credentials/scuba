@@ -31,6 +31,6 @@ public class ProtocolCommands extends ArrayList<ProtocolCommand> {
     /**
      * Universal version identifier to match versions during deserialisation.
      */
-	private static final long serialVersionUID = -3336896365299268066L;
+    private static final long serialVersionUID = -3336896365299268066L;
 
 }

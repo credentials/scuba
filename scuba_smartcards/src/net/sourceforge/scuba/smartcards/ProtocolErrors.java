@@ -27,21 +27,21 @@ import java.util.HashMap;
  * @author Pim Vullers
  */
 public class ProtocolErrors extends HashMap<Integer, String> {
-	// TODO: automatically add a list of well-known errors
+    // TODO: automatically add a list of well-known errors
 
     /**
      * Universal version identifier to match versions during deserialisation.
      */
-	private static final long serialVersionUID = -5991735413227319349L;
+    private static final long serialVersionUID = -5991735413227319349L;
 
-	/**
-	 * Convenience constructor to easily add a single error.
-	 * 
-	 * @param status word from the smart card.
-	 * @param message describing the corresponding error.
-	 */
-	public ProtocolErrors(Integer status, String message) {
-		super();
-		put(status, message);
-	}
+    /**
+     * Convenience constructor to easily add a single error.
+     * 
+     * @param status word from the smart card.
+     * @param message describing the corresponding error.
+     */
+    public ProtocolErrors(Integer status, String message) {
+        super();
+        put(status, message);
+    }
 }

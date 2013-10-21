@@ -1,22 +1,23 @@
-/* 
+/*
  * This file is part of the SCUBA smart card framework.
- * 
- * SCUBA is free software: you can redistribute it and/or modify it under the 
- * terms of the GNU General Public License as published by the Free Software 
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- * 
- * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * SCUBA. If not, see <http://www.gnu.org/licenses/>.
- * 
- * Copyright (C) 2009-2012 The SCUBA team.
- * 
- * $Id: CardServiceException.java 210 2013-01-02 21:14:04Z martijno $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *
+ * Copyright (C) 2009-2013 The SCUBA team.
+ *
+ * $Id: $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -28,48 +29,47 @@ package net.sourceforge.scuba.smartcards;
  * @author erikpoll
  * 
  */
-
 public class CardServiceException extends Exception {
 
-	private static final long serialVersionUID = 4489156194716970879L;
+    private static final long serialVersionUID = 4489156194716970879L;
 
-	/**
-	 * The status word that caused this exception, or -1 if not known or
-	 * recorded.
-	 */
-	private int sw = -1;
+    /**
+     * The status word that caused this exception, or -1 if not known or
+     * recorded.
+     */
+    private int sw = -1;
 
-	public CardServiceException(String msg) {
-		super(msg);
-	}
+    public CardServiceException(String msg) {
+        super(msg);
+    }
 
-	/**
-	 * Create a CardServiceException with a status word
-	 * 
-	 * @param sw
-	 *            The status word that caused this CardServiceException
-	 */
-	public CardServiceException(String msg, int sw) {
-		super(msg);
-		this.sw = sw;
-	}
+    /**
+     * Create a CardServiceException with a status word
+     * 
+     * @param sw
+     *            The status word that caused this CardServiceException
+     */
+    public CardServiceException(String msg, int sw) {
+        super(msg);
+        this.sw = sw;
+    }
 
-	public static long getSerialVersionUID() {
-		return serialVersionUID;
-	}
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
-	public String getMessage() {
-		if (sw == -1) {
-			return super.getMessage();
-		} else {
-			return super.getMessage() + " (SW = 0x" + Integer.toHexString(sw) + ")";
-		}
-	}
+    public String getMessage() {
+        if (sw == -1) {
+            return super.getMessage();
+        } else {
+            return super.getMessage() + " (SW = 0x" + Integer.toHexString(sw) + ")";
+        }
+    }
 
-	/**
-	 * @return The status word that caused this exception
-	 */
-	public int getSW() {
-		return sw;
-	}
+    /**
+     * @return The status word that caused this exception
+     */
+    public int getSW() {
+        return sw;
+    }
 }

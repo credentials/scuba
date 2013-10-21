@@ -1,22 +1,23 @@
 /*
  * This file is part of the SCUBA smart card framework.
  *
- * SCUBA is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * SCUBA. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2012 The SCUBA team.
+ * Copyright (C) 2009-2013 The SCUBA team.
  *
- * $Id: TerminalCardService.java 214 2013-02-19 22:03:49Z martijno $
+ * $Id: $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -30,10 +31,10 @@ import javax.smartcardio.CardTerminal;
  * Card service implementation for sending APDUs to a terminal using the
  * JSR 268 (<code>javax.smartcardio</code>) classes available in Java
  * SDK 6.0 and higher.
- *
+ * 
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
- *
- * @version $Revision: 214 $
+ * 
+ * @version $Revision: 216 $
  */
 public class TerminalCardService extends CardService {
 
@@ -47,7 +48,7 @@ public class TerminalCardService extends CardService {
 
     /**
      * Constructs a new card service.
-     *
+     * 
      * @param terminal the card terminal to connect to
      */
     public TerminalCardService(CardTerminal terminal) {
@@ -55,7 +56,7 @@ public class TerminalCardService extends CardService {
         lastActiveTime = System.currentTimeMillis();
         apduCount = 0;
     }
-
+    
     /**
      * Opens a session with the card.
      */
@@ -64,8 +65,8 @@ public class TerminalCardService extends CardService {
         try {
             card = terminal.connect("*");
             channel = card.getBasicChannel();
-            if (channel == null) {
-                throw new CardServiceException("channel == null");
+            if (channel == null) { 
+                throw new CardServiceException("channel == null"); 
             }
             state = SESSION_STARTED_STATE;
         } catch (CardException ce) {
@@ -82,13 +83,12 @@ public class TerminalCardService extends CardService {
 
     /**
      * Sends an APDU to the card.
-     *
+     * 
      * @param ourCommandAPDU the command apdu to send
      * @return the response from the card, including the status word
-     * @throws CardServiceException - if the card operation failed
+     * @throws CardServiceException - if the card operation failed 
      */
-    public ResponseAPDU transmit(CommandAPDU ourCommandAPDU)
-    throws CardServiceException {
+    public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) throws CardServiceException {
         try {
             if (channel == null) {
                 throw new CardServiceException("channel == null");
@@ -100,9 +100,23 @@ public class TerminalCardService extends CardService {
             lastActiveTime = System.currentTimeMillis();
             return ourResponseAPDU;
         } catch (CardException ce) {
-            ce.printStackTrace();
             throw new CardServiceException(ce.toString());
         }
+    }
+
+    public byte[] getATR() {
+        javax.smartcardio.ATR atr = channel.getCard().getATR();
+        return atr.getBytes();
+    }
+
+    public String getName() {
+        return "Terminal [ " + terminal.getName() + " ]";
+    }
+    
+    public boolean isExtendedAPDULengthSupported() {
+//      javax.smartcardio.ATR atr = channel.getCard().getATR();
+//      byte[] historicalBytes = atr.getHistoricalBytes();      
+        return true; // FIXME: check ATR to see if really true
     }
 
     /**
@@ -122,19 +136,7 @@ public class TerminalCardService extends CardService {
             throw new CardServiceException(ce.toString());
         }
     }
-
-    public byte[] getATR() {
-        javax.smartcardio.ATR atr = channel.getCard().getATR();
-        return atr.getBytes();
-    }
-
-    public String getName() {
-        return "Terminal [ " + terminal.getName() + " ]";
-    }
-    public boolean isExtendedAPDULengthSupported() {
-        return true; // FIXME: check ATR to see if really true
-    }
-
+    
     /**
      * Closes the session with the card.
      */
@@ -151,12 +153,12 @@ public class TerminalCardService extends CardService {
                   card.disconnect(false);
                 }
             }
-            state = SESSION_STOPPED_STATE;
         } catch (Exception ce) {
             /* Disconnect failed? Fine... */
         }
+        state = SESSION_STOPPED_STATE;
     }
-
+    
     /**
      * The terminal used by this service.
      *
@@ -165,14 +167,14 @@ public class TerminalCardService extends CardService {
     public CardTerminal getTerminal() {
         return terminal;
     }
-
+    
     /* package visible */ long getLastActiveTime() {
-        return lastActiveTime;
+       return lastActiveTime;
     }
-
+    
     /**
      * Produces a textual representation of this service.
-     *
+     * 
      * @return a textual representation of this service
      */
     public String toString() {

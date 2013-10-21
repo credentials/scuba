@@ -39,8 +39,8 @@ import javax.smartcardio.TerminalFactorySpi;
 
 public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
 
-	private static final Logger LOGGER = Logger.getLogger("net.sourceforge.scuba.smartcards");
-	
+    private static final Logger LOGGER = Logger.getLogger("net.sourceforge.scuba.smartcards");
+    
     /** Constant to represent card's presence */
     private static int PRESENT = 1, ABSENT = 0;
 
@@ -300,14 +300,14 @@ public class ACR122TerminalFactorySpi extends TerminalFactorySpi {
                         CardTerminals.State.CARD_PRESENT)) {
                     debug("Terminal: " + terminal.getName());
                     if (!terminal.getName().contains("ACR122")
-                    		/*
-                        	 * FIXME: On WinXP with ACS supplied drivers (October 2010)
-                        	 *  one of my tikitag readers presents itself as " CCID USB Reader 0"
-                        	 * (instead of "ACR 122 USB Reader").
-                        	 * 
-                        	 * Is there some other way to positively identify a 122U? -- MO
-                        	 */
-                    		&& !terminal.getName().contains(" CCID USB Reader")) {
+                            /*
+                             * FIXME: On WinXP with ACS supplied drivers (October 2010)
+                             *  one of my tikitag readers presents itself as " CCID USB Reader 0"
+                             * (instead of "ACR 122 USB Reader").
+                             * 
+                             * Is there some other way to positively identify a 122U? -- MO
+                             */
+                            && !terminal.getName().contains(" CCID USB Reader")) {
                         continue;
                     }
                     virtualCard = terminal.connect("T=0");

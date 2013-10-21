@@ -31,13 +31,13 @@ import java.security.Provider;
  */
 public class CREFTerminalProvider extends Provider
 {
-	private static final long serialVersionUID = 6049577128262232444L;
+    private static final long serialVersionUID = 6049577128262232444L;
 
-	/**
-	 * Constructs the provider.
-	 */
-	public CREFTerminalProvider() {
-		super("CREFTerminalProvider", 0.1d, "CREF Emulation Provider");
-		put("TerminalFactory.CREF", "net.sourceforge.scuba.smartcards.CREFEmulatorTerminalFactorySpi");
-	}
+    /**
+     * Constructs the provider.
+     */
+    public CREFTerminalProvider() {
+        super("CREFTerminalProvider", 0.1d, "CREF Emulation Provider");
+        put("TerminalFactory.CREF", "net.sourceforge.scuba.smartcards.CREFEmulatorTerminalFactorySpi");
+    }
 }

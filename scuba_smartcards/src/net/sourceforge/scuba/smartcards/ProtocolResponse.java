@@ -28,70 +28,70 @@ import net.sourceforge.scuba.smartcards.ResponseAPDU;
  * @author Pim Vullers
  */
 public class ProtocolResponse {
-	
-	/**
-	 * A short string used to uniquely identify this command. 
-	 */	
-	private String key;
-	
-	/**
-	 * The actual response APDU received from the smart card.
-	 */	
-	private ResponseAPDU response;
+    
+    /**
+     * A short string used to uniquely identify this command. 
+     */ 
+    private String key;
+    
+    /**
+     * The actual response APDU received from the smart card.
+     */ 
+    private ResponseAPDU response;
 
-	/**
-	 * Construct a new ProtocolResponse.
-	 * 
-	 * @param key used to identify the response.
-	 * @param response from the smart card.
-	 */
-	public ProtocolResponse(String key, ResponseAPDU response) {
-		this.key = key;
-		this.response = response;
-	}
-	
-	/**
-	 * Get the key used to identify this response.
-	 * 
-	 * @return the key used to identify this response. 
-	 */
-	public String getKey() {
-		return key;
-	}
-	
-	/**
-	 * Get the response APDU received from the smart card.
-	 * 
-	 * @return the response from the smart card.
-	 */
-	public ResponseAPDU getAPDU() {
-		return response;
-	}
+    /**
+     * Construct a new ProtocolResponse.
+     * 
+     * @param key used to identify the response.
+     * @param response from the smart card.
+     */
+    public ProtocolResponse(String key, ResponseAPDU response) {
+        this.key = key;
+        this.response = response;
+    }
+    
+    /**
+     * Get the key used to identify this response.
+     * 
+     * @return the key used to identify this response. 
+     */
+    public String getKey() {
+        return key;
+    }
+    
+    /**
+     * Get the response APDU received from the smart card.
+     * 
+     * @return the response from the smart card.
+     */
+    public ResponseAPDU getAPDU() {
+        return response;
+    }
 
-	/**
-	 * Set the response from the smart card.
-	 * 
-	 * @param apdu received from the smart card.
-	 */
-	public void setAPDU(ResponseAPDU apdu) {
-		this.response = apdu;
-	}
+    /**
+     * Set the response from the smart card.
+     * 
+     * @param apdu received from the smart card.
+     */
+    public void setAPDU(ResponseAPDU apdu) {
+        this.response = apdu;
+    }
 
-	/**
-	 * Get the response data received from the smart card.
-	 * 
-	 * @return the response data from the smart card.
-	 */
-	public byte[] getData() {
-		return response.getData();
-	}
+    /**
+     * Get the response data received from the smart card.
+     * 
+     * @return the response data from the smart card.
+     */
+    public byte[] getData() {
+        return response.getData();
+    }
 
-	/**
-	 * Get the response status received from the smart card.
-	 * 
-	 * @return the response status from the smart card.
-	 */
-	public int getStatus() {
-		return response.getSW();
-	}
+    /**
+     * Get the response status received from the smart card.
+     * 
+     * @return the response status from the smart card.
+     */
+    public int getStatus() {
+        return response.getSW();
+    }
 }

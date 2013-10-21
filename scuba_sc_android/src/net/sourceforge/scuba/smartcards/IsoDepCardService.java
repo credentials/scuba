@@ -1,25 +1,26 @@
 /*
  * This file is part of the SCUBA smart card framework.
  *
- * SCUBA is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * SCUBA. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com) for
+ * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com) for 
  * aJMRTD (an Android client for JMRTD, released under the LGPL license).
  *
- * Copyright (C) 2012 The SCUBA team.
+ * Copyright (C) 2009-2013 The SCUBA team.
  *
- * $Id: IsoDepCardService.java 214 2013-02-19 22:03:49Z martijno $
+ * $Id: $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -97,14 +98,19 @@ public class IsoDepCardService extends CardService {
     throws CardServiceException {
         try {
             if (!nfc.isConnected()) {
-                throw new CardServiceException("not connected");
+                throw new CardServiceException("Not connected");
             }
-            ResponseAPDU ourResponseAPDU = new ResponseAPDU(
-                    nfc.transceive(ourCommandAPDU.getBytes()));
+            byte[] responseBytes = nfc.transceive(ourCommandAPDU.getBytes());
+            if (responseBytes == null || responseBytes.length < 2) {
+                throw new CardServiceException("Failed response");
+            }
+            ResponseAPDU ourResponseAPDU = new ResponseAPDU(responseBytes);
             notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
             return ourResponseAPDU;
         } catch (IOException e) {
-            throw new CardServiceException("could not transmit");
+            throw new CardServiceException(e.getMessage());
+        } catch (Exception e) {
+            throw new CardServiceException(e.getMessage());
         }
     }
 

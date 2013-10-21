@@ -24,9 +24,9 @@ import java.security.Provider;
 
 public final class ACR120Provider extends Provider
 {
-	private static final long serialVersionUID = 7370223589120938274L;
+    private static final long serialVersionUID = 7370223589120938274L;
 
-	public ACR120Provider() {
+    public ACR120Provider() {
         super("ACR120U", 0.1d,
                 "TerminalFactory Provider for the ACR120U Smart Card Reader");
         put("TerminalFactory.ACR120U",

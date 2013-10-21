@@ -37,31 +37,31 @@ import javax.smartcardio.TerminalFactorySpi;
  */
 public class CREFEmulatorTerminalFactorySpi  extends TerminalFactorySpi
 {
-	private static final List<CardTerminal> TERMINAL_LIST = new ArrayList<CardTerminal>();
-	private static final CardTerminals TERMINALS = new CardTerminals() {
-		public List<CardTerminal> list(State state) throws CardException {
-			return TERMINAL_LIST;
-		}
+    private static final List<CardTerminal> TERMINAL_LIST = new ArrayList<CardTerminal>();
+    private static final CardTerminals TERMINALS = new CardTerminals() {
+        public List<CardTerminal> list(State state) throws CardException {
+            return TERMINAL_LIST;
+        }
 
-		public boolean waitForChange(long timeout) throws CardException {
-			return false;
-		}		
-	};
+        public boolean waitForChange(long timeout) throws CardException {
+            return false;
+        }       
+    };
 
-	public CREFEmulatorTerminalFactorySpi(Object parameter) {
-		if (!parameter.getClass().equals(String.class)) { throw new IllegalArgumentException("Invalid parameter"); } 
-		try {
-			String paramString = (String)parameter;
-			int colonIndex = paramString.indexOf(':');
-			String host = paramString.substring(0, colonIndex).trim();
-			int port = Integer.parseInt(paramString.substring(colonIndex + 1).trim());
-			TERMINAL_LIST.add(new CREFEmulatorTerminal(host, port));
-		} catch (NumberFormatException nfe) {
-			throw new IllegalArgumentException("Invalid parameter");
-		}
-	}
+    public CREFEmulatorTerminalFactorySpi(Object parameter) {
+        if (!parameter.getClass().equals(String.class)) { throw new IllegalArgumentException("Invalid parameter"); } 
+        try {
+            String paramString = (String)parameter;
+            int colonIndex = paramString.indexOf(':');
+            String host = paramString.substring(0, colonIndex).trim();
+            int port = Integer.parseInt(paramString.substring(colonIndex + 1).trim());
+            TERMINAL_LIST.add(new CREFEmulatorTerminal(host, port));
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("Invalid parameter");
+        }
+    }
 
-	protected CardTerminals engineTerminals() {
-		return TERMINALS;
-	}
+    protected CardTerminals engineTerminals() {
+        return TERMINALS;
+    }
 }

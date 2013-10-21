@@ -32,13 +32,13 @@ import java.security.Provider;
 public class JCOPTerminalProvider extends Provider
 {
 
-	private static final long serialVersionUID = -959161628374948639L;
+    private static final long serialVersionUID = -959161628374948639L;
 
-	/**
-	 * Constructs the provider.
-	 */
-	public JCOPTerminalProvider() {
-		super("JCOPTerminalProvider", 0.1d, "JCOP Emulation Provider");
-		put("TerminalFactory.JCOP", "net.sourceforge.scuba.smartcards.JCOPEmulatorTerminalFactorySpi");
-	}
+    /**
+     * Constructs the provider.
+     */
+    public JCOPTerminalProvider() {
+        super("JCOPTerminalProvider", 0.1d, "JCOP Emulation Provider");
+        put("TerminalFactory.JCOP", "net.sourceforge.scuba.smartcards.JCOPEmulatorTerminalFactorySpi");
+    }
 }

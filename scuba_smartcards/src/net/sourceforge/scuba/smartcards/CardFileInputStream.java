@@ -1,22 +1,23 @@
-/* 
+/*
  * This file is part of the SCUBA smart card framework.
- * 
- * SCUBA is free software: you can redistribute it and/or modify it under the 
- * terms of the GNU General Public License as published by the Free Software 
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- * 
- * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * SCUBA. If not, see <http://www.gnu.org/licenses/>.
- * 
- * Copyright (C) 2009-2012 The SCUBA team.
- * 
- * $Id: CardFileInputStream.java 215 2013-02-27 16:36:30Z martijno $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *
+ * Copyright (C) 2009-2013 The SCUBA team.
+ *
+ * $Id: $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -32,149 +33,152 @@ import java.util.Arrays;
  */
 public class CardFileInputStream extends InputStream {
 
-	private FileInfo[] path;
-	private final byte[] buffer;
-	private int bufferLength;
-	private int offsetBufferInFile;
-	private int offsetInBuffer;
-	private int markedOffset;
-	private int fileLength;
-	private FileSystemStructured fs;
+    private FileInfo[] path;
+    private final byte[] buffer;
+    private int bufferLength;
+    private int offsetBufferInFile;
+    private int offsetInBuffer;
+    private int markedOffset;
+    private int fileLength;
+    private FileSystemStructured fs;
 
-	/**
-	 * An input stream for reading from the currently selected file in the indicated file system.
-	 * 
-	 * @param maxBlockSize maximum block size to use for read binaries
-	 * @param fs the file system
-	 * 
-	 * @throws CardServiceException on error
-	 */
-	public CardFileInputStream(int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
-		this.fs = fs;
-		synchronized(fs) {
-			FileInfo[] fsPath = fs.getSelectedPath();
-			if (fsPath == null || fsPath.length < 1) { throw new CardServiceException("No valid file selected"); }
-			this.path = new FileInfo[fsPath.length];
-			System.arraycopy(fsPath, 0, this.path, 0, fsPath.length);
-			fileLength = fsPath[fsPath.length - 1].getFileLength();
-			buffer = new byte[maxBlockSize];
-			bufferLength = 0;
-			offsetBufferInFile = 0;
-			offsetInBuffer = 0;
-			markedOffset = -1;
-		}
-	}
+    /**
+     * An input stream for reading from the currently selected file in the indicated file system.
+     * 
+     * @param maxBlockSize maximum block size to use for read binaries
+     * @param fs the file system
+     * 
+     * @throws CardServiceException on error
+     */
+    public CardFileInputStream(int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
+        this.fs = fs;
+        synchronized(fs) {
+            FileInfo[] fsPath = fs.getSelectedPath();
+            if (fsPath == null || fsPath.length < 1) { throw new CardServiceException("No valid file selected, path = " + Arrays.toString(fsPath)); }
+            this.path = new FileInfo[fsPath.length];
+            System.arraycopy(fsPath, 0, this.path, 0, fsPath.length);
+            fileLength = fsPath[fsPath.length - 1].getFileLength();
+            buffer = new byte[maxBlockSize];
+            bufferLength = 0;
+            offsetBufferInFile = 0;
+            offsetInBuffer = 0;
+            markedOffset = -1;
+        }
+    }
 
-	public int read() throws IOException {
-		synchronized(fs) {
-			if (!Arrays.equals(path, fs.getSelectedPath())) {
-				try {
-					for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
-				} catch (CardServiceException cse) {
-					/* ERROR: selecting proper path failed. */
-					cse.printStackTrace();
-					return 0; // FIXME: proper error handling here
-				}
-			}
+    public int read() throws IOException {
+        synchronized(fs) {
+            try {
+                if (!Arrays.equals(path, fs.getSelectedPath())) {
+                    for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
+                }   
+            } catch (CardServiceException cse) {
+                /* ERROR: selecting proper path failed. */
+                cse.printStackTrace();
+                throw new IOException(cse.getMessage()); // FIXME: proper error handling here
+            }
 
-			int offsetInFile = offsetBufferInFile + offsetInBuffer;
-			if (offsetInFile >= fileLength) {
-				return -1;
-			}
-			if (offsetInBuffer >= bufferLength) {
-				int le = Math.min(buffer.length, fileLength - offsetInFile);
-				try {
-					offsetBufferInFile += bufferLength;
-					offsetInBuffer = 0;
-					bufferLength = fillBufferFromFile(path, offsetBufferInFile, le);
-				} catch (CardServiceException cse) {
-					throw new IOException(cse.toString());
-				}
-			}
-			int result = buffer[offsetInBuffer] & 0xFF;
-			offsetInBuffer++;
-			return result;
-		}
-	}
+            int offsetInFile = offsetBufferInFile + offsetInBuffer;
+            if (offsetInFile >= fileLength) {
+                return -1;
+            }
+            if (offsetInBuffer >= bufferLength) {
+                int le = Math.min(buffer.length, fileLength - offsetInFile);
+                try {
+                    offsetBufferInFile += bufferLength;
+                    offsetInBuffer = 0;
+                    bufferLength = fillBufferFromFile(path, offsetBufferInFile, le);
+                } catch (CardServiceException cse) {
+                    throw new IOException(cse.toString());
+                } catch (Exception e) {
+                    throw new IOException("DEBUG: Unexpected Exception: " + e.getMessage());
+                }
 
-	public long skip(long n) {
-		synchronized(fs) {
-			if (n < (bufferLength - offsetInBuffer)) {
-				offsetInBuffer += n;
-			} else {
-				int offsetInFile = offsetBufferInFile + offsetInBuffer;
-				offsetBufferInFile = (int) (offsetInFile + n); /* FIXME: shouldn't we check for EOF? We know fileLength... */
-				offsetInBuffer = 0;
-				bufferLength = 0;
-				offsetInFile = offsetBufferInFile + offsetInBuffer;
-			}
-			return n;
-		}
-	}
+            }
+            int result = buffer[offsetInBuffer] & 0xFF;
+            offsetInBuffer++;
+            return result;
+        }
+    }
 
-	public synchronized int available() {
-		return bufferLength - offsetInBuffer;
-	}
+    public long skip(long n) {
+        synchronized(fs) {
+            if (n < (bufferLength - offsetInBuffer)) {
+                offsetInBuffer += n;
+            } else {
+                int offsetInFile = offsetBufferInFile + offsetInBuffer;
+                offsetBufferInFile = (int) (offsetInFile + n); /* FIXME: shouldn't we check for EOF? We know fileLength... */
+                offsetInBuffer = 0;
+                bufferLength = 0;
+                offsetInFile = offsetBufferInFile + offsetInBuffer;
+            }
+            return n;
+        }
+    }
 
-	public void mark(int readLimit) {
-		synchronized(fs) {
-			markedOffset = offsetBufferInFile + offsetInBuffer;
-		}
-	}
+    public synchronized int available() {
+        return bufferLength - offsetInBuffer;
+    }
 
-	public void reset() throws IOException {
-		synchronized(fs) {
-			if (markedOffset < 0) {
-				throw new IOException("Mark not set");
-			}
-			offsetBufferInFile = markedOffset;
-			offsetInBuffer = 0;
-			bufferLength = 0;
-		}
-	}
+    public void mark(int readLimit) {
+        synchronized(fs) {
+            markedOffset = offsetBufferInFile + offsetInBuffer;
+        }
+    }
 
-	public boolean markSupported() {
-		synchronized(fs) {
-			return true;
-		}
-	}
+    public void reset() throws IOException {
+        synchronized(fs) {
+            if (markedOffset < 0) {
+                throw new IOException("Mark not set");
+            }
+            offsetBufferInFile = markedOffset;
+            offsetInBuffer = 0;
+            bufferLength = 0;
+        }
+    }
 
-	/**
-	 * Gets the length of the underlying card file.
-	 * 
-	 * @return the length of the underlying card file.
-	 */
-	public int getLength() {
-		return fileLength;
-	}
+    public boolean markSupported() {
+        synchronized(fs) {
+            return true;
+        }
+    }
 
-	public int getPostion() {
-		return offsetBufferInFile + offsetInBuffer;
-	}
+    /**
+     * Gets the length of the underlying card file.
+     * 
+     * @return the length of the underlying card file.
+     */
+    public int getLength() {
+        return fileLength;
+    }
 
-	/**
-	 * Reads from file with id <code>fid</code>.
-	 * 
-	 * @param fid
-	 *            the file to read
-	 * @param offsetInFile
-	 *            starting offset in file
-	 * @param length
-	 *            the number of bytes to read, or -1 to read until EOF
-	 * 
-	 * @return the contents of the file.
-	 */
-	private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le) throws CardServiceException {
-		synchronized (fs) {
-			if (le > buffer.length) {
-				throw new IllegalArgumentException("length too big");
-			}
-			if (!Arrays.equals(fs.getSelectedPath(), path)) {
-				for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
-			}
-			byte[] data = fs.readBinary(offsetInFile, le);
-			System.arraycopy(data, 0, buffer, 0, data.length);
-			return data.length;
-		}
-	}
+    public int getPostion() {
+        return offsetBufferInFile + offsetInBuffer;
+    }
+
+    /**
+     * Reads from file with id <code>fid</code>.
+     * 
+     * @param fid
+     *            the file to read
+     * @param offsetInFile
+     *            starting offset in file
+     * @param length
+     *            the number of bytes to read, or -1 to read until EOF
+     * 
+     * @return the contents of the file.
+     */
+    private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le) throws CardServiceException {
+        synchronized(fs) {
+            if (le > buffer.length) {
+                throw new IllegalArgumentException("length too big");
+            }
+            if (!Arrays.equals(fs.getSelectedPath(), path)) {
+                for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
+            }
+            byte[] data = fs.readBinary(offsetInFile, le);
+            System.arraycopy(data, 0, buffer, 0, data.length);
+            return data.length;
+        }
+    }
 }

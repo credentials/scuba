@@ -1,22 +1,23 @@
 /*
  * This file is part of the SCUBA smart card framework.
  *
- * SCUBA is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * SCUBA is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * SCUBA. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2012 The SCUBA team.
+ * Copyright (C) 2009-2013 The SCUBA team.
  *
- * $Id: CardService.java 214 2013-02-19 22:03:49Z martijno $
+ * $Id: $
  */
 
 package net.sourceforge.scuba.smartcards;
@@ -32,11 +33,11 @@ import java.util.Map.Entry;
  * Default abstract service.
  * Provides a factory method for creating card services.
  * Provides some functionality for observing apdu events.
- *
+ * 
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
- *
+ * 
  * @version $Revision: 214 $
  */
 public abstract class CardService implements Serializable {
@@ -97,7 +98,7 @@ public abstract class CardService implements Serializable {
 
     /**
      * Adds a listener.
-     *
+     * 
      * @param l the listener to add
      */
     public void addAPDUListener(APDUListener l) {
@@ -106,7 +107,7 @@ public abstract class CardService implements Serializable {
 
     /**
      * Removes the listener <code>l</code>, if present.
-     *
+     * 
      * @param l the listener to remove
      */
     public void removeAPDUListener(APDUListener l) {
@@ -115,7 +116,7 @@ public abstract class CardService implements Serializable {
 
     /**
      * Notifies listeners about APDU event.
-     *
+     * 
      * @param capdu APDU event
      */
     protected void notifyExchangedAPDU(int count, CommandAPDU capdu, ResponseAPDU rapdu) {
@@ -144,16 +145,16 @@ public abstract class CardService implements Serializable {
 
     /**
      * Sends an apdu to the card. Notifies any interested apduListeners.
-     *
+     * 
      * This method does not throw a CardServiceException if the ResponseAPDU
      * is status word indicating error.
-     *
+     * 
      * @param apdu the command apdu to send.
      * @return the response from the card, including the status word.
-     * @throws CardServiceException - if the card operation failed
+     * @throws CardServiceException - if the card operation failed 
      */
     /*
-     * @ requires state == SESSION_STARTED_STATE;
+     * @ requires state == SESSION_STARTED_STATE; 
      * @ ensures state == SESSION_STARTED_STATE;
      */
     public abstract ResponseAPDU transmit(CommandAPDU apdu) throws CardServiceException;
@@ -161,7 +162,7 @@ public abstract class CardService implements Serializable {
     public abstract byte[] transmitControlCommand(int controlCode, byte[] command) throws CardServiceException;
 
     public abstract byte[] getATR() throws CardServiceException;
-
+    
     public abstract String getName();
 
     public boolean isExtendedAPDULengthSupported() {
@@ -173,7 +174,7 @@ public abstract class CardService implements Serializable {
      * Notifies any interested apduListeners.
      */
     /*
-     * @ requires state == SESSION_STARTED_STATE;
+     * @ requires state == SESSION_STARTED_STATE; 
      * @ ensures state == SESSION_STOPPED_STATE;
      */
     public abstract void close();

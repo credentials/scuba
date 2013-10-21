@@ -39,40 +39,40 @@ import javax.smartcardio.TerminalFactorySpi;
  */
 public class ACR120TerminalFactorySpi  extends TerminalFactorySpi
 {
-	private static final Map<Integer, CardTerminal> TERMINALS = new HashMap<Integer, CardTerminal>();
+    private static final Map<Integer, CardTerminal> TERMINALS = new HashMap<Integer, CardTerminal>();
 
-	public ACR120TerminalFactorySpi(Object parameter) {
-		addReader(ACR120CardTerminal.ACR120_USB1);
-		addReader(ACR120CardTerminal.ACR120_USB2);
-		addReader(ACR120CardTerminal.ACR120_USB3);
-		addReader(ACR120CardTerminal.ACR120_USB4);
-		addReader(ACR120CardTerminal.ACR120_USB5);
-		addReader(ACR120CardTerminal.ACR120_USB6);
-		addReader(ACR120CardTerminal.ACR120_USB7);
-		addReader(ACR120CardTerminal.ACR120_USB8);
-	}
+    public ACR120TerminalFactorySpi(Object parameter) {
+        addReader(ACR120CardTerminal.ACR120_USB1);
+        addReader(ACR120CardTerminal.ACR120_USB2);
+        addReader(ACR120CardTerminal.ACR120_USB3);
+        addReader(ACR120CardTerminal.ACR120_USB4);
+        addReader(ACR120CardTerminal.ACR120_USB5);
+        addReader(ACR120CardTerminal.ACR120_USB6);
+        addReader(ACR120CardTerminal.ACR120_USB7);
+        addReader(ACR120CardTerminal.ACR120_USB8);
+    }
 
-	private void addReader(int port) {
-		try {
-			if (!TERMINALS.containsKey(port)) { TERMINALS.put(port, new ACR120CardTerminal(port)); }
-		} catch (CardException ce) {
-			/* NOTE: Reader not connected? Fine, don't add it to list. */
-		}
-	}
+    private void addReader(int port) {
+        try {
+            if (!TERMINALS.containsKey(port)) { TERMINALS.put(port, new ACR120CardTerminal(port)); }
+        } catch (CardException ce) {
+            /* NOTE: Reader not connected? Fine, don't add it to list. */
+        }
+    }
 
-	protected CardTerminals engineTerminals() {
-		return new CardTerminals() {
-			public List<CardTerminal> list(State state) throws CardException {
-				return new ArrayList<CardTerminal>(TERMINALS.values());
-			}
+    protected CardTerminals engineTerminals() {
+        return new CardTerminals() {
+            public List<CardTerminal> list(State state) throws CardException {
+                return new ArrayList<CardTerminal>(TERMINALS.values());
+            }
 
-			public boolean waitForChange(long timeout) throws CardException {
-				return false;
-			}		
-		};
-	}
-	
-	public String toString() {
-		return "ACSCardTerminalFactory " + TERMINALS;
-	}
+            public boolean waitForChange(long timeout) throws CardException {
+                return false;
+            }       
+        };
+    }
+    
+    public String toString() {
+        return "ACSCardTerminalFactory " + TERMINALS;
+    }
 }

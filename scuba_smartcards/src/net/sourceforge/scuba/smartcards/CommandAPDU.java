@@ -68,7 +68,7 @@ public final class CommandAPDU implements java.io.Serializable {
     private static final long serialVersionUID = 398698301286670877L;
 
     @SuppressWarnings("unused")
-	private static final int MAX_APDU_SIZE = 65544;
+    private static final int MAX_APDU_SIZE = 65544;
 
     /** @serial */
     private byte[] apdu;

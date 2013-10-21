@@ -45,269 +45,269 @@ import com.ibm.jc.JCTerminal;
  */
 public class JCOPEmulatorTerminal extends CardTerminal
 {
-	private static final long CARD_CHECK_SLEEP_TIME = 150;
-	private static final long HEARTBEAT_TIMEOUT = 1200;
+    private static final long CARD_CHECK_SLEEP_TIME = 150;
+    private static final long HEARTBEAT_TIMEOUT = 1200;
 
-	private String hostName;
-	private int port;
+    private String hostName;
+    private int port;
 
-	private long heartBeat;
-	private boolean isCheckingForCardPresent;
+    private long heartBeat;
+    private boolean isCheckingForCardPresent;
 
-	private final Object terminal;
-	private boolean wasCardPresent;
-	private EmulatedCard card;
+    private final Object terminal;
+    private boolean wasCardPresent;
+    private EmulatedCard card;
 
-	private JCTerminal jcTerminal;
+    private JCTerminal jcTerminal;
 
-	/**
-	 * Listens for instances of the emulator on the specified host and port.
-	 * 
-	 * @param hostName the host name, for instance <code>&quot;localhost&quot;"</code>
-	 * @param port the port number, for instance <code>9025</code>
-	 */
-	public JCOPEmulatorTerminal(String hostName, int port) {
-		terminal = this;
-		this.hostName = hostName;
-		this.port = port;
-		jcTerminal = JCTerminal.getInstance("Remote", hostName.trim() + ":" + port);
-		heartBeat = System.currentTimeMillis();
-		isCheckingForCardPresent = false;
-	}
+    /**
+     * Listens for instances of the emulator on the specified host and port.
+     * 
+     * @param hostName the host name, for instance <code>&quot;localhost&quot;"</code>
+     * @param port the port number, for instance <code>9025</code>
+     */
+    public JCOPEmulatorTerminal(String hostName, int port) {
+        terminal = this;
+        this.hostName = hostName;
+        this.port = port;
+        jcTerminal = JCTerminal.getInstance("Remote", hostName.trim() + ":" + port);
+        heartBeat = System.currentTimeMillis();
+        isCheckingForCardPresent = false;
+    }
 
-	/**
-	 * Connects to the emulator.
-	 * 
-	 * @param protocol is ignored for now
-	 */
-	public synchronized Card connect(String protocol) throws CardException {
-		synchronized (terminal) {
-			if (!isCardPresent()) {
-				throw new CardException("No card present");
-			}
-			if (card == null) {
-				card = new EmulatedCard();
-			}
-			return card;
-		}
-	}
+    /**
+     * Connects to the emulator.
+     * 
+     * @param protocol is ignored for now
+     */
+    public synchronized Card connect(String protocol) throws CardException {
+        synchronized (terminal) {
+            if (!isCardPresent()) {
+                throw new CardException("No card present");
+            }
+            if (card == null) {
+                card = new EmulatedCard();
+            }
+            return card;
+        }
+    }
 
-	/**
-	 * The name of this terminal.
-	 * 
-	 * @return the name of this terminal.
-	 */
-	public String getName() {
-		return "JCOP emulator at " + hostName + ":" + port;
-	}
+    /**
+     * The name of this terminal.
+     * 
+     * @return the name of this terminal.
+     */
+    public String getName() {
+        return "JCOP emulator at " + hostName + ":" + port;
+    }
 
-	public String toString() {
-		return getName();
-	}
+    public String toString() {
+        return getName();
+    }
 
-	/**
-	 * Determines whether a card is present.
-	 * 
-	 * @return whether a card is present.
-	 */
-	public boolean isCardPresent() {
-		if (jcTerminal == null) { return false; }
-		if (isCheckingForCardPresent) { return wasCardPresent; }
-		if ((System.currentTimeMillis() - heartBeat) < HEARTBEAT_TIMEOUT) { return wasCardPresent; }
-		synchronized (terminal) {
-			isCheckingForCardPresent = true;
-			try {
-				jcTerminal.open();
-			} catch (Throwable e1) {
-				wasCardPresent = false;
-				isCheckingForCardPresent = false;
-				return false;
-			}
-			switch(jcTerminal.getState()) {
-			case JCTerminal.CARD_PRESENT: wasCardPresent = true; break;
-			case JCTerminal.NOT_CONNECTED: wasCardPresent = false; break;
-			case JCTerminal.ERROR: wasCardPresent = false; break;
-			default: wasCardPresent = false; break;
-			}
-			heartBeat = System.currentTimeMillis();
-			isCheckingForCardPresent = false;
-			return wasCardPresent;
-		}
-	}
+    /**
+     * Determines whether a card is present.
+     * 
+     * @return whether a card is present.
+     */
+    public boolean isCardPresent() {
+        if (jcTerminal == null) { return false; }
+        if (isCheckingForCardPresent) { return wasCardPresent; }
+        if ((System.currentTimeMillis() - heartBeat) < HEARTBEAT_TIMEOUT) { return wasCardPresent; }
+        synchronized (terminal) {
+            isCheckingForCardPresent = true;
+            try {
+                jcTerminal.open();
+            } catch (Throwable e1) {
+                wasCardPresent = false;
+                isCheckingForCardPresent = false;
+                return false;
+            }
+            switch(jcTerminal.getState()) {
+            case JCTerminal.CARD_PRESENT: wasCardPresent = true; break;
+            case JCTerminal.NOT_CONNECTED: wasCardPresent = false; break;
+            case JCTerminal.ERROR: wasCardPresent = false; break;
+            default: wasCardPresent = false; break;
+            }
+            heartBeat = System.currentTimeMillis();
+            isCheckingForCardPresent = false;
+            return wasCardPresent;
+        }
+    }
 
-	/**
-	 * Waits for a card to be present. TODO: NEEDS TESTING!
-	 * 
-	 * @param timeout a timeout
-	 * 
-	 * @return whether the card became present before the timeout expired
-	 */
-	public boolean waitForCardAbsent(long timeout) throws CardException {
-		long startTime = System.currentTimeMillis();
-		if (CARD_CHECK_SLEEP_TIME > timeout) {
-			return !isCardPresent();
-		}
-		try {
-			while (isCardPresent()) {
-				if (System.currentTimeMillis() - startTime > timeout) {
-					break;
-				}
-				Thread.sleep(CARD_CHECK_SLEEP_TIME);
-			}
-		} catch (InterruptedException ie) {
-			/* NOTE: Exit on interrupt. */
-		}
-		return !isCardPresent();
-	}
+    /**
+     * Waits for a card to be present. TODO: NEEDS TESTING!
+     * 
+     * @param timeout a timeout
+     * 
+     * @return whether the card became present before the timeout expired
+     */
+    public boolean waitForCardAbsent(long timeout) throws CardException {
+        long startTime = System.currentTimeMillis();
+        if (CARD_CHECK_SLEEP_TIME > timeout) {
+            return !isCardPresent();
+        }
+        try {
+            while (isCardPresent()) {
+                if (System.currentTimeMillis() - startTime > timeout) {
+                    break;
+                }
+                Thread.sleep(CARD_CHECK_SLEEP_TIME);
+            }
+        } catch (InterruptedException ie) {
+            /* NOTE: Exit on interrupt. */
+        }
+        return !isCardPresent();
+    }
 
-	/**
-	 * Waits for a card to be absent. TODO: NEEDS TESTING!
-	 * 
-	 * @param timeout a timeout
-	 * 
-	 * @return whether the card became absent before the timeout expired
-	 */
-	public boolean waitForCardPresent(long timeout) throws CardException {
-		/* TODO: test this method. */
-		long startTime = System.currentTimeMillis();
-		if (CARD_CHECK_SLEEP_TIME > timeout) {
-			return isCardPresent();
-		}
-		try {
-			while (!isCardPresent()) {
-				if (System.currentTimeMillis() - startTime > timeout) {
-					break;
-				}
-				Thread.sleep(CARD_CHECK_SLEEP_TIME);
-			}
-		} catch (InterruptedException ie) {
-			/* NOTE: Exit on interrupt. */
-		}
-		return isCardPresent();
-	}
+    /**
+     * Waits for a card to be absent. TODO: NEEDS TESTING!
+     * 
+     * @param timeout a timeout
+     * 
+     * @return whether the card became absent before the timeout expired
+     */
+    public boolean waitForCardPresent(long timeout) throws CardException {
+        /* TODO: test this method. */
+        long startTime = System.currentTimeMillis();
+        if (CARD_CHECK_SLEEP_TIME > timeout) {
+            return isCardPresent();
+        }
+        try {
+            while (!isCardPresent()) {
+                if (System.currentTimeMillis() - startTime > timeout) {
+                    break;
+                }
+                Thread.sleep(CARD_CHECK_SLEEP_TIME);
+            }
+        } catch (InterruptedException ie) {
+            /* NOTE: Exit on interrupt. */
+        }
+        return isCardPresent();
+    }
 
-	/**
-	 * This merely wraps channel.
-	 */
-	private class EmulatedCard extends Card
-	{
-		private EmulatedCardChannel basicChannel;
+    /**
+     * This merely wraps channel.
+     */
+    private class EmulatedCard extends Card
+    {
+        private EmulatedCardChannel basicChannel;
 
-		public EmulatedCard() {
-			basicChannel = new EmulatedCardChannel(this);
-		}
+        public EmulatedCard() {
+            basicChannel = new EmulatedCardChannel(this);
+        }
 
-		public void beginExclusive() throws CardException {
-		}
+        public void beginExclusive() throws CardException {
+        }
 
-		public void disconnect(boolean reset) throws CardException {
-			basicChannel.close();
-		}
+        public void disconnect(boolean reset) throws CardException {
+            basicChannel.close();
+        }
 
-		public void endExclusive() throws CardException {
-		}
+        public void endExclusive() throws CardException {
+        }
 
-		public ATR getATR() {
-			return basicChannel.getATR();
-		}
+        public ATR getATR() {
+            return basicChannel.getATR();
+        }
 
-		public CardChannel getBasicChannel() {
-			return basicChannel;
-		}
+        public CardChannel getBasicChannel() {
+            return basicChannel;
+        }
 
-		public String getProtocol() {
-			return "T=1";
-		}
+        public String getProtocol() {
+            return "T=1";
+        }
 
-		public CardChannel openLogicalChannel() throws CardException {
-			return null;
-		}
+        public CardChannel openLogicalChannel() throws CardException {
+            return null;
+        }
 
-		public byte[] transmitControlCommand(int controlCode, byte[] command)
-		throws CardException {
-			return null;
-		}
-	}
+        public byte[] transmitControlCommand(int controlCode, byte[] command)
+        throws CardException {
+            return null;
+        }
+    }
 
-	/**
-	 * Basic card channel to the emulator.
-	 */
-	private class EmulatedCardChannel extends CardChannel
-	{
-		private ATR atr;
+    /**
+     * Basic card channel to the emulator.
+     */
+    private class EmulatedCardChannel extends CardChannel
+    {
+        private ATR atr;
 
-		private Card card;
+        private Card card;
 
-		public EmulatedCardChannel(Card card) {
-			synchronized (terminal) {
-				this.card = card;
-				jcTerminal.open();
-				byte[] atrBytes = jcTerminal.waitForCard(0);
-				atr = new ATR(atrBytes);
-				heartBeat = System.currentTimeMillis();
-			}
+        public EmulatedCardChannel(Card card) {
+            synchronized (terminal) {
+                this.card = card;
+                jcTerminal.open();
+                byte[] atrBytes = jcTerminal.waitForCard(0);
+                atr = new ATR(atrBytes);
+                heartBeat = System.currentTimeMillis();
+            }
 
-		}
+        }
 
-		public ATR getATR() {
-			return atr;
-		}
+        public ATR getATR() {
+            return atr;
+        }
 
-		public void close() throws CardException {
-			synchronized (terminal) {
-				try {
-					jcTerminal.close();
-				} catch (JCException jce) {
-					throw new CardException(
-							"Couldn't establish connection to the emulator: "
-							+ jcTerminal.getErrorMessage());
-				}
-			}
-		}
+        public void close() throws CardException {
+            synchronized (terminal) {
+                try {
+                    jcTerminal.close();
+                } catch (JCException jce) {
+                    throw new CardException(
+                            "Couldn't establish connection to the emulator: "
+                            + jcTerminal.getErrorMessage());
+                }
+            }
+        }
 
-		public Card getCard() {
-			return card;
-		}
+        public Card getCard() {
+            return card;
+        }
 
-		public int getChannelNumber() {
-			return 0;
-		}
+        public int getChannelNumber() {
+            return 0;
+        }
 
-		/**
-		 * Transmits a command to the card.
-		 * 
-		 * @param command the command to send
-		 * 
-		 * @return the response from the card.
-		 */
-		public int transmit(ByteBuffer command, ByteBuffer response) throws CardException {
-			synchronized (terminal) {
-				ResponseAPDU rapdu = transmit(new CommandAPDU(command));
-				byte[] rapduBytes = rapdu.getBytes();
-				response.put(rapduBytes);
-				return rapduBytes.length;
-			}
-		}
+        /**
+         * Transmits a command to the card.
+         * 
+         * @param command the command to send
+         * 
+         * @return the response from the card.
+         */
+        public int transmit(ByteBuffer command, ByteBuffer response) throws CardException {
+            synchronized (terminal) {
+                ResponseAPDU rapdu = transmit(new CommandAPDU(command));
+                byte[] rapduBytes = rapdu.getBytes();
+                response.put(rapduBytes);
+                return rapduBytes.length;
+            }
+        }
 
-		/**
-		 * Transmits a command to the card.
-		 * 
-		 * @param command the command to send
-		 * 
-		 * @return the response from the card.
-		 */
-		public ResponseAPDU transmit(CommandAPDU command) throws CardException {
-			synchronized (terminal) {
-				try {
-					byte[] capdu = command.getBytes();
-					byte[] rapdu = jcTerminal.send(0, capdu, 0, capdu.length);
-					ResponseAPDU ourResponseAPDU = new ResponseAPDU(rapdu);
-					heartBeat = System.currentTimeMillis();
-					return ourResponseAPDU;
-				} catch (Exception e) {
-					throw (e instanceof CardException) ? (CardException)e : new CardException(e.toString());
-				}
-			}
-		}
-	}
+        /**
+         * Transmits a command to the card.
+         * 
+         * @param command the command to send
+         * 
+         * @return the response from the card.
+         */
+        public ResponseAPDU transmit(CommandAPDU command) throws CardException {
+            synchronized (terminal) {
+                try {
+                    byte[] capdu = command.getBytes();
+                    byte[] rapdu = jcTerminal.send(0, capdu, 0, capdu.length);
+                    ResponseAPDU ourResponseAPDU = new ResponseAPDU(rapdu);
+                    heartBeat = System.currentTimeMillis();
+                    return ourResponseAPDU;
+                } catch (Exception e) {
+                    throw (e instanceof CardException) ? (CardException)e : new CardException(e.toString());
+                }
+            }
+        }
+    }
 }

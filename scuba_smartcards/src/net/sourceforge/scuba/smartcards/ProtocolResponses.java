@@ -31,5 +31,5 @@ public class ProtocolResponses extends HashMap<String, ProtocolResponse> {
     /**
      * Universal version identifier to match versions during deserialisation.
      */
-	private static final long serialVersionUID = 2358602306268421757L;
+    private static final long serialVersionUID = 2358602306268421757L;
 }
