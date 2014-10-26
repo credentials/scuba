@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+// Our directory structure differs from the default
+sourceSets.main.java {
+    srcDir 'src'
+}
+
+dependencies {
+    compile project(':scuba_util')
+    compile project(':scuba_smartcards')
+}

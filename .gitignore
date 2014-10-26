@@ -35,3 +35,8 @@
 
 # /scuba_util_j2se/
 /scuba_util_j2se/bin
+
+# Gradle build files
+*/build
+*/.gradle
+.gradle

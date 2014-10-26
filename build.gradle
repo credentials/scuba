@@ -1,0 +1,19 @@
+subprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'maven'
+
+    version = '0.0.223'
+    group = 'net.sourceforge.scuba'
+
+    repositories {
+        mavenLocal()
+    }
+
+    uploadArchives.repositories.mavenDeployer {
+        repository(url: mavenRepositoryIRMA )
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
