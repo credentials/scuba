@@ -9,8 +9,10 @@ subprojects {
         mavenLocal()
     }
 
-    uploadArchives.repositories.mavenDeployer {
-        repository(url: mavenRepositoryIRMA )
+    if ( project.hasProperty("mavenRepositoryIRMA") ) {
+        uploadArchives.repositories.mavenDeployer {
+            repository(url: mavenRepositoryIRMA)
+        }
     }
 }
 
